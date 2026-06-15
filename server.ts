@@ -3,11 +3,82 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
+import fs from "fs";
+import multer from "multer";
+import { rateLimit } from "express-rate-limit";
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
+
+// 1. Cấu hình Rate Limiters bảo vệ server
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 phút
+  max: 150, // Tối đa 150 request / phút từ mỗi IP cho các API thông thường
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút." }
+});
+
+const heavyAiLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 phút
+  max: 10, // Tối đa 10 request / 5 phút từ mỗi IP cho các thao tác nặng liên quan tới AI
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Bạn đã gửi quá nhiều yêu cầu phân tích tài liệu/giọng nói. Vui lòng thử lại sau 5 phút." }
+});
+
+// Áp dụng Rate Limiters cho các API tương ứng
+app.use("/api/", apiLimiter);
+app.use("/api/process-file", heavyAiLimiter);
+app.use("/api/process-link", heavyAiLimiter);
+app.use("/api/translate-live-audio", heavyAiLimiter);
+
+// 2. Class Concurrency Limiter để kiểm soát số lượng cuộc gọi Gemini API đồng thời
+class ConcurrencyLimiter {
+  private activeCount = 0;
+  private queue: (() => void)[] = [];
+  constructor(private limit: number) {}
+
+  async run<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.activeCount >= this.limit) {
+      await new Promise<void>((resolve) => this.queue.push(resolve));
+    }
+    this.activeCount++;
+    try {
+      return await fn();
+    } finally {
+      this.activeCount--;
+      const next = this.queue.shift();
+      if (next) next();
+    }
+  }
+}
+const geminiLimiter = new ConcurrencyLimiter(3); // Tối đa 3 cuộc gọi đồng thời sang Gemini
+
+// 3. Cấu hình Multer lưu tạm file tải lên vào đĩa cứng (Disk Storage) tránh nghẽn RAM
+const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, UPLOAD_DIR);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 20 * 1024 * 1024 // Giới hạn kích thước file tải lên là 20MB
+  }
+});
 
 // Set body parser limits for handling larger file uploads of PDFs, docs, audios or images
 app.use(express.json({ limit: "50mb" }));
@@ -96,11 +167,29 @@ function getSafeGeminiPayload(name: string, originalMime: string, base64Data: st
 }
 
 // 1. API: Process File (PDF, Docs, Audio MP3/WAV, Image, Video MP4)
-app.post("/api/process-file", async (req, res): Promise<any> => {
+app.post("/api/process-file", upload.single("file"), async (req, res): Promise<any> => {
+  let tempFilePath: string | null = null;
   try {
-    const { name, mimeType, base64Data } = req.body;
-    if (!base64Data) {
-      return res.status(400).json({ error: "Missing base64 file data" });
+    let name: string;
+    let mimeType: string;
+    let base64Data: string;
+    let buffer: Buffer;
+
+    if (req.file) {
+      tempFilePath = req.file.path;
+      name = req.body.name || req.file.originalname;
+      mimeType = req.body.mimeType || req.file.mimetype;
+      buffer = await fs.promises.readFile(tempFilePath);
+      base64Data = buffer.toString("base64");
+    } else {
+      const { name: bodyName, mimeType: bodyMime, base64Data: bodyBase64 } = req.body;
+      if (!bodyBase64) {
+        return res.status(400).json({ error: "Missing file payload (multipart or base64)" });
+      }
+      name = bodyName;
+      mimeType = bodyMime;
+      base64Data = bodyBase64;
+      buffer = Buffer.from(base64Data, "base64");
     }
 
     const ai = getAiClient();
@@ -165,7 +254,6 @@ app.post("/api/process-file", async (req, res): Promise<any> => {
     }
 
     // Call Gemini to analyze the file safely (handling text files / scraped web pages as pure prompts)
-    const buffer = Buffer.from(base64Data, "base64");
     const payload = getSafeGeminiPayload(name, mimeType || "application/octet-stream", base64Data, buffer);
 
     let contentsPayload: any[] = [];
@@ -206,57 +294,67 @@ Lưu ý: Hãy tự động phân tích định dạng cấu trúc cây (I, II, I
       contentsPayload = [promptMessage];
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: contentsPayload,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            extractedText: { type: Type.STRING },
-            quiz: {
-              type: Type.ARRAY,
-              items: {
+    const parsedData = await geminiLimiter.run(async () => {
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: contentsPayload,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              summary: { type: Type.STRING },
+              extractedText: { type: Type.STRING },
+              quiz: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    question: { type: Type.STRING },
+                    options: {
+                      type: Type.ARRAY,
+                      items: { type: Type.STRING }
+                    },
+                    correctAnswer: { type: Type.STRING },
+                    explanation: { type: Type.STRING }
+                  },
+                  required: ["id", "question", "options", "correctAnswer", "explanation"]
+                }
+              },
+              mindmap: {
                 type: Type.OBJECT,
                 properties: {
                   id: { type: Type.STRING },
-                  question: { type: Type.STRING },
-                  options: {
+                  label: { type: Type.STRING },
+                  children: {
                     type: Type.ARRAY,
-                    items: { type: Type.STRING }
-                  },
-                  correctAnswer: { type: Type.STRING },
-                  explanation: { type: Type.STRING }
+                    items: { type: Type.OBJECT } // Recursive JSON structure setup
+                  }
                 },
-                required: ["id", "question", "options", "correctAnswer", "explanation"]
+                required: ["id", "label"]
               }
             },
-            mindmap: {
-              type: Type.OBJECT,
-              properties: {
-                id: { type: Type.STRING },
-                label: { type: Type.STRING },
-                children: {
-                  type: Type.ARRAY,
-                  items: { type: Type.OBJECT } // Recursive JSON structure setup
-                }
-              },
-              required: ["id", "label"]
-            }
-          },
-          required: ["summary", "extractedText", "quiz", "mindmap"]
+            required: ["summary", "extractedText", "quiz", "mindmap"]
+          }
         }
-      }
+      });
+      return JSON.parse(response.text || "{}");
     });
 
-    const parsedData = JSON.parse(response.text || "{}");
     return res.json({ success: true, ...parsedData });
 
   } catch (error: any) {
     console.error("Error in /api/process-file:", error);
     res.status(500).json({ error: error.message || "Failed to process file" });
+  } finally {
+    if (tempFilePath) {
+      try {
+        await fs.promises.unlink(tempFilePath);
+      } catch (err) {
+        console.warn("Failed to delete temp file:", tempFilePath, err);
+      }
+    }
   }
 });
 
@@ -299,22 +397,44 @@ app.post("/api/process-link", async (req, res): Promise<any> => {
     console.log(`Downloading URL contents for processing: ${finalUrl}`);
     
     let resFetch;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    
     try {
       resFetch = await fetch(finalUrl, {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept": "*/*"
-        }
+        },
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+      
       if (!resFetch.ok) {
         throw new Error(`Tải file thất bại với mã lỗi HTTP: ${resFetch.status}`);
       }
     } catch (fetchErr: any) {
-      return res.status(400).json({ error: `Không thể kết nối hoặc tải tệp từ liên kết này. Lỗi: ${fetchErr.message}` });
+      clearTimeout(timeoutId);
+      return res.status(400).json({ error: `Không thể kết nối hoặc tải tệp từ liên kết này. Lỗi: ${fetchErr.name === 'AbortError' ? 'Yêu cầu tải tệp quá thời gian cho phép (Timeout 15s)' : fetchErr.message}` });
+    }
+
+    // Kiểm tra Header Content-Length để chặn file quá lớn trước khi tải
+    const contentLengthHeader = resFetch.headers.get("content-length");
+    if (contentLengthHeader) {
+      const contentLength = parseInt(contentLengthHeader, 10);
+      if (contentLength > 20 * 1024 * 1024) { // 20MB
+        return res.status(400).json({ error: "Tệp tin liên kết quá lớn (tối đa 20MB)." });
+      }
     }
 
     const mimeType = resFetch.headers.get("content-type") || "application/octet-stream";
     const arrayBuffer = await resFetch.arrayBuffer();
+    
+    // Kiểm tra dung lượng tải thực tế
+    if (arrayBuffer.byteLength > 20 * 1024 * 1024) {
+      return res.status(400).json({ error: "Tệp tin tải về vượt quá giới hạn 20MB." });
+    }
+    
     const buffer = Buffer.from(arrayBuffer);
     const base64Data = buffer.toString("base64");
     const fileSize = buffer.length;
@@ -412,52 +532,54 @@ Lưu ý: Hãy sinh JSON hoàn hảo không chứa văn bản bao quanh.`;
       contentsPayload = [promptMessage];
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: contentsPayload,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            summary: { type: Type.STRING },
-            extractedText: { type: Type.STRING },
-            quiz: {
-              type: Type.ARRAY,
-              items: {
+    const parsedData = await geminiLimiter.run(async () => {
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: contentsPayload,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              summary: { type: Type.STRING },
+              extractedText: { type: Type.STRING },
+              quiz: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    question: { type: Type.STRING },
+                    options: {
+                      type: Type.ARRAY,
+                      items: { type: Type.STRING }
+                    },
+                    correctAnswer: { type: Type.STRING },
+                    explanation: { type: Type.STRING }
+                  },
+                  required: ["id", "question", "options", "correctAnswer", "explanation"]
+                }
+              },
+              mindmap: {
                 type: Type.OBJECT,
                 properties: {
                   id: { type: Type.STRING },
-                  question: { type: Type.STRING },
-                  options: {
+                  label: { type: Type.STRING },
+                  children: {
                     type: Type.ARRAY,
-                    items: { type: Type.STRING }
-                  },
-                  correctAnswer: { type: Type.STRING },
-                  explanation: { type: Type.STRING }
+                    items: { type: Type.OBJECT }
+                  }
                 },
-                required: ["id", "question", "options", "correctAnswer", "explanation"]
+                required: ["id", "label"]
               }
             },
-            mindmap: {
-              type: Type.OBJECT,
-              properties: {
-                id: { type: Type.STRING },
-                label: { type: Type.STRING },
-                children: {
-                  type: Type.ARRAY,
-                  items: { type: Type.OBJECT }
-                }
-              },
-              required: ["id", "label"]
-            }
-          },
-          required: ["summary", "extractedText", "quiz", "mindmap"]
+            required: ["summary", "extractedText", "quiz", "mindmap"]
+          }
         }
-      }
+      });
+      return JSON.parse(response.text || "{}");
     });
 
-    const parsedData = JSON.parse(response.text || "{}");
     return res.json({
       success: true,
       name,
@@ -700,16 +822,17 @@ app.post("/api/translate-live-audio", async (req, res): Promise<any> => {
     // Call Gemini with Audio Part input!
     let cleanMime = (mimeType || "audio/webm").split(";")[0].trim().toLowerCase();
     
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: [
-        {
-          inlineData: {
-            mimeType: cleanMime,
-            data: base64Audio
-          }
-        },
-        `You are a real-time speech translation system. 
+    const parsedData = await geminiLimiter.run(async () => {
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: [
+          {
+            inlineData: {
+              mimeType: cleanMime,
+              data: base64Audio
+            }
+          },
+          `You are a real-time speech translation system. 
 Listen to this short audio chunk (which is played from a microphone or computer video).
 1. Transcribe the audio chunk in its original language (${sourceLang === 'auto' ? 'detect the language' : sourceLang}).
 2. Translate the transcribed text to target language: ${targetLang}.
@@ -724,21 +847,22 @@ If there is only silence, ambient noise, or music with no clear speech, you shou
   "translation": ""
 }
 Do not write any markdown wrappers or additional text, return only the requested JSON.`
-      ],
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            transcription: { type: Type.STRING },
-            translation: { type: Type.STRING }
-          },
-          required: ["transcription", "translation"]
+        ],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              transcription: { type: Type.STRING },
+              translation: { type: Type.STRING }
+            },
+            required: ["transcription", "translation"]
+          }
         }
-      }
+      });
+      return JSON.parse(response.text || "{}");
     });
 
-    const parsedData = JSON.parse(response.text || "{}");
     return res.json({
       success: true,
       transcription: parsedData.transcription || "",

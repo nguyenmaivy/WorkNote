@@ -1,0 +1,6 @@
+{
+  "name": "VietLearn AI Studio",
+  "description": "Nền tảng học tập AI thông minh, hỗ trợ trò chơi nhập vai ôn luyện 2D, Chatbot tài liệu, OCR, chuyển đổi Mindmap tự động, phòng Lab âm thanh và thư viện kiến trúc Fullstack.",
+  "requestFramePermissions": ["microphone", "display-capture"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+    <script>
+      // Elegant shim for sandboxed environments where window.fetch is structured as a prototype-only getter.
+      // Providing both a getter and a setter prevent "Cannot set property fetch of #<Window> which has only a getter" crashes.
+      try {
+        let currentFetch = window.fetch;
+        Object.defineProperty(window, 'fetch', {
+          get() {
+            return currentFetch;
+          },
+          set(newFetch) {
+            currentFetch = newFetch;
+          },
+          configurable: true,
+          enumerable: true
+        });
+      } catch (e) {
+        console.warn("Fetch shadowing bypass failed:", e);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,433 @@
+import React, { useState, useEffect } from "react";
+import { UploadedFile, QuizQuestion, MindMapNode } from "./types";
+import DocUploadSection from "./components/DocUploadSection";
+import ChatbotSection from "./components/ChatbotSection";
+import MindMapViewer from "./components/MindMapViewer";
+import EduGamePlayground from "./components/EduGamePlayground";
+import AudioSpeechLab from "./components/AudioSpeechLab";
+import FullstackKnowledgeBase from "./components/FullstackKnowledgeBase";
+import StudentBudgetTracker from "./components/StudentBudgetTracker";
+
+import {
+  Sparkles,
+  FileText,
+  MessageSquare,
+  Network,
+  Gamepad2,
+  Mic,
+  BookOpen,
+  CloudLightning,
+  HelpCircle,
+  FileCheck,
+  CheckCircle,
+  FolderOpen,
+  Globe,
+  Copy,
+  Languages,
+  RefreshCw,
+  PiggyBank
+} from "lucide-react";
+
+export default function App() {
+  const [currentTab, setCurrentTab] = useState<
+    "upload" | "chat" | "mindmap" | "game" | "audiolab" | "knowledge" | "budget"
+  >("upload");
+
+  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [activeFileId, setActiveFileId] = useState<string | null>(null);
+  
+  // Track statistics
+  const [hasApiKey, setHasApiKey] = useState<boolean>(true);
+
+  useEffect(() => {
+    // Quick probe to check if API key is loaded on Server-side (displays premium notification banner accordingly)
+    const checkApiStatus = async () => {
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: [] })
+        });
+        const data = await res.json();
+        // If simulated response or error indicates mock is active due to missing secret
+        if (data.isDemo) {
+          setHasApiKey(false);
+        } else {
+          setHasApiKey(true);
+        }
+      } catch {
+        setHasApiKey(false); // fallback to demo
+      }
+    };
+    checkApiStatus();
+  }, []);
+
+  const activeFile = files.find((f) => f.id === activeFileId) || null;
+
+  // Multi-language translation states targeting audio transcripts & documents
+  const [translatedText, setTranslatedText] = useState<string>("");
+  const [isTranslating, setIsTranslating] = useState<boolean>(false);
+  const [translateTargetLang, setTranslateTargetLang] = useState<string>("en");
+  const [translateSourceField, setTranslateSourceField] = useState<"summary" | "extractedText">("extractedText");
+  const [translationError, setTranslationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTranslatedText("");
+    setTranslationError(null);
+    // Suggest English as translation fallback by default
+    setTranslateTargetLang("en");
+  }, [activeFileId]);
+
+  const handleTranslate = async () => {
+    if (!activeFile) return;
+    const textToTranslate = translateSourceField === "summary" ? activeFile.summary : activeFile.extractedText;
+    if (!textToTranslate) {
+      setTranslationError("Nội dung học tập nguồn đang trống hoặc dọn dẹp.");
+      return;
+    }
+
+    setIsTranslating(true);
+    setTranslationError(null);
+    try {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: textToTranslate,
+          targetLang: translateTargetLang
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTranslatedText(data.translatedText);
+      } else {
+        throw new Error(data.error || "Lỗi dịch tự động.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setTranslationError(err.message || "Không thể thực hiện dịch đa ngôn ngữ.");
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleAddFile = (newFile: UploadedFile) => {
+    setFiles((prev) => {
+      // Prevent duplicates of presets
+      if (prev.some((f) => f.id === newFile.id)) return prev;
+      return [newFile, ...prev];
+    });
+  };
+
+  const handleUpdateFile = (id: string, updated: Partial<UploadedFile>) => {
+    setFiles((prev) =>
+      prev.map((f) => (f.id === id ? { ...f, ...updated } : f))
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col antialiased">
+      
+      {/* Visual Workspace Top Banner Alert about Demo / Live Key */}
+      {!hasApiKey && (
+        <div className="bg-amber-500 text-amber-950 px-4 py-2 text-[11px] font-semibold text-center flex items-center justify-center gap-2 shadow-sm border-b border-amber-600/20">
+          <span>⚠️ Chế độ Demo Trực Quan sẵn sàng! Hãy cấu hình</span>
+          <code className="bg-amber-600/30 px-1.5 py-0.5 rounded text-amber-950 font-bold">GEMINI_API_KEY</code>
+          <span>trong <strong>Settings &gt; Secrets</strong> trên thanh công cụ để kích hoạt xử lý tệp tin và giọng nói thực tế thông qua mô hình Gemini-3.5-flash siêu tốc.</span>
+        </div>
+      )}
+
+      {/* Main Glass Header */}
+      <header className="bg-white border-b border-slate-200/85 sticky top-0 z-40 backdrop-blur-md bg-white/90">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-indigo-105">
+              <Sparkles size={20} className="animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base font-bold text-slate-900 tracking-tight">VietLearn AI Lab</h1>
+                <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded text-[9px] font-black uppercase tracking-wider">
+                  v3.5 Active
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium">Nền tảng Ôn tập 2D RPG, Mindmap &amp; Phòng Lab Âm Thanh Đa Ngữ</p>
+            </div>
+          </div>
+
+          {/* Quick status counters */}
+          <div className="flex items-center gap-2 md:gap-4 flex-wrap text-xs md:text-sm">
+            <div className="bg-slate-100/80 border border-slate-200/50 rounded-xl py-1.5 px-3 flex items-center gap-2">
+              <FolderOpen size={14} className="text-slate-500" />
+              <span className="text-[11px] font-semibold text-slate-700">Tài liệu: {files.length}</span>
+            </div>
+
+            <div className="bg-indigo-50/50 border border-indigo-100/50 rounded-xl py-1.5 px-3 flex items-center gap-2">
+              <CloudLightning size={14} className="text-indigo-600" />
+              <span className="text-[11px] font-semibold text-indigo-700">
+                AI Engine: {hasApiKey ? "Gemini-Active ⚡" : "Local Mock 🔒"}
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      {/* Core Tabs Navigator Bar */}
+      <nav className="bg-white border-b border-slate-200/60 sticky top-[73px] z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 overflow-x-auto flex">
+          {[
+            { id: "upload", label: "Tài Liệu & OCR", icon: FileText, desc: "Tải file & bóc tách" },
+            { id: "chat", label: "Trợ Lý AI", icon: MessageSquare, desc: "Hỏi đáp ngữ cảnh" },
+            { id: "mindmap", label: "Sơ Đồ Tư Duy", icon: Network, desc: "Cây phẳng phân tầng" },
+            { id: "game", label: "Trò Chơi 2D & Quiz", icon: Gamepad2, desc: "Vui chơi ôn bài" },
+            { id: "audiolab", label: "Lab Âm Thanh", icon: Mic, desc: "Ghi âm & TTS" },
+            { id: "knowledge", label: "Thư Viện Kỹ Thuật", icon: BookOpen, desc: "Giải đáp 8 chuyên mục" },
+            { id: "budget", label: "Sổ Chi Tiêu & Tiết Kiệm", icon: PiggyBank, desc: "Quản lý chi tiêu học tập" }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = currentTab === tab.id;
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setCurrentTab(tab.id as any)}
+                className={`py-3.5 px-4 md:px-5 border-b-2 font-medium text-xs transition-all flex flex-col items-center gap-1 flex-shrink-0 relative ${
+                  isActive
+                    ? "border-indigo-600 text-indigo-700 font-semibold bg-indigo-50/30"
+                    : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Icon size={14} />
+                  <span>{tab.label}</span>
+                </div>
+                <span className="text-[9px] text-slate-400 font-normal hidden md:inline">{tab.desc}</span>
+                {isActive && (
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Main Educational Workspace Canvas Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8">
+        
+        {/* Dynamic active document summary card attached to top */}
+        {activeFile && currentTab !== "upload" && (
+          <div className="mb-6 bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs animate-fade-in">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1 px-2.5 bg-indigo-50 border border-indigo-150 rounded text-[10px] font-bold text-indigo-700 uppercase">
+                {activeFile.mimeType.split("/")[1] || "DOC"}
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-800">
+                  Tài liệu hoạt động: <span className="text-indigo-600">"{activeFile.name}"</span>
+                </p>
+                <p className="text-[10px] text-slate-400">Đã nạp thành công quizzes ôn tập và cấu trúc Mindmap.</p>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setCurrentTab("upload")}
+              className="text-[11px] font-semibold text-indigo-600 hover:underline flex items-center gap-1 text-left"
+            >
+              Thay đổi tài liệu ở thư viện ➜
+            </button>
+          </div>
+        )}
+
+        {/* Dynamic View rendering depending on activeTab state */}
+        <div className="transition-all duration-300">
+          
+          {currentTab === "upload" && (
+            <DocUploadSection
+              files={files}
+              onAddFile={handleAddFile}
+              onUpdateFile={handleUpdateFile}
+              activeFileId={activeFileId}
+              onSelectActiveFile={setActiveFileId}
+            />
+          )}
+
+          {currentTab === "chat" && (
+            <ChatbotSection activeFile={activeFile} />
+          )}
+
+          {currentTab === "mindmap" && (
+            <MindMapViewer
+              initialData={activeFile?.mindmap}
+              onUpdate={(updatedTree) => {
+                if (activeFileId) {
+                  handleUpdateFile(activeFileId, { mindmap: updatedTree });
+                }
+              }}
+            />
+          )}
+
+          {currentTab === "game" && (
+            <EduGamePlayground quizList={activeFile?.quiz} />
+          )}
+
+          {currentTab === "audiolab" && (
+            <AudioSpeechLab />
+          )}
+
+          {currentTab === "knowledge" && (
+            <FullstackKnowledgeBase />
+          )}
+
+          {currentTab === "budget" && (
+            <StudentBudgetTracker />
+          )}
+
+        </div>
+
+        {/* Detailed summary and explanation of document if available inside documents tab */}
+        {currentTab === "upload" && activeFile && (
+          <div className="mt-8 bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm flex flex-col gap-4 animate-fade-in">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <FileCheck className="text-emerald-500" size={16} />
+                Phần Tóm Tắt & Nội Dung Tài Liệu Phân Tích
+              </h3>
+              <p className="text-[11px] text-slate-400 mt-0.5">Văn bản chi tiết được AI trích xuất và tóm tắt theo phong cách dễ học.</p>
+            </div>
+
+            {/* Multi-language Translation Portal */}
+            <div className="bg-gradient-to-r from-indigo-50/50 to-blue-50/50 border border-indigo-100 p-4 rounded-2xl flex flex-col gap-3">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
+                    <Languages size={15} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5 flex-wrap">
+                      Dịch Thuật Đa Ngôn Ngữ (Hỗ trợ Audio & Tài liệu) 🌐
+                      {(activeFile.mimeType.includes("audio") || activeFile.mimeType.includes("mp3") || activeFile.mimeType.includes("wav")) && (
+                        <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[9px] font-bold">🎵 HỖ TRỢ FILE ÂM THANH</span>
+                      )}
+                    </h4>
+                    <p className="text-[10px] text-slate-500">Dịch thuật bài tóm tắt tổng quan hoặc nội dung ghi âm chính xác sang nhiều ngôn ngữ ngôn học khác nhau.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Source field */}
+                  <select
+                    value={translateSourceField}
+                    onChange={(e) => {
+                      setTranslateSourceField(e.target.value as any);
+                      setTranslatedText("");
+                    }}
+                    className="p-1 px-2 bg-white border border-slate-200 rounded-lg text-[11px] font-medium text-slate-700 outline-none focus:border-indigo-400"
+                  >
+                    <option value="extractedText">Dịch: Bản Ghi Âm / OCR</option>
+                    <option value="summary">Dịch: Bản Tóm Tắt AI</option>
+                  </select>
+
+                  {/* Arrow element */}
+                  <span className="text-slate-400 text-[10px]">➜</span>
+
+                  {/* Destination Language */}
+                  <select
+                    value={translateTargetLang}
+                    onChange={(e) => {
+                      setTranslateTargetLang(e.target.value);
+                      setTranslatedText("");
+                    }}
+                    className="p-1 px-2 bg-white border border-slate-200 rounded-lg text-[11px] font-medium text-slate-700 outline-none focus:border-indigo-400"
+                  >
+                    <option value="vi">Tiếng Việt (Vietnamese)</option>
+                    <option value="en">Tiếng Anh (English)</option>
+                    <option value="ja">Tiếng Nhật (Japanese)</option>
+                    <option value="ko">Tiếng Hàn (Korean)</option>
+                    <option value="zh">Tiếng Trung (Chinese)</option>
+                    <option value="fr">Tiếng Pháp (French)</option>
+                  </select>
+
+                  {/* Translate Action Trigger */}
+                  <button
+                    onClick={handleTranslate}
+                    disabled={isTranslating}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] py-1 px-3 rounded-lg transition flex items-center gap-1 disabled:opacity-50"
+                  >
+                    {isTranslating ? (
+                      <>
+                        <RefreshCw className="animate-spin" size={11} /> Đang dịch...
+                      </>
+                    ) : (
+                      "Dịch Ngay"
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Live Translation Response Container */}
+              {translatedText && (
+                <div className="bg-white border border-indigo-100 p-4 rounded-xl shadow-xs text-xs animate-fade-in">
+                  <div className="flex justify-between items-center border-b border-indigo-50 pb-2 mb-2">
+                    <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1">
+                      🌎 KẾT QUẢ DỊCH SANG: {
+                        translateTargetLang === "vi" ? "Tiếng Việt" :
+                        translateTargetLang === "en" ? "Tiếng Anh" :
+                        translateTargetLang === "ja" ? "Tiếng Nhật" :
+                        translateTargetLang === "ko" ? "Tiếng Hàn" :
+                        translateTargetLang === "zh" ? "Tiếng Trung" :
+                        translateTargetLang === "fr" ? "Tiếng Pháp" : translateTargetLang
+                      }
+                    </span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(translatedText);
+                      }}
+                      className="text-[10px] font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1"
+                    >
+                      <Copy size={11} /> Sao chép bản dịch
+                    </button>
+                  </div>
+                  <div className="prose prose-indigo max-w-none text-slate-700 font-sans leading-relaxed whitespace-pre-wrap">
+                    {translatedText}
+                  </div>
+                </div>
+              )}
+
+              {translationError && (
+                <div className="bg-rose-50 text-rose-700 border border-rose-100 p-2.5 rounded-lg text-[11px] font-semibold">
+                  ⚠️ Có lỗi xảy ra trong quá trình dịch thuật: {translationError}
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs leading-relaxed">
+              <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl overflow-y-auto max-h-[350px]">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-2">TÓM TẮT AI (Markdown)</span>
+                <div className="prose prose-indigo max-w-none text-slate-600 whitespace-pre-wrap">
+                  {activeFile.summary}
+                </div>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl overflow-y-auto max-h-[350px]">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-2">VĂN BẢN TRÍCH XUẤT OCR / AUDIO TRANSCRIPTION</span>
+                <p className="text-slate-600 whitespace-pre-wrap font-mono text-[11px] leading-normal select-all">
+                  {activeFile.extractedText}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-400 mt-auto">
+        <p className="font-medium">© 2026 VietLearn AI Studio • Xây dựng bởi Trí Tuệ Nhân Tạo</p>
+        <p className="text-[10px] text-slate-450 mt-1">Sử dụng Google Gemini-3.5-flash và TTS Model. Dữ liệu lưu trữ cục bộ bảo mật.</p>
+      </footer>
+
+    </div>
+  );
+}

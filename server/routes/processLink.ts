@@ -100,7 +100,7 @@ router.post("/", async (req, res): Promise<any> => {
     }
 
     const ai = getAiClient();
-    const payload = getSafeGeminiPayload(name, mimeType, base64Data, buffer);
+    const payload = await getSafeGeminiPayload(name, resFetch.headers.get("content-type") || "application/octet-stream", base64Data, buffer);
     const promptMessage = buildFileAnalysisPrompt(name);
 
     const contentsPayload =

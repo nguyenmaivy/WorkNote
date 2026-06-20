@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChatMessage, UploadedFile } from "../types";
 import { Send, Sparkles, Volume2, MessageSquare, PlusCircle, VolumeX, HelpCircle } from "lucide-react";
-import { Button } from "./ui/Button";
-import { Card } from "./ui/Card";
 
 interface ChatbotSectionProps {
   activeFile: UploadedFile | null;
@@ -169,25 +167,25 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
   };
 
   return (
-    <Card className="p-5 mt-1 flex flex-col h-[650px]" id="chatbot-workspace">
+    <div className="bg-white rounded-3xl border border-slate-100 p-5 mt-1 shadow-sm flex flex-col h-[650px]" id="chatbot-workspace">
       
       {/* Voice Dialect settings bar */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-border-default pb-3 mb-4 gap-3">
+      <div className="flex flex-wrap items-center justify-between border-b border-slate-105 pb-3 mb-4 gap-3">
         <div className="flex items-center gap-2">
-          <MessageSquare className="text-fg-brand" size={18} />
+          <MessageSquare className="text-indigo-600" size={18} />
           <div>
-            <h3 className="text-xs font-bold text-heading">Trợ Lý Thông Thái VietLearn AI</h3>
-            <p className="text-[10px] text-body-subtle">Đang đồng bộ ngữ liệu: <span className="font-semibold text-fg-brand">{activeFile ? activeFile.name : "Toàn bộ tài liệu mặc định"}</span></p>
+            <h3 className="text-xs font-bold text-slate-800">Trợ Lý Thông Thái VietLearn AI</h3>
+            <p className="text-[10px] text-slate-400">Đang đồng bộ ngữ liệu: <span className="font-semibold text-indigo-600">{activeFile ? activeFile.name : "Toàn bộ tài liệu mặc định"}</span></p>
           </div>
         </div>
 
         {/* Audio Dialect choice */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase font-bold text-body-subtle tracking-wider">Đọc phát âm bằng giọng:</span>
+          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Đọc phát âm bằng giọng:</span>
           <select
             value={selectedAccent}
             onChange={(e) => setSelectedAccent(e.target.value as any)}
-            className="text-[14px] font-bold border-2 border-border-default bg-neutral-primary rounded-xl px-2 py-1 focus:outline-none focus:border-border-brand"
+            className="text-xs border border-slate-200 bg-white rounded-lg px-2 py-1 focus:outline-none focus:border-indigo-400"
           >
             <option value="north">🎤 Miền Bắc (Hà Nội)</option>
             <option value="central">🎙️ Miền Trung (Huế)</option>
@@ -197,7 +195,7 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
       </div>
 
       {/* Messages Feed panel */}
-      <div className="flex-1 overflow-y-auto space-y-4 px-1.5 py-2 messages-board bg-neutral-secondary-medium rounded-xl border-2 border-border-default p-4 mb-4">
+      <div className="flex-1 overflow-y-auto space-y-4 px-1.5 py-2 messages-board bg-slate-50 rounded-2xl border border-slate-100 p-4 mb-4">
         {messages.map((m) => {
           const isUser = m.role === "user";
 
@@ -207,10 +205,10 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
               className={`flex flex-col max-w-[85%] ${isUser ? "ml-auto items-end" : "mr-auto items-start"} animate-fade-in`}
             >
               <div
-                className={`p-3.5 rounded-xl text-[14px] leading-[1.55] whitespace-pre-wrap shadow-xs border-2 ${
+                className={`p-3.5 rounded-2xl text-xs leading-normal whitespace-pre-wrap shadow-sm border ${
                   isUser
-                    ? "bg-brand border-border-brand-strong text-white rounded-tr-none"
-                    : "bg-neutral-primary border-border-default text-heading rounded-tl-none"
+                    ? "bg-indigo-600 border-indigo-600 text-white rounded-tr-none"
+                    : "bg-white border-slate-150 text-slate-700 rounded-tl-none"
                 }`}
               >
                 {/* Render markdown bolding/title blocks simply */}
@@ -218,13 +216,13 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
               </div>
 
               {/* Message sub info (Timestamp + TTS reader trigger button only for assistant) */}
-              <div className="flex items-center gap-2 mt-1.5 text-[9px] text-body-subtle font-mono">
+              <div className="flex items-center gap-2 mt-1.5 text-[9px] text-slate-450 font-mono">
                 <span>{m.timestamp}</span>
                 {!isUser && (
                   <button
                     onClick={() => handleTTSPlay(m.id, m.content)}
-                    className={`flex items-center gap-0.5 hover:text-fg-brand transition-all px-1 py-0.5 rounded ${
-                      isPlayingVoice === m.id ? "text-fg-brand font-bold bg-brand-softer" : "text-body-subtle"
+                    className={`flex items-center gap-0.5 hover:text-indigo-600 transition-all px-1 py-0.5 rounded ${
+                      isPlayingVoice === m.id ? "text-indigo-600 font-bold bg-indigo-50" : "text-slate-400"
                     }`}
                     title="Đọc văn bản bài trả lời này"
                   >
@@ -239,11 +237,11 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
 
         {loading && (
           <div className="flex flex-col max-w-[80%] mr-auto items-start animate-pulse">
-            <div className="bg-neutral-primary border-2 border-border-default p-3 rounded-xl rounded-tl-none text-[14px] text-body flex items-center gap-2">
-              <span className="w-2 h-2 bg-brand rounded-full animate-bounce" />
-              <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:0.2s]" />
-              <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:0.4s]" />
-              <span className="font-bold">VietLearn AI đang phân tích dữ liệu...</span>
+            <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none text-xs text-slate-500 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" />
+              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]" />
+              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]" />
+              <span>VietLearn AI đang phân tích dữ liệu...</span>
             </div>
           </div>
         )}
@@ -251,13 +249,13 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
 
       {/* Suggestion Quick Chips */}
       <div className="mb-3">
-        <span className="text-[9px] font-bold text-body-subtle uppercase tracking-widest block mb-1.5">Gợi ý truy vấn nhanh (Promptless AI):</span>
+        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1.5">Gợi ý truy vấn nhanh (Promptless AI):</span>
         <div className="flex flex-wrap gap-1.5">
           {quickChips.map((chip, idx) => (
             <button
               key={idx}
               onClick={() => handleSendMessage(chip.prompt)}
-              className="text-[12px] font-bold bg-neutral-primary hover:bg-neutral-secondary-medium text-heading border-2 border-border-default rounded-full py-1.5 px-3 transition shadow-xs active:translate-y-[2px] active:shadow-[0_0px_0_var(--color-border-default)] select-none"
+              className="text-[10px] font-medium bg-indigo-50/50 hover:bg-indigo-50 text-indigo-700 border border-indigo-100/40 rounded-full py-1 px-3 transition"
             >
               {chip.label}
             </button>
@@ -277,20 +275,18 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
               handleSendMessage();
             }
           }}
-          className="flex-1 text-[16px] border-2 border-border-default focus:border-border-brand focus:ring-2 focus:ring-brand-soft focus:outline-none rounded-xl py-3 px-4 bg-neutral-primary text-heading leading-[1.55]"
+          className="flex-1 text-xs border border-slate-200 hover:border-slate-350 focus:border-indigo-400 focus:outline-none rounded-xl py-3 px-4 bg-slate-50 text-slate-700 leading-normal"
           placeholder={activeFile ? "Đặt câu hỏi về nội dung tài liệu..." : "Chat tự do hỏi đáp về Kỹ thuật, Lập trình di động, OCR..."}
         />
-        <Button
+        <button
           onClick={() => handleSendMessage()}
           disabled={loading || !userInput.trim()}
-          size="base"
-          icon={<Send size={18} />}
-          className="px-4"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white p-3 py-3 px-4 rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          {null}
-        </Button>
+          <Send size={15} />
+        </button>
       </div>
 
-    </Card>
+    </div>
   );
 }

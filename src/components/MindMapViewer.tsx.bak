@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { MindMapNode } from "../types";
 import { Plus, Trash, ChevronRight, ChevronDown, RefreshCw, ZoomIn, ZoomOut, Download } from "lucide-react";
-import { Button } from "./ui/Button";
-import { Card } from "./ui/Card";
 
 interface MindMapViewerProps {
   initialData?: MindMapNode;
@@ -226,45 +224,42 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
   const { nodesList, linksList, maxLeafHeight } = computePositions();
 
   return (
-    <Card className="p-6 overflow-hidden flex flex-col h-[700px]" id="mindmap-workspace">
+    <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm overflow-hidden flex flex-col h-[700px]" id="mindmap-workspace">
       {/* Mindmap controllers */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-border-default pb-4 mb-4 gap-4">
+      <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pb-4 mb-4 gap-4">
         <div>
-          <h2 className="text-lg font-bold text-heading">Sơ Đồ Tư Duy Tương Tác</h2>
-          <p className="text-[14px] text-body">Tự động cấu trúc theo cây nội dung (I, II, III). Nhấp để thu gọn, chỉnh sửa hoặc tạo nhánh mới.</p>
+          <h2 className="text-lg font-semibold text-slate-800">Sơ Đồ Tư Duy Tương Tác</h2>
+          <p className="text-xs text-slate-500">Tự động cấu trúc theo cây nội dung (I, II, III). Nhấp để thu gọn, chỉnh sửa hoặc tạo nhánh mới.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
+          <button
             onClick={() => setZoom(Math.max(0.6, zoom - 0.1))}
+            className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition"
             title="Thu nhỏ"
           >
             <ZoomOut size={16} />
-          </Button>
-          <span className="text-[14px] font-bold text-body px-2">{Math.round(zoom * 100)}%</span>
-          <Button
-            variant="secondary"
-            size="sm"
+          </button>
+          <span className="text-xs font-mono text-slate-500 px-2">{Math.round(zoom * 100)}%</span>
+          <button
             onClick={() => setZoom(Math.min(1.4, zoom + 0.1))}
+            className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 transition"
             title="Phóng to"
           >
             <ZoomIn size={16} />
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
+          </button>
+          <button
             onClick={() => handleUpdate(defaultTree)}
-            icon={<RefreshCw size={16} />}
+            className="px-3 py-1.5 border border-slate-200 text-xs rounded-lg hover:bg-rose-50 hover:text-rose-600 font-medium text-slate-600 transition flex items-center gap-1.5"
             title="Reset"
           >
+            <RefreshCw size={13} />
             Reset Sơ Đồ
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* SVG Canvas Board */}
-      <div className="relative flex-1 bg-neutral-secondary-medium rounded-xl overflow-auto border-2 border-border-default">
+      <div className="relative flex-1 bg-slate-50 rounded-xl overflow-auto border border-slate-100">
         <div
           className="absolute origin-top-left transition-all duration-150 p-8"
           style={{
@@ -276,7 +271,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ minHeight: maxLeafHeight }}>
             <defs>
               <linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#89E219" stopOpacity="0.4" />
+                <stop offset="0%" stopColor="#818cf8" stopOpacity="0.4" />
                 <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.6" />
               </linearGradient>
             </defs>
@@ -310,7 +305,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
             return (
               <div
                 key={node.id}
-                className="absolute flex items-center gap-1 bg-white select-none pointer-events-auto rounded-xl border-2 border-border-default shadow-xs transition-all hover:shadow-[0_4px_0_var(--color-border-default)] py-2 px-3 hover:border-border-brand hover:-translate-y-1 group"
+                className="absolute flex items-center gap-1 bg-white select-none pointer-events-auto rounded-xl border border-slate-200/90 shadow-sm transition-all hover:shadow-md py-2 px-3 hover:border-indigo-400 group"
                 style={{
                   left: `${node.x}px`,
                   top: `${node.y}px`,
@@ -322,9 +317,9 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
                 {node.id !== "root" && (
                   <button
                     onClick={() => toggleCollapse(node.id)}
-                    className="p-1 rounded-lg hover:bg-neutral-secondary-medium text-body-subtle hover:text-heading transition"
+                    className="p-0.5 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition"
                   >
-                    {node.collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                    {node.collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
                   </button>
                 )}
 
@@ -340,17 +335,17 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
                       onKeyDown={(e) => {
                         if (e.key === "Enter") saveEditNode(node.id);
                       }}
-                      className="w-full text-[14px] bg-neutral-primary border-2 border-border-brand focus:outline-none rounded-lg px-2 py-1 font-bold text-heading"
+                      className="w-full text-xs bg-slate-50 border border-indigo-400 focus:outline-none rounded px-1.5 py-0.5 font-medium text-slate-800"
                     />
                   ) : (
                     <div
                       onDoubleClick={() => handleEditNode(node.id, node.label)}
-                      className={`text-[14px] truncate cursor-pointer py-0.5 ${
+                      className={`text-xs font-medium truncate curor-pointer py-0.5 ${
                         node.id === "root"
-                          ? "text-fg-brand-strong font-black"
+                          ? "text-indigo-700 font-semibold"
                           : node.parentId === "root"
-                          ? "text-heading font-bold"
-                          : "text-body font-bold"
+                          ? "text-slate-800 font-medium"
+                          : "text-slate-600"
                       }`}
                       title="Nhấp đúp chuột để sửa nội dung"
                     >
@@ -363,18 +358,18 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
                 <div className="hidden group-hover:flex items-center gap-0.5 ml-auto">
                   <button
                     onClick={() => addChildNode(node.id)}
-                    className="p-1.5 rounded-lg hover:bg-brand-soft text-fg-brand transition"
+                    className="p-1 rounded hover:bg-indigo-50 text-indigo-500 hover:text-indigo-600 transition"
                     title="Thêm nhánh mới"
                   >
-                    <Plus size={14} />
+                    <Plus size={12} />
                   </button>
                   {node.id !== "root" && (
                     <button
                       onClick={() => deleteNode(node.id)}
-                      className="p-1.5 rounded-lg hover:bg-rose-100 text-rose-500 hover:text-rose-600 transition"
+                      className="p-1 rounded hover:bg-red-50 text-red-400 hover:text-red-500 transition"
                       title="Xóa nhánh"
                     >
-                      <Trash size={14} />
+                      <Trash size={12} />
                     </button>
                   )}
                 </div>
@@ -383,6 +378,6 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
           })}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

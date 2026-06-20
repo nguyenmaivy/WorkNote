@@ -40,19 +40,52 @@ export function normalizeMimeType(originalMime: string, filename: string): strin
   return mime;
 }
 
+import mammoth from "mammoth";
+import * as xlsx from "xlsx";
+
 // ─── Safe Gemini Payload Builder ──────────────────────────────────────────────
 
 /**
  * Xây dựng payload phù hợp với Gemini API:
  * - Multimodal (PDF, ảnh, audio, video): gửi inline binary
  * - Text (HTML, txt, csv, json, md): gửi decoded UTF-8 string
+ * - Trích xuất text cho docx và xlsx bằng mammoth và xlsx.
  */
-export function getSafeGeminiPayload(
+export async function getSafeGeminiPayload(
   name: string,
   originalMime: string,
   base64Data: string,
   buffer: Buffer
-): GeminiPayload {
+): Promise<GeminiPayload> {
+  const ext = (name.split(".").pop() || "").toLowerCase();
+  
+  // 1. Xử lý các định dạng Office (docx, xlsx) bằng cách parse text
+  if (ext === "docx") {
+    try {
+      const result = await mammoth.extractRawText({ buffer });
+      return { type: "text", textContent: result.value || "[Nội dung docx trống]" };
+    } catch (e) {
+      console.warn("Mammoth extraction failed for docx:", e);
+      return { type: "text", textContent: "[Lỗi giải mã tệp docx]" };
+    }
+  }
+
+  if (ext === "xlsx" || ext === "xls") {
+    try {
+      const workbook = xlsx.read(buffer, { type: "buffer" });
+      let allText = "";
+      workbook.SheetNames.forEach(sheetName => {
+        const sheet = workbook.Sheets[sheetName];
+        allText += `--- Bảng: ${sheetName} ---\n`;
+        allText += xlsx.utils.sheet_to_csv(sheet) + "\n\n";
+      });
+      return { type: "text", textContent: allText || "[Nội dung xlsx trống]" };
+    } catch (e) {
+      console.warn("XLSX extraction failed for xlsx:", e);
+      return { type: "text", textContent: "[Lỗi giải mã tệp excel]" };
+    }
+  }
+
   const cleanMime = normalizeMimeType(originalMime, name);
 
   const isMultimodal =
@@ -68,7 +101,7 @@ export function getSafeGeminiPayload(
     };
   }
 
-  // Text: decode as UTF-8 and strip HTML tags if needed
+  // 2. Text: decode as UTF-8 and strip HTML tags if needed
   let textContent = "";
   try {
     textContent = buffer.toString("utf-8");

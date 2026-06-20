@@ -95,7 +95,7 @@ router.post("/", upload.single("file"), async (req, res): Promise<any> => {
     }
 
     const ai = getAiClient();
-    const payload = getSafeGeminiPayload(name, mimeType || "application/octet-stream", base64Data, buffer);
+    const payload = await getSafeGeminiPayload(name, mimeType || "application/octet-stream", base64Data, buffer);
     const promptMessage = buildFileAnalysisPrompt(name);
 
     const contentsPayload =

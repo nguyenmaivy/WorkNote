@@ -15,9 +15,6 @@ import AudioSpeechLab from "./components/AudioSpeechLab";
 import FullstackKnowledgeBase from "./components/FullstackKnowledgeBase";
 import StudentBudgetTracker from "./components/StudentBudgetTracker";
 
-import { Button } from "./components/ui/Button";
-import { Card } from "./components/ui/Card";
-
 import {
   Sparkles,
   CloudLightning,
@@ -38,12 +35,12 @@ export default function App() {
   const translation = useTranslation(activeFile);
 
   return (
-    <div className="min-h-screen bg-neutral-primary-soft text-body font-sans flex flex-col antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col antialiased">
       {/* Demo Banner */}
       {!hasApiKey && (
-        <div className="bg-amber-500 text-amber-950 px-4 py-2.5 text-[13px] font-bold text-center flex items-center justify-center gap-2 shadow-sm border-b border-amber-600/20">
+        <div className="bg-amber-500 text-amber-950 px-4 py-2 text-[11px] font-semibold text-center flex items-center justify-center gap-2 shadow-sm border-b border-amber-600/20">
           <span>⚠️ Chế độ Demo Trực Quan sẵn sàng! Hãy cấu hình</span>
-          <code className="bg-amber-600/30 px-1.5 py-0.5 rounded text-amber-950 font-black">
+          <code className="bg-amber-600/30 px-1.5 py-0.5 rounded text-amber-950 font-bold">
             GEMINI_API_KEY
           </code>
           <span>
@@ -54,38 +51,38 @@ export default function App() {
       )}
 
       {/* Main Glass Header */}
-      <header className="bg-neutral-primary-soft border-b-2 border-border-default sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="bg-white border-b border-slate-200/85 sticky top-0 z-40 backdrop-blur-md bg-white/90">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center text-white shadow-brand shadow-sm">
-              <Sparkles size={24} className="animate-pulse" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-indigo-105">
+              <Sparkles size={20} className="animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-[24px] font-black text-heading tracking-tight">
+                <h1 className="text-base font-bold text-slate-900 tracking-tight">
                   VietLearn AI Lab
                 </h1>
-                <span className="px-2.5 py-1 bg-brand-softer border-2 border-border-brand-subtle text-fg-brand-strong rounded-full text-[11px] font-black uppercase tracking-wider">
+                <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded text-[9px] font-black uppercase tracking-wider">
                   v3.5 Active
                 </span>
               </div>
-              <p className="text-[14px] text-body font-bold">
+              <p className="text-[11px] text-slate-500 font-medium">
                 Nền tảng Ôn tập 2D RPG, Mindmap &amp; Phòng Lab Âm Thanh Đa Ngữ
               </p>
             </div>
           </div>
 
           {/* Quick status counters */}
-          <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-            <div className="bg-neutral-secondary-medium border-2 border-border-default rounded-xl py-2 px-4 flex items-center gap-2">
-              <FolderOpen size={16} className="text-body" />
-              <span className="text-[14px] font-bold text-heading">
+          <div className="flex items-center gap-2 md:gap-4 flex-wrap text-xs md:text-sm">
+            <div className="bg-slate-100/80 border border-slate-200/50 rounded-xl py-1.5 px-3 flex items-center gap-2">
+              <FolderOpen size={14} className="text-slate-500" />
+              <span className="text-[11px] font-semibold text-slate-700">
                 Tài liệu: {files.length}
               </span>
             </div>
-            <div className="bg-brand-softer border-2 border-border-brand-subtle rounded-xl py-2 px-4 flex items-center gap-2">
-              <CloudLightning size={16} className="text-fg-brand" />
-              <span className="text-[14px] font-bold text-fg-brand-strong">
+            <div className="bg-indigo-50/50 border border-indigo-100/50 rounded-xl py-1.5 px-3 flex items-center gap-2">
+              <CloudLightning size={14} className="text-indigo-600" />
+              <span className="text-[11px] font-semibold text-indigo-700">
                 AI Engine: {hasApiKey ? "Gemini-Active ⚡" : "Local Mock 🔒"}
               </span>
             </div>
@@ -93,9 +90,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* Core Tabs Navigator */}
-      <nav className="bg-neutral-primary-soft border-b-2 border-border-default sticky top-[81px] z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 overflow-x-auto scrollbar-hide flex">
+      {/* Core Tabs Navigator — driven by TABS constant */}
+      <nav className="bg-white border-b border-slate-200/60 sticky top-[73px] z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 overflow-x-auto flex">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id;
@@ -103,19 +100,22 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setCurrentTab(tab.id)}
-                className={`py-[16px] px-[20px] border-b-[4px] font-bold text-[15px] uppercase tracking-[0.6px] transition-colors flex flex-col items-center gap-1 flex-shrink-0 relative translate-y-[2px] ${
+                className={`py-3.5 px-4 md:px-5 border-b-2 font-medium text-xs transition-all flex flex-col items-center gap-1 flex-shrink-0 relative ${
                   isActive
-                    ? "border-border-brand text-fg-brand"
-                    : "border-transparent text-body hover:text-heading hover:border-border-default-strong"
+                    ? "border-indigo-600 text-indigo-700 font-semibold bg-indigo-50/30"
+                    : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Icon size={18} />
+                <div className="flex items-center gap-1.5">
+                  <Icon size={14} />
                   <span>{tab.label}</span>
                 </div>
-                <span className="text-[12px] text-body-subtle font-normal hidden lg:inline tracking-normal normal-case">
+                <span className="text-[9px] text-slate-400 font-normal hidden md:inline">
                   {tab.desc}
                 </span>
+                {isActive && (
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-indigo-600 rounded-full" />
+                )}
               </button>
             );
           })}
@@ -123,32 +123,31 @@ export default function App() {
       </nav>
 
       {/* Main Workspace */}
-      <main className="flex-1 max-w-[1152px] w-full mx-auto px-[24px] py-[48px]">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8">
         {/* Active document summary card */}
         {activeFile && currentTab !== "upload" && (
-          <Card className="mb-6 p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 animate-fade-in">
+          <div className="mb-6 bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs animate-fade-in">
             <div className="flex items-center gap-2.5">
-              <div className="p-1.5 px-3 bg-brand-softer border-2 border-border-brand-subtle rounded-xl text-[12px] font-bold text-fg-brand-strong uppercase">
+              <div className="p-1 px-2.5 bg-indigo-50 border border-indigo-150 rounded text-[10px] font-bold text-indigo-700 uppercase">
                 {activeFile.mimeType.split("/")[1] || "DOC"}
               </div>
               <div>
-                <p className="text-[15px] font-bold text-heading">
+                <p className="text-xs font-bold text-slate-800">
                   Tài liệu hoạt động:{" "}
-                  <span className="text-fg-brand">"{activeFile.name}"</span>
+                  <span className="text-indigo-600">"{activeFile.name}"</span>
                 </p>
-                <p className="text-[13px] text-body-subtle">
+                <p className="text-[10px] text-slate-400">
                   Đã nạp thành công quizzes ôn tập và cấu trúc Mindmap.
                 </p>
               </div>
             </div>
-              <Button 
-                variant="tertiary" 
-                size="sm"
-                onClick={() => setCurrentTab("upload")}
-              >
-                Thay đổi tài liệu ở thư viện
-              </Button>
-          </Card>
+            <button
+              onClick={() => setCurrentTab("upload")}
+              className="text-[11px] font-semibold text-indigo-600 hover:underline flex items-center gap-1 text-left"
+            >
+              Thay đổi tài liệu ở thư viện ➜
+            </button>
+          </div>
         )}
 
         {/* Tab Content — each wrapped in ErrorBoundary and motion.div */}
@@ -217,36 +216,36 @@ export default function App() {
 
         {/* Summary & Translation section (upload tab + active file) */}
         {currentTab === "upload" && activeFile && (
-          <Card className="mt-[48px] p-6 md:p-8 flex flex-col gap-4 animate-fade-in">
-            <div className="border-b-2 border-border-default pb-3">
-              <h3 className="text-[20px] font-bold text-heading flex items-center gap-1.5">
-                <FileCheck className="text-success" size={20} />
+          <div className="mt-8 bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm flex flex-col gap-4 animate-fade-in">
+            <div className="border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <FileCheck className="text-emerald-500" size={16} />
                 Phần Tóm Tắt & Nội Dung Tài Liệu Phân Tích
               </h3>
-              <p className="text-[14px] text-body-subtle mt-0.5">
+              <p className="text-[11px] text-slate-400 mt-0.5">
                 Văn bản chi tiết được AI trích xuất và tóm tắt theo phong cách dễ học.
               </p>
             </div>
 
             {/* Multi-language Translation Portal */}
-            <div className="bg-neutral-primary border-2 border-border-default p-4 rounded-xl flex flex-col gap-3">
+            <div className="bg-gradient-to-r from-indigo-50/50 to-blue-50/50 border border-indigo-100 p-4 rounded-2xl flex flex-col gap-3">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-brand-soft text-fg-brand-strong flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0">
                     <Languages size={15} />
                   </div>
                   <div>
-                    <h4 className="text-[14px] font-bold text-heading flex items-center gap-1.5 flex-wrap">
+                    <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5 flex-wrap">
                       Dịch Thuật Đa Ngôn Ngữ (Hỗ trợ Audio & Tài liệu) 🌐
                       {(activeFile.mimeType.includes("audio") ||
                         activeFile.mimeType.includes("mp3") ||
                         activeFile.mimeType.includes("wav")) && (
-                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[11px] font-bold">
+                        <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[9px] font-bold">
                           🎵 HỖ TRỢ FILE ÂM THANH
                         </span>
                       )}
                     </h4>
-                    <p className="text-[13px] text-body">
+                    <p className="text-[10px] text-slate-500">
                       Dịch thuật bài tóm tắt tổng quan hoặc nội dung ghi âm chính xác sang nhiều
                       ngôn ngữ khác nhau.
                     </p>
@@ -257,18 +256,18 @@ export default function App() {
                   <select
                     value={translation.translateSourceField}
                     onChange={(e) => translation.changeSourceField(e.target.value as any)}
-                    className="p-1.5 px-3 bg-white border-2 border-border-default rounded-xl text-[14px] font-bold text-heading outline-none focus:border-border-brand"
+                    className="p-1 px-2 bg-white border border-slate-200 rounded-lg text-[11px] font-medium text-slate-700 outline-none focus:border-indigo-400"
                   >
                     <option value="extractedText">Dịch: Bản Ghi Âm / OCR</option>
                     <option value="summary">Dịch: Bản Tóm Tắt AI</option>
                   </select>
 
-                  <span className="text-body-subtle text-[14px]">➜</span>
+                  <span className="text-slate-400 text-[10px]">➜</span>
 
                   <select
                     value={translation.translateTargetLang}
                     onChange={(e) => translation.changeTargetLang(e.target.value)}
-                    className="p-1.5 px-3 bg-white border-2 border-border-default rounded-xl text-[14px] font-bold text-heading outline-none focus:border-border-brand"
+                    className="p-1 px-2 bg-white border border-slate-200 rounded-lg text-[11px] font-medium text-slate-700 outline-none focus:border-indigo-400"
                   >
                     {SUPPORTED_LANGUAGES.map((lang) => (
                       <option key={lang.code} value={lang.code}>
@@ -277,75 +276,79 @@ export default function App() {
                     ))}
                   </select>
 
-                  <Button
-                    variant="brand"
-                    size="sm"
+                  <button
                     onClick={translation.handleTranslate}
                     disabled={translation.isTranslating}
-                    icon={translation.isTranslating ? <RefreshCw className="animate-spin" /> : undefined}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-[11px] py-1 px-3 rounded-lg transition flex items-center gap-1 disabled:opacity-50"
                   >
-                    {translation.isTranslating ? "Đang dịch..." : "Dịch Ngay"}
-                  </Button>
+                    {translation.isTranslating ? (
+                      <>
+                        <RefreshCw className="animate-spin" size={11} /> Đang dịch...
+                      </>
+                    ) : (
+                      "Dịch Ngay"
+                    )}
+                  </button>
                 </div>
               </div>
 
               {/* Translation Result */}
               {translation.translatedText && (
-                <Card className="p-4 mt-2 border-border-brand-subtle animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-border-brand-subtle pb-2 mb-2">
-                    <span className="text-[12px] font-bold text-fg-brand-strong uppercase tracking-wider flex items-center gap-1">
+                <div className="bg-white border border-indigo-100 p-4 rounded-xl shadow-xs text-xs animate-fade-in">
+                  <div className="flex justify-between items-center border-b border-indigo-50 pb-2 mb-2">
+                    <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1">
                       🌎 KẾT QUẢ DỊCH SANG:{" "}
                       {LANGUAGE_NAME_MAP[translation.translateTargetLang] ||
                         translation.translateTargetLang}
                     </span>
                     <button
                       onClick={() => navigator.clipboard.writeText(translation.translatedText)}
-                      className="text-[13px] font-bold text-body hover:text-fg-brand flex items-center gap-1"
+                      className="text-[10px] font-bold text-slate-500 hover:text-indigo-600 flex items-center gap-1"
                     >
-                      <Copy size={14} /> Sao chép bản dịch
+                      <Copy size={11} /> Sao chép bản dịch
                     </button>
                   </div>
-                  <div className="prose prose-indigo max-w-none text-heading font-sans leading-relaxed whitespace-pre-wrap">
+                  <div className="prose prose-indigo max-w-none text-slate-700 font-sans leading-relaxed whitespace-pre-wrap">
                     {translation.translatedText}
                   </div>
-                </Card>
+                </div>
               )}
 
               {translation.translationError && (
-                <div className="bg-danger-soft text-fg-danger-strong border-2 border-border-danger-subtle p-3 rounded-xl text-[14px] font-bold">
+                <div className="bg-rose-50 text-rose-700 border border-rose-100 p-2.5 rounded-lg text-[11px] font-semibold">
                   ⚠️ Có lỗi xảy ra trong quá trình dịch thuật: {translation.translationError}
                 </div>
               )}
             </div>
 
             {/* OCR + Summary panels */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[32px] text-[16px] leading-[1.55]">
-              <Card className="p-5 overflow-y-auto max-h-[350px]">
-                <span className="text-[14px] uppercase tracking-[0.6px] font-bold text-heading block mb-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs leading-relaxed">
+              <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl overflow-y-auto max-h-[350px]">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-2">
                   TÓM TẮT AI (Markdown)
                 </span>
-                <div className="prose max-w-none text-body whitespace-pre-wrap">
+                <div className="prose prose-indigo max-w-none text-slate-600 whitespace-pre-wrap">
                   {activeFile.summary}
                 </div>
-              </Card>
+              </div>
 
-              <Card className="p-5 overflow-y-auto max-h-[350px]">
-                <span className="text-[14px] uppercase tracking-[0.6px] font-bold text-heading block mb-2">
+              <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl overflow-y-auto max-h-[350px]">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-2">
                   VĂN BẢN TRÍCH XUẤT OCR / AUDIO TRANSCRIPTION
                 </span>
-                <p className="text-body whitespace-pre-wrap font-mono text-[14px] leading-[1.5] select-all">
+                <p className="text-slate-600 whitespace-pre-wrap font-mono text-[11px] leading-normal select-all">
                   {activeFile.extractedText}
                 </p>
-              </Card>
+              </div>
             </div>
-          </Card>
+          </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="bg-neutral-primary-soft border-t-2 border-border-default py-[48px] text-center text-[15px] text-body">
-        <p className="font-bold text-heading text-[16px]">© 2026 VietLearn AI Studio • Xây dựng bởi Trí Tuệ Nhân Tạo</p>
-        <p className="mt-[8px]">
+      <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-400 mt-auto">
+        <p className="font-medium">© 2026 VietLearn AI Studio • Xây dựng bởi Trí Tuệ Nhân Tạo</p>
+        <p className="text-[10px] text-slate-450 mt-1">
           Sử dụng Google Gemini-3.5-flash và TTS Model. Dữ liệu lưu trữ cục bộ bảo mật.
         </p>
       </footer>

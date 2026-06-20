@@ -54,3 +54,55 @@ export interface TechTopic {
   visualCode?: string;
   diagramSteps?: { title: string; desc: string; icon: string }[];
 }
+
+// ─── API Response Types ───────────────────────────────────────────────────────
+
+export interface ApiStatusResponse {
+  success: boolean;
+  isDemo: boolean;
+}
+
+export interface ProcessFileResponse {
+  success: boolean;
+  isDemo?: boolean;
+  name?: string;
+  mimeType?: string;
+  size?: number;
+  summary: string;
+  extractedText: string;
+  quiz: QuizQuestion[];
+  mindmap: MindMapNode;
+}
+
+export interface ChatResponse {
+  success: boolean;
+  reply: string;
+}
+
+export interface TTSResponse {
+  success: boolean;
+  isDemo?: boolean;
+  region: string;
+  base64Audio?: string;
+  mimeType?: string;
+  message?: string;
+}
+
+export interface TranslateResponse {
+  success: boolean;
+  isDemo?: boolean;
+  translatedText: string;
+}
+
+export interface LiveAudioTranslateResponse {
+  success: boolean;
+  isDemo?: boolean;
+  transcription: string;
+  translation: string;
+}
+
+export type AccentRegion = "north" | "central" | "south";
+
+export type TabId = "upload" | "chat" | "mindmap" | "game" | "audiolab" | "knowledge" | "budget";
+
+export type TranslateSourceField = "summary" | "extractedText";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -58,11 +58,11 @@ interface SavingGoal {
 // Categories translations and colors
 const CATEGORY_MAP: Record<string, { label: string; color: string; bg: string }> = {
   study_material: { label: "Sách & Đồ dùng học tập", color: "text-blue-600 border-blue-200", bg: "bg-blue-50" },
-  course_tuition: { label: "Học phí & Khóa học", color: "text-fg-brand border-border-brand-subtle", bg: "bg-brand-softer" },
+  course_tuition: { label: "Học phí & Khóa học", color: "text-[var(--color-primary)] border-indigo-100", bg: "bg-indigo-50" },
   living_food: { label: "Ăn uống & Sinh hoạt", color: "text-emerald-600 border-emerald-200", bg: "bg-emerald-50" },
   housing_bills: { label: "Nhà ở & Tiền điện nước", color: "text-amber-600 border-amber-200", bg: "bg-amber-50" },
   entertainment: { label: "Giải trí & Công nghệ", color: "text-rose-600 border-rose-200", bg: "bg-rose-50" },
-  other: { label: "Chi phí khác", color: "text-body border-border-default", bg: "bg-surface-muted" }
+  other: { label: "Chi phí khác", color: "text-[var(--color-text-secondary)] border-[var(--color-border-subtle)]", bg: "bg-[var(--color-neutral-soft)]" }
 };
 
 // --- Quick Templates Data Structure ---
@@ -346,7 +346,7 @@ export default function StudentBudgetTracker() {
     const newTx: Transaction = {
       id: "tx_" + Date.now(),
       title: formTitle.trim(),
-      category: formType === "income" ? "other" : formCategory,
+      category: (formType === "income" ? "other" : formCategory) as Transaction["category"],
       amount: numAmount,
       date: formDate,
       type: formType,
@@ -504,12 +504,12 @@ export default function StudentBudgetTracker() {
     <div className="flex flex-col gap-8 w-full animate-fade-in" id="budget-tracker-root">
       
       {/* Title & Visual Introduction */}
-      <div className="border-b border-border-default pb-3">
-        <h2 className="text-xl font-bold text-heading flex items-center gap-2">
-          <PiggyBank className="text-fg-brand animate-bounce" size={24} />
+      <div className="border-b border-[var(--color-border-subtle)] pb-3">
+        <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+          <PiggyBank className="text-[var(--color-primary)] animate-bounce" size={24} />
           Trình Quản Lý Chi Tiêu & Dự Trù Tiết Kiệm Học Tập (VietLearn Finance Lab)
         </h2>
-        <p className="text-xs text-body mt-1">
+        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
           Lập kế hoạch cân đối chi phí sinh hoạt, mua sắm sách giáo trình, ghi chú học phí và phân bổ heo đất tiết kiệm hướng tới mục tiêu cá nhân.
         </p>
       </div>
@@ -519,16 +519,16 @@ export default function StudentBudgetTracker() {
         
         {/* Wallet / Available Balance */}
         <Card className="p-5 flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-soft rounded-full translate-x-6 -translate-y-6" />
-          <div className="w-12 h-12 rounded-card bg-brand-softer text-fg-brand-strong flex items-center justify-center flex-shrink-0 relative z-10">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-100 rounded-full translate-x-6 -translate-y-6" />
+          <div className="w-12 h-12 rounded-[var(--radius-card)] bg-indigo-50 text-[var(--color-primary-hover)] flex items-center justify-center flex-shrink-0 relative z-10">
             <Wallet size={22} />
           </div>
           <div className="relative z-10 flex-1">
-            <span className="text-[10px] text-body-subtle font-bold uppercase tracking-wider block">SỐ DƯ KHẢ DỤNG</span>
-            <span className={`text-xl font-extrabold tracking-tight block mt-0.5 ${netBalance >= 0 ? "text-fg-brand" : "text-rose-600"}`}>
+            <span className="text-[10px] text-[var(--color-neutral)] font-bold uppercase tracking-wider block">SỐ DƯ KHẢ DỤNG</span>
+            <span className={`text-xl font-extrabold tracking-tight block mt-0.5 ${netBalance >= 0 ? "text-[var(--color-primary)]" : "text-rose-600"}`}>
               {formatVND(netBalance)}
             </span>
-            <p className="text-[10px] text-body-subtle mt-1 flex items-center gap-1">
+            <p className="text-[10px] text-[var(--color-neutral)] mt-1 flex items-center gap-1">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Sẵn sàng cho các mục tiêu học tập
             </p>
@@ -538,15 +538,15 @@ export default function StudentBudgetTracker() {
         {/* Expenses (Đã Tiêu Dùng) */}
         <Card className="p-5 flex items-center gap-4 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full translate-x-6 -translate-y-6" />
-          <div className="w-12 h-12 rounded-card bg-rose-50 text-rose-700 flex items-center justify-center flex-shrink-0 relative z-10">
+          <div className="w-12 h-12 rounded-[var(--radius-card)] bg-rose-50 text-rose-700 flex items-center justify-center flex-shrink-0 relative z-10">
             <TrendingDown size={22} />
           </div>
           <div className="relative z-10 flex-1">
-            <span className="text-[10px] text-body-subtle font-bold uppercase tracking-wider block">TỔNG ĐÃ DÙNG</span>
+            <span className="text-[10px] text-[var(--color-neutral)] font-bold uppercase tracking-wider block">TỔNG ĐÃ DÙNG</span>
             <span className="text-xl font-extrabold text-rose-600 tracking-tight block mt-0.5">
               {formatVND(totalExpense)}
             </span>
-            <p className="text-[10px] text-body-subtle mt-1">
+            <p className="text-[10px] text-[var(--color-neutral)] mt-1">
               Chiếm {totalIncome > 0 ? Math.round((totalExpense / totalIncome) * 100) : 0}% của tổng thu
             </p>
           </div>
@@ -555,15 +555,15 @@ export default function StudentBudgetTracker() {
         {/* Deposits / Incomes */}
         <Card className="p-5 flex items-center gap-4 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full translate-x-6 -translate-y-6" />
-          <div className="w-12 h-12 rounded-card bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0 relative z-10">
+          <div className="w-12 h-12 rounded-[var(--radius-card)] bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0 relative z-10">
             <TrendingUp size={22} />
           </div>
           <div className="relative z-10 flex-1">
-            <span className="text-[10px] text-body-subtle font-bold uppercase tracking-wider block">TỔNG NGUỒN THU</span>
+            <span className="text-[10px] text-[var(--color-neutral)] font-bold uppercase tracking-wider block">TỔNG NGUỒN THU</span>
             <span className="text-xl font-extrabold text-emerald-600 tracking-tight block mt-0.5">
               {formatVND(totalIncome)}
             </span>
-            <p className="text-[10px] text-body-subtle mt-1">
+            <p className="text-[10px] text-[var(--color-neutral)] mt-1">
               Gia sư, học bổng, trợ cấp gia đình...
             </p>
           </div>
@@ -575,13 +575,13 @@ export default function StudentBudgetTracker() {
       <Card className={`p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-2 ${
         adNote.status === "danger" ? "bg-rose-50 border-rose-200 text-rose-800" :
         adNote.status === "warning" ? "bg-amber-50 border-amber-200 text-amber-800" :
-        "bg-brand-soft border-border-brand text-fg-brand-strong"
+        "bg-indigo-100 border-[var(--color-primary)] text-[var(--color-primary-hover)]"
       }`}>
         <div className="flex items-start gap-3">
-          <div className={`p-2 rounded-card flex-shrink-0 ${
+          <div className={`p-2 rounded-[var(--radius-card)] flex-shrink-0 ${
             adNote.status === "danger" ? "bg-rose-100 text-rose-700" :
             adNote.status === "warning" ? "bg-amber-100 text-amber-700" :
-            "bg-brand-soft text-fg-brand-strong"
+            "bg-indigo-100 text-[var(--color-primary-hover)]"
           }`}>
             <Sparkles size={18} className="animate-pulse" />
           </div>
@@ -589,39 +589,39 @@ export default function StudentBudgetTracker() {
             <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full inline-block mb-1 ${
               adNote.status === "danger" ? "bg-rose-200 text-rose-800" :
               adNote.status === "warning" ? "bg-amber-200 text-amber-800" :
-              "bg-indigo-200 text-fg-brand-strong"
+              "bg-indigo-200 text-[var(--color-primary-hover)]"
             }`}>
               Cố vấn Tài chính AI Lab • {adNote.tone}
             </span>
             <p className="text-xs font-semibold leading-relaxed font-sans">{adNote.text}</p>
           </div>
         </div>
-        <div className="hidden md:block text-right flex-shrink-0 text-[10px] font-mono text-body-subtle">
+        <div className="hidden md:block text-right flex-shrink-0 text-[10px] font-mono text-[var(--color-neutral)]">
           VietLearn AI FinEngine
         </div>
       </Card>
 
       {/* Phân Tích & Biểu Đồ Thống Kê Học Đường */}
       <Card className="p-6 flex flex-col gap-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border-default pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-[var(--color-border-subtle)] pb-3">
           <div>
-            <h3 className="text-sm font-bold text-heading uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-[13px] font-medium text-[var(--color-text-primary)] uppercase tracking-wider flex items-center gap-2">
               <span className="text-lg">📊</span>
               Trung Tâm Phân Tích Tài Chính Phổ Thông (VietLearn Finance Labs)
             </h3>
-            <p className="text-[10px] text-body-subtle mt-0.5">
+            <p className="text-[10px] text-[var(--color-neutral)] mt-0.5">
               Trực quan hóa hoạt động và xu hướng tích lũy đồng hành cùng kết quả học tập của học viên.
             </p>
           </div>
 
           {/* Sub-tabs for trend chart options */}
-          <div className="flex gap-1 bg-surface-muted p-1 rounded-card self-start sm:self-center">
+          <div className="flex gap-1 bg-[var(--color-neutral-soft)] p-1 rounded-[var(--radius-card)] self-start sm:self-center">
             <button
               onClick={() => setChartSubTab("cumulative")}
               className={`py-1 px-3 rounded-lg text-[10px] font-bold transition-all ${
                 chartSubTab === "cumulative"
-                  ? "bg-white text-fg-brand-strong shadow-3xs"
-                  : "text-body hover:text-heading"
+                  ? "bg-white text-[var(--color-primary-hover)] shadow-3xs"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               📈 Xu hướng Tích lũy
@@ -630,8 +630,8 @@ export default function StudentBudgetTracker() {
               onClick={() => setChartSubTab("daily")}
               className={`py-1 px-3 rounded-lg text-[10px] font-bold transition-all ${
                 chartSubTab === "daily"
-                  ? "bg-white text-fg-brand-strong shadow-3xs"
-                  : "text-body hover:text-heading"
+                  ? "bg-white text-[var(--color-primary-hover)] shadow-3xs"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
               }`}
             >
               🔄 So sánh Thu - Chi
@@ -644,21 +644,21 @@ export default function StudentBudgetTracker() {
           {/* Trend Area / Flow Chart (7 cols) */}
           <div className="lg:col-span-7 flex flex-col gap-3 min-h-[220px]">
             <div className="flex justify-between items-center">
-              <span className="text-[11px] font-bold text-body uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">
                 {chartSubTab === "cumulative" ? "📈 Đồ thị biến động số dư theo ngày" : "🔄 Nhật ký cụ thể thu & chi hàng ngày"}
               </span>
-              <span className="text-[9px] font-mono text-body-subtle">
+              <span className="text-[9px] font-mono text-[var(--color-neutral)]">
                 Độ chia tỷ lệ tự chuyển đổi (VND)
               </span>
             </div>
 
             {trendChartData.length < 2 ? (
-              <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-border-default bg-surface-muted/50 p-6 rounded-card text-center">
+              <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[var(--color-border-subtle)] bg-[var(--color-neutral-soft)]/50 p-6 rounded-[var(--radius-card)] text-center">
                 <span className="text-xl mb-1.5">📈</span>
-                <p className="text-xs font-semibold text-body leading-relaxed">
+                <p className="text-xs font-semibold text-[var(--color-text-secondary)] leading-relaxed">
                   Chưa đủ dữ liệu để vẽ biểu đồ phân tích thời gian
                 </p>
-                <p className="text-[10px] text-body-subtle mt-0.5 max-w-xs">
+                <p className="text-[10px] text-[var(--color-neutral)] mt-0.5 max-w-xs">
                   Vui lòng bổ sung thêm giao dịch (thu hoặc chi) thuộc các mốc ngày khác nhau để hệ thống tích lũy dòng tài chính dòng chảy.
                 </p>
               </div>
@@ -787,16 +787,16 @@ export default function StudentBudgetTracker() {
           </div>
 
           {/* Pie Chart Component inside layout (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-3 border-t lg:border-t-0 lg:border-l border-border-default pt-5 lg:pt-0 lg:pl-6 min-h-[200px]">
-            <span className="text-[11px] font-bold text-body uppercase tracking-wider">
+          <div className="lg:col-span-5 flex flex-col gap-3 border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] pt-5 lg:pt-0 lg:pl-6 min-h-[200px]">
+            <span className="text-[11px] font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">
               🍕 Cơ cấu các khoản chi tiêu học đường
             </span>
 
             {expensePieData.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-border-default bg-surface-muted/50 p-6 rounded-card text-center">
+              <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[var(--color-border-subtle)] bg-[var(--color-neutral-soft)]/50 p-6 rounded-[var(--radius-card)] text-center">
                 <span className="text-xl mb-1.5">🍕</span>
-                <p className="text-xs font-semibold text-body">Chưa nảy sinh chi tiêu</p>
-                <p className="text-[10px] text-body-subtle mt-0.5 max-w-[200px]">
+                <p className="text-xs font-semibold text-[var(--color-text-secondary)]">Chưa nảy sinh chi tiêu</p>
+                <p className="text-[10px] text-[var(--color-neutral)] mt-0.5 max-w-[200px]">
                   Tích chọn các mục chi tiêu ở biểu mẫu Nhập Giao Dịch bên dưới để lập tức hiển thị tỉ lệ phân bổ!
                 </p>
               </div>
@@ -835,8 +835,8 @@ export default function StudentBudgetTracker() {
                   
                   {/* Center percentage summary indicator */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-1">
-                    <span className="text-[10px] font-black text-heading">TỔNG</span>
-                    <span className="text-[8px] font-mono font-bold text-body">{formatVND(totalExpense).replace("₫", "đ")}</span>
+                    <span className="text-[10px] font-black text-[var(--color-text-primary)]">TỔNG</span>
+                    <span className="text-[8px] font-mono font-bold text-[var(--color-text-secondary)]">{formatVND(totalExpense).replace("₫", "đ")}</span>
                   </div>
                 </div>
 
@@ -848,20 +848,20 @@ export default function StudentBudgetTracker() {
                     return (
                       <div
                         key={index}
-                        className="flex items-center justify-between text-[10px] bg-surface-muted p-2 rounded-card border border-border-default hover:bg-surface-muted/50 transition-colors"
+                        className="flex items-center justify-between text-[10px] bg-[var(--color-neutral-soft)] p-2 rounded-[var(--radius-card)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-neutral-soft)]/50 transition-colors"
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                          <span className="text-body font-bold truncate">{item.name}</span>
+                          <span className="text-[var(--color-text-secondary)] font-bold truncate">{item.name}</span>
                         </div>
-                        <div className="text-right flex-shrink-0 font-mono font-black text-heading ml-1">
+                        <div className="text-right flex-shrink-0 font-mono font-black text-[var(--color-text-primary)] ml-1">
                           {pct}%
                         </div>
                       </div>
                     );
                   })}
                   {expensePieData.length > 4 && (
-                    <div className="text-[9px] text-body-subtle text-center italic mt-0.5">
+                    <div className="text-[9px] text-[var(--color-neutral)] text-center italic mt-0.5">
                       + và {expensePieData.length - 4} danh mục chi lẻ khác...
                     </div>
                   )}
@@ -870,15 +870,15 @@ export default function StudentBudgetTracker() {
             )}
 
             {/* Tùy chỉnh màu sắc các danh mục (Color Label Labs) */}
-            <div className="mt-3 pt-4 border-t border-border-default flex flex-col gap-2.5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b border-dashed border-border-default pb-2">
+            <div className="mt-3 pt-4 border-t border-[var(--color-border-subtle)] flex flex-col gap-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b border-dashed border-[var(--color-border-subtle)] pb-2">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm">🎨</span>
                   <div>
-                    <h4 className="text-[10px] font-black text-heading uppercase tracking-widest leading-none">
+                    <h4 className="text-[10px] font-black text-[var(--color-text-primary)] uppercase tracking-widest leading-none">
                       Phòng Thí Nghiệm Nhãn Màu (Color Labs)
                     </h4>
-                    <p className="text-[8px] text-body-subtle mt-0.5">
+                    <p className="text-[8px] text-[var(--color-neutral)] mt-0.5">
                       Nhấp vào bong bóng màu tròn trịa để tùy biến hoặc áp dụng dải màu đẹp đẽ!
                     </p>
                   </div>
@@ -895,7 +895,7 @@ export default function StudentBudgetTracker() {
                       other: "#64748b"
                     });
                   }}
-                  className="text-[9px] font-bold text-fg-brand hover:text-fg-brand-strong transition underline underline-offset-2 self-start sm:self-center"
+                  className="text-[9px] font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition underline underline-offset-2 self-start sm:self-center"
                 >
                   Mặc định
                 </button>
@@ -903,7 +903,7 @@ export default function StudentBudgetTracker() {
 
               {/* Quick Collection Color Presets */}
               <div className="flex flex-wrap gap-1 items-center">
-                <span className="text-[8px] font-bold text-body-subtle">Bộ mảng đề xuất:</span>
+                <span className="text-[8px] font-bold text-[var(--color-neutral)]">Bộ mảng đề xuất:</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -961,11 +961,11 @@ export default function StudentBudgetTracker() {
                   return (
                     <div
                       key={key}
-                      className="flex items-center justify-between border border-border-default/70 p-1.5 rounded-card bg-surface-muted/50 hover:bg-surface-muted transition-colors min-w-0"
+                      className="flex items-center justify-between border border-[var(--color-border-subtle)]/70 p-1.5 rounded-[var(--radius-card)] bg-[var(--color-neutral-soft)]/50 hover:bg-[var(--color-neutral-soft)] transition-colors min-w-0"
                     >
                       <div className="flex items-center gap-1.5 min-w-0">
                         {/* Inline color input picker bubble */}
-                        <div className="relative w-3.5 h-3.5 rounded-full border border-border-default overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        <div className="relative w-3.5 h-3.5 rounded-full border border-[var(--color-border-subtle)] overflow-hidden flex-shrink-0 flex items-center justify-center">
                           <input
                             type="color"
                             value={currentCategoryHex}
@@ -979,11 +979,11 @@ export default function StudentBudgetTracker() {
                             title={`Tùy chỉnh màu sắc ${value.label}`}
                           />
                         </div>
-                        <span className="text-[9px] font-bold text-body truncate" title={value.label}>
+                        <span className="text-[9px] font-bold text-[var(--color-text-secondary)] truncate" title={value.label}>
                           {value.label}
                         </span>
                       </div>
-                      <span className="text-[8px] font-mono font-black text-body pl-1 block ml-auto flex-shrink-0">
+                      <span className="text-[8px] font-mono font-black text-[var(--color-text-secondary)] pl-1 block ml-auto flex-shrink-0">
                         {currentCategoryHex.toUpperCase()}
                       </span>
                     </div>
@@ -1004,26 +1004,26 @@ export default function StudentBudgetTracker() {
           
           {/* Form to Add Transaction */}
           <Card className="p-6 flex flex-col gap-4">
-            <h3 className="text-[14px] font-black text-heading uppercase tracking-wider border-b-2 border-border-default pb-2">
+            <h3 className="text-[14px] font-black text-[var(--color-text-primary)] uppercase tracking-wider border-b-2 border-[var(--color-border-subtle)] pb-2">
               📝 Nhập Giao Dịch Mới
             </h3>
 
             {/* Quick Template Checklists Selection */}
-            <div className="bg-gradient-to-tr from-slate-50 to-indigo-50/50 border border-border-brand-subtle/50 rounded-card p-4 flex flex-col gap-3">
+            <div className="bg-gradient-to-tr from-slate-50 to-indigo-50/50 border border-indigo-100/50 rounded-[var(--radius-card)] p-4 flex flex-col gap-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h4 className="text-[11px] font-black text-heading uppercase tracking-widest flex items-center gap-1.5">
-                    <Sparkles className="text-fg-brand animate-pulse" size={13} />
+                  <h4 className="text-[11px] font-black text-[var(--color-text-primary)] uppercase tracking-widest flex items-center gap-1.5">
+                    <Sparkles className="text-[var(--color-primary)] animate-pulse" size={13} />
                     Danh Mục Gợi Ý & Nhập Nhanh
                   </h4>
-                  <p className="text-[10px] text-body-subtle mt-0.5">
+                  <p className="text-[10px] text-[var(--color-neutral)] mt-0.5">
                     Chọn nhóm danh sách, tích chọn mục có sẵn để tự động điền thông tin và giá đề xuất!
                   </p>
                 </div>
               </div>
 
               {/* Tabs list switch */}
-              <div className="flex flex-wrap gap-1 bg-surface-muted p-1 rounded-card bg-surface-muted">
+              <div className="flex flex-wrap gap-1 bg-[var(--color-neutral-soft)] p-1 rounded-[var(--radius-card)] bg-[var(--color-neutral-soft)]">
                 {(Object.keys(TEMPLATE_LISTS) as Array<keyof typeof TEMPLATE_LISTS>).map((key) => {
                   const item = TEMPLATE_LISTS[key];
                   const isActive = activeTemplateTab === key;
@@ -1034,8 +1034,8 @@ export default function StudentBudgetTracker() {
                       onClick={() => setActiveTemplateTab(key)}
                       className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 sm:gap-1.5 ${
                         isActive
-                          ? "bg-white text-fg-brand-strong shadow-3xs border border-border-brand-subtle"
-                          : "text-body hover:text-heading"
+                          ? "bg-white text-[var(--color-primary-hover)] shadow-3xs border border-indigo-100"
+                          : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
                       }`}
                     >
                       <span className="text-xs">{item.icon}</span>
@@ -1060,19 +1060,19 @@ export default function StudentBudgetTracker() {
                         // Automatically set notes
                         setFormNotes(`Lấy nhanh từ biểu mẫu ${TEMPLATE_LISTS[activeTemplateTab].label}`);
                       }}
-                      className={`border p-2.5 rounded-card cursor-pointer transition-all flex items-center justify-between gap-2 text-left ${
+                      className={`border p-2.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex items-center justify-between gap-2 text-left ${
                         isSelected
-                          ? "bg-brand-softer border-border-brand ring-1 ring-indigo-550"
-                          : "bg-white text-heading border-border-default/80 hover:border-border-brand"
+                          ? "bg-indigo-50 border-[var(--color-primary)] ring-1 ring-indigo-550"
+                          : "bg-white text-[var(--color-text-primary)] border-[var(--color-border-subtle)]/80 hover:border-[var(--color-primary)]"
                       }`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-sm">{tpl.icon}</span>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-heading truncate">
+                          <p className="text-[11px] font-bold text-[var(--color-text-primary)] truncate">
                             {tpl.title}
                           </p>
-                          <span className="text-[9px] font-mono font-medium block text-fg-brand">
+                          <span className="text-[9px] font-mono font-medium block text-[var(--color-primary)]">
                             Giá gợi ý: {tpl.suggestedAmount.toLocaleString("vi-VN")}đ
                           </span>
                         </div>
@@ -1081,8 +1081,8 @@ export default function StudentBudgetTracker() {
                       {/* Interactive tick circle */}
                       <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center flex-shrink-0 ${
                         isSelected 
-                          ? "border-indigo-600 bg-brand text-white" 
-                          : "border-border-default-strong bg-surface-muted"
+                          ? "border-indigo-600 bg-[var(--color-primary)] text-white" 
+                          : "border-[var(--color-border-default)] bg-[var(--color-neutral-soft)]"
                       }`}>
                         {isSelected && <span className="text-[9px] font-bold">✓</span>}
                       </div>
@@ -1095,7 +1095,7 @@ export default function StudentBudgetTracker() {
             <form onSubmit={handleAddTransaction} className="flex flex-col gap-4">
               
               {/* Selector: Expense vs Income */}
-              <div className="flex bg-surface-muted p-1 rounded-card w-full self-start max-w-xs">
+              <div className="flex bg-[var(--color-neutral-soft)] p-1 rounded-[var(--radius-card)] w-full self-start max-w-xs">
                 <button
                   type="button"
                   onClick={() => {
@@ -1104,8 +1104,8 @@ export default function StudentBudgetTracker() {
                   }}
                   className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
                     formType === "expense"
-                      ? "bg-white text-fg-brand-strong shadow-3xs"
-                      : "text-body hover:text-heading"
+                      ? "bg-white text-[var(--color-primary-hover)] shadow-3xs"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
                   }`}
                 >
                   Khoản Chi tiêu (-)
@@ -1116,7 +1116,7 @@ export default function StudentBudgetTracker() {
                   className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all ${
                     formType === "income"
                       ? "bg-white text-emerald-700 shadow-3xs"
-                      : "text-body hover:text-heading"
+                      : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
                   }`}
                 >
                   Khoản Thu nhập (+)
@@ -1127,21 +1127,21 @@ export default function StudentBudgetTracker() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] uppercase font-bold text-body-subtle">Tên khoản giao dịch</label>
+                  <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Tên khoản giao dịch</label>
                   <input
                     type="text"
                     required
                     placeholder={formType === "expense" ? "Ví dụ: Sách song ngữ IELTS, Tiền ăn trưa..." : "Ví dụ: Dạy kèm IELTS, Học bổng HK1..."}
                     value={formTitle}
                     onChange={(e) => setFormTitle(e.target.value)}
-                    className="p-2 border border-border-default rounded-lg text-xs outline-none focus:border-border-brand"
+                    className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] uppercase font-bold text-body-subtle flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)] flex items-center justify-between">
                     <span>Số tiền (VND)</span>
-                    <span className="text-[9px] text-body-subtle">Gợi ý nhanh mệnh giá 🔽</span>
+                    <span className="text-[9px] text-[var(--color-neutral)]">Gợi ý nhanh mệnh giá 🔽</span>
                   </label>
                   <div className="relative">
                     <input
@@ -1151,9 +1151,9 @@ export default function StudentBudgetTracker() {
                       placeholder="Nhập số tiền..."
                       value={formAmount}
                       onChange={(e) => setFormAmount(e.target.value)}
-                      className="p-2 pl-7 w-full border border-border-default rounded-lg text-xs outline-none focus:border-border-brand"
+                      className="p-2 pl-7 w-full border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
                     />
-                    <div className="absolute left-2.5 top-2.5 text-body-subtle text-xs font-medium">₫</div>
+                    <div className="absolute left-2.5 top-2.5 text-[var(--color-neutral)] text-xs font-medium">₫</div>
                   </div>
 
                   {/* Pricing Preset Buttons (Denominations) */}
@@ -1163,7 +1163,7 @@ export default function StudentBudgetTracker() {
                         key={val}
                         type="button"
                         onClick={() => setFormAmount(val.toString())}
-                        className="py-1 px-1.5 border border-border-default rounded-md text-[9px] bg-surface-muted text-body hover:bg-brand-softer hover:text-fg-brand hover:border-border-brand-subtle transition font-bold"
+                        className="py-1 px-1.5 border border-[var(--color-border-subtle)] rounded-md text-[9px] bg-[var(--color-neutral-soft)] text-[var(--color-text-secondary)] hover:bg-indigo-50 hover:text-[var(--color-primary)] hover:border-indigo-100 transition font-bold"
                       >
                         {val >= 1000 ? `${val / 1000}k` : val}
                       </button>
@@ -1178,11 +1178,11 @@ export default function StudentBudgetTracker() {
                 
                 {formType === "expense" ? (
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] uppercase font-bold text-body-subtle">Phân loại chi phí</label>
+                    <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Phân loại chi phí</label>
                     <select
                       value={formCategory}
                       onChange={(e) => setFormCategory(e.target.value as any)}
-                      className="p-2 border border-border-default rounded-lg text-xs bg-white outline-none focus:border-border-brand"
+                      className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs bg-white outline-none focus:border-[var(--color-primary)]"
                     >
                       <option value="study_material">📚 Sách & Đồ dùng học tập</option>
                       <option value="course_tuition">🎓 Học phí & Khóa học ôn luyện</option>
@@ -1194,30 +1194,30 @@ export default function StudentBudgetTracker() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] uppercase font-bold text-body-subtle">Danh mục thu</label>
+                    <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Danh mục thu</label>
                     <input
                       type="text"
                       disabled
                       value="Trợ cấp / Thu nhập làm thêm"
-                      className="p-2 border border-border-default bg-surface-muted text-body-subtle rounded-lg text-xs"
+                      className="p-2 border border-[var(--color-border-subtle)] bg-[var(--color-neutral-soft)] text-[var(--color-neutral)] rounded-lg text-xs"
                     />
                   </div>
                 )}
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] uppercase font-bold text-body-subtle">Ngày giao dịch</label>
+                  <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Ngày giao dịch</label>
                   <div className="flex gap-1.5 items-center">
                     <input
                       type="date"
                       required
                       value={formDate}
                       onChange={(e) => setFormDate(e.target.value)}
-                      className="p-2 border border-border-default rounded-lg text-xs outline-none focus:border-border-brand flex-1"
+                      className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)] flex-1"
                     />
                     <button
                       type="button"
                       onClick={() => setFormDate(new Date().toISOString().substring(0, 10))}
-                      className="p-2 bg-brand-softer border border-border-brand-subtle text-fg-brand-strong hover:bg-brand-soft transition rounded-lg text-xs font-semibold whitespace-nowrap"
+                      className="p-2 bg-indigo-50 border border-indigo-100 text-[var(--color-primary-hover)] hover:bg-indigo-100 transition rounded-lg text-xs font-semibold whitespace-nowrap"
                       title="Chọn mốc ngày hôm nay"
                     >
                       Hôm nay 📅
@@ -1229,13 +1229,13 @@ export default function StudentBudgetTracker() {
 
               {/* Notes */}
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] uppercase font-bold text-body-subtle">Ghi chú nhanh (Tùy chọn)</label>
+                <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Ghi chú nhanh (Tùy chọn)</label>
                 <input
                   type="text"
                   placeholder="Thêm mô tả về nhà sách, địa điểm hoặc hình thức chuyển khoản..."
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
-                  className="p-2 border border-border-default rounded-lg text-xs outline-none focus:border-border-brand"
+                  className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
                 />
               </div>
 
@@ -1256,9 +1256,9 @@ export default function StudentBudgetTracker() {
           <Card className="p-6 flex flex-col gap-4">
             
             {/* Header + Filter elements */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-border-default pb-3">
-              <h3 className="text-xs font-bold text-heading uppercase tracking-wider flex items-center gap-1.5">
-                <Filter size={14} className="text-body" />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b-2 border-[var(--color-border-subtle)] pb-3">
+              <h3 className="text-xs font-bold text-[var(--color-text-primary)] uppercase tracking-wider flex items-center gap-1.5">
+                <Filter size={14} className="text-[var(--color-text-secondary)]" />
                 Lịch Sử Giao Dịch ({filteredTransactions.length})
               </h3>
 
@@ -1267,7 +1267,7 @@ export default function StudentBudgetTracker() {
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="p-1 px-2 border border-border-default rounded-lg text-[10px] bg-white text-body font-semibold outline-none"
+                  className="p-1 px-2 border border-[var(--color-border-subtle)] rounded-lg text-[10px] bg-white text-[var(--color-text-secondary)] font-semibold outline-none"
                 >
                   <option value="all">Tất cả Kiểu thu/chi</option>
                   <option value="expense">Chỉ Khoản Chi (-)</option>
@@ -1277,7 +1277,7 @@ export default function StudentBudgetTracker() {
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="p-1 px-2 border border-border-default rounded-lg text-[10px] bg-white text-body font-semibold outline-none"
+                  className="p-1 px-2 border border-[var(--color-border-subtle)] rounded-lg text-[10px] bg-white text-[var(--color-text-secondary)] font-semibold outline-none"
                 >
                   <option value="all">Tất cả Danh mục</option>
                   <option value="study_material">📚 Sách học tập</option>
@@ -1292,7 +1292,7 @@ export default function StudentBudgetTracker() {
 
             {/* List */}
             {filteredTransactions.length === 0 ? (
-              <div className="text-center py-8 text-xs text-body-subtle italic">
+              <div className="text-center py-8 text-xs text-[var(--color-neutral)] italic">
                 Không tìm thấy giao dịch nào khớp với tiêu chuẩn bộ lọc lọc ra.
               </div>
             ) : (
@@ -1303,18 +1303,18 @@ export default function StudentBudgetTracker() {
                   return (
                     <div 
                       key={t.id} 
-                      className="border border-border-default hover:border-border-default p-3 rounded-card flex items-center justify-between gap-3 transition-all hover:bg-surface-muted/50"
+                      className="border border-[var(--color-border-subtle)] hover:border-[var(--color-border-subtle)] p-3 rounded-[var(--radius-card)] flex items-center justify-between gap-3 transition-all hover:bg-[var(--color-neutral-soft)]/50"
                     >
                       <div className="flex items-start gap-2.5 min-w-0">
                         {/* Type Icon indicator */}
-                        <div className={`p-2 rounded-card flex-shrink-0 ${
+                        <div className={`p-2 rounded-[var(--radius-card)] flex-shrink-0 ${
                           t.type === "income" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
                         }`}>
                           {t.type === "income" ? <TrendingUp size={15} /> : <TrendingDown size={15} />}
                         </div>
 
                         <div className="min-w-0">
-                          <h4 className="text-xs font-bold text-heading truncate" title={t.title}>
+                          <h4 className="text-xs font-bold text-[var(--color-text-primary)] truncate" title={t.title}>
                             {t.title}
                           </h4>
                           
@@ -1324,12 +1324,12 @@ export default function StudentBudgetTracker() {
                               {catDetails?.label}
                             </span>
                             {/* Date */}
-                            <span className="text-body-subtle flex items-center gap-0.5 font-mono">
+                            <span className="text-[var(--color-neutral)] flex items-center gap-0.5 font-mono">
                               <Calendar size={10} /> {t.date}
                             </span>
                             {/* Notes */}
                             {t.notes && (
-                              <span className="text-body italic max-w-[120px] truncate" title={t.notes}>
+                              <span className="text-[var(--color-text-secondary)] italic max-w-[120px] truncate" title={t.notes}>
                                 ({t.notes})
                               </span>
                             )}
@@ -1345,7 +1345,7 @@ export default function StudentBudgetTracker() {
 
                         <button
                           onClick={() => handleDeleteTransaction(t.id)}
-                          className="p-1 text-body-subtle hover:text-rose-500 transition-colors"
+                          className="p-1 text-[var(--color-neutral)] hover:text-rose-500 transition-colors"
                           title="Xóa giao dịch này"
                         >
                           <Trash2 size={13} />
@@ -1358,7 +1358,7 @@ export default function StudentBudgetTracker() {
               </div>
             )}
 
-            <div className="bg-surface-muted p-3 rounded-xl text-[12px] font-bold text-body text-center border-2 border-border-default">
+            <div className="bg-[var(--color-neutral-soft)] p-3 rounded-xl text-[12px] font-bold text-[var(--color-text-secondary)] text-center border-2 border-[var(--color-border-subtle)]">
               Nhấn nút Thùng rác để khôi phục hoặc xóa bớt. Toàn bộ dữ liệu nằm an toàn tại bộ nhớ cục bộ trình duyệt của học sinh.
             </div>
 
@@ -1371,8 +1371,8 @@ export default function StudentBudgetTracker() {
           
           <Card className="p-6 flex flex-col gap-5">
             
-            <div className="flex items-center justify-between border-b-2 border-border-default pb-2.5">
-              <h3 className="text-[14px] font-black text-heading uppercase tracking-wider flex items-center gap-1.5">
+            <div className="flex items-center justify-between border-b-2 border-[var(--color-border-subtle)] pb-2.5">
+              <h3 className="text-[14px] font-black text-[var(--color-text-primary)] uppercase tracking-wider flex items-center gap-1.5">
                 <PiggyBank className="text-rose-500" size={18} />
                 Quỹ Heo Tiết Kiệm Học Tập (Savings Goals)
               </h3>
@@ -1388,7 +1388,7 @@ export default function StudentBudgetTracker() {
 
             {/* Allocation savings modal look-alike inline */}
             {fundingGoalId && (
-              <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 text-white rounded-card p-4 flex flex-col gap-3 animate-fade-in text-xs">
+              <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 text-white rounded-[var(--radius-card)] p-4 flex flex-col gap-3 animate-fade-in text-xs">
                 <div>
                   <h4 className="font-bold text-yellow-300">🐷 Trích tiền chuyển vào Quỹ Tiết Kiệm</h4>
                   <p className="text-[10px] text-indigo-200 mt-0.5">Số dư khả dụng tối đa: <strong className="text-white">{formatVND(netBalance)}</strong></p>
@@ -1404,9 +1404,9 @@ export default function StudentBudgetTracker() {
                       placeholder="Số tiền cần chuyển..."
                       value={fundingAmount}
                       onChange={(e) => setFundingAmount(e.target.value)}
-                      className="p-1 px-2.5 pl-6 w-full text-heading bg-white rounded-lg text-xs outline-none text-left"
+                      className="p-1 px-2.5 pl-6 w-full text-[var(--color-text-primary)] bg-white rounded-lg text-xs outline-none text-left"
                     />
-                    <div className="absolute left-2 top-1 w-3 text-body-subtle">₫</div>
+                    <div className="absolute left-2 top-1 w-3 text-[var(--color-neutral)]">₫</div>
                   </div>
 
                   <Button
@@ -1429,24 +1429,24 @@ export default function StudentBudgetTracker() {
 
             {/* Form to Create Saving Goal */}
             {showGoalForm && (
-              <form onSubmit={handleAddGoal} className="bg-surface-muted border border-border-default rounded-card p-4 flex flex-col gap-3 text-xs animate-fade-in">
-                <span className="font-bold text-heading block text-center">🎯 THIẾT LẬP MỤC TIÊU TIẾT KIỆM MỚI</span>
+              <form onSubmit={handleAddGoal} className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-4 flex flex-col gap-3 text-xs animate-fade-in">
+                <span className="font-bold text-[var(--color-text-primary)] block text-center">🎯 THIẾT LẬP MỤC TIÊU TIẾT KIỆM MỚI</span>
                 
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] uppercase font-bold text-body-subtle">Tên mục tiêu tích lũy</label>
+                  <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Tên mục tiêu tích lũy</label>
                   <input
                     type="text"
                     required
                     placeholder="Ví dụ: Thi JLPT N3, Lệ phí Học quân sự..."
                     value={goalName}
                     onChange={(e) => setGoalName(e.target.value)}
-                    className="p-2 border border-border-default rounded-lg text-xs bg-white outline-none focus:border-border-brand"
+                    className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs bg-white outline-none focus:border-[var(--color-primary)]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] uppercase font-bold text-body-subtle">Số tiền mục tiêu</label>
+                    <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Số tiền mục tiêu</label>
                     <input
                       type="number"
                       required
@@ -1454,17 +1454,17 @@ export default function StudentBudgetTracker() {
                       placeholder="Số tiền VND..."
                       value={goalTarget}
                       onChange={(e) => setGoalTarget(e.target.value)}
-                      className="p-2 border border-border-default rounded-lg text-xs outline-none focus:border-border-brand"
+                      className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <label className="text-[10px] uppercase font-bold text-body-subtle">Thời hạn hoàn thành</label>
+                    <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Thời hạn hoàn thành</label>
                     <input
                       type="date"
                       value={goalDeadline}
                       onChange={(e) => setGoalDeadline(e.target.value)}
-                      className="p-2 border border-border-default rounded-lg text-xs outline-none focus:border-border-brand"
+                      className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
                     />
                   </div>
                 </div>
@@ -1480,7 +1480,7 @@ export default function StudentBudgetTracker() {
 
             {/* Goals Display */}
             {savingGoals.length === 0 ? (
-              <div className="text-center py-6 text-xs text-body-subtle italic">
+              <div className="text-center py-6 text-xs text-[var(--color-neutral)] italic">
                 Bạn chưa có mục tiêu tiết kiệm nào. Hãy khởi tạo một mục tiêu mới!
               </div>
             ) : (
@@ -1492,21 +1492,21 @@ export default function StudentBudgetTracker() {
                   return (
                     <div 
                       key={g.id} 
-                      className={`border p-4 rounded-card flex flex-col gap-2.5 transition-all ${
+                      className={`border p-4 rounded-[var(--radius-card)] flex flex-col gap-2.5 transition-all ${
                         isCompleted 
                           ? "bg-emerald-50/50 border-emerald-200" 
-                          : "bg-surface-muted/30 border-border-default hover:border-border-default"
+                          : "bg-[var(--color-neutral-soft)]/30 border-[var(--color-border-subtle)] hover:border-[var(--color-border-subtle)]"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h4 className="text-xs font-bold text-heading flex items-center gap-1.5">
+                          <h4 className="text-xs font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
                             {g.name}
                             {isCompleted && (
                               <CheckCircle2 size={13} className="text-emerald-500 flex-shrink-0" />
                             )}
                           </h4>
-                          <span className="text-[10px] text-body-subtle font-medium block mt-0.5 font-mono">
+                          <span className="text-[10px] text-[var(--color-neutral)] font-medium block mt-0.5 font-mono">
                             Khạn chót: {g.deadline}
                           </span>
                         </div>
@@ -1519,7 +1519,7 @@ export default function StudentBudgetTracker() {
                                 setFundingGoalId(g.id);
                                 setFundingAmount("");
                               }}
-                              className="bg-brand-softer border border-border-brand-subtle text-fg-brand-strong text-[9px] font-black px-2 py-1 rounded-md hover:bg-brand-soft transition"
+                              className="bg-indigo-50 border border-indigo-100 text-[var(--color-primary-hover)] text-[9px] font-black px-2 py-1 rounded-md hover:bg-indigo-100 transition"
                               title="Chuyển tiền vào quỹ heo đất chứa mục tiêu"
                             >
                               Nạp Quỹ 🐷
@@ -1527,7 +1527,7 @@ export default function StudentBudgetTracker() {
                           )}
                           <button
                             onClick={() => handleDeleteGoal(g.id)}
-                            className="text-body-subtle hover:text-rose-500 transition-colors p-1"
+                            className="text-[var(--color-neutral)] hover:text-rose-500 transition-colors p-1"
                             title="Xóa mục tiêu này"
                           >
                             <Trash2 size={12} />
@@ -1537,15 +1537,15 @@ export default function StudentBudgetTracker() {
 
                       {/* Linear progression bar */}
                       <div className="space-y-1">
-                        <div className="flex justify-between items-center text-[10px] font-semibold text-body">
-                          <span>Tiến trình: <strong className="text-heading">{percent}%</strong></span>
+                        <div className="flex justify-between items-center text-[10px] font-semibold text-[var(--color-text-secondary)]">
+                          <span>Tiến trình: <strong className="text-[var(--color-text-primary)]">{percent}%</strong></span>
                           <span>{formatVND(g.currentAmount)} / {formatVND(g.targetAmount)}</span>
                         </div>
 
                         <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                           <div 
                             className={`h-full rounded-full transition-all duration-500 ${
-                              isCompleted ? "bg-emerald-500" : "bg-brand"
+                              isCompleted ? "bg-emerald-500" : "bg-[var(--color-primary)]"
                             }`}
                             style={{ width: `${percent}%` }}
                           />
@@ -1553,7 +1553,7 @@ export default function StudentBudgetTracker() {
                       </div>
 
                       {/* Insight / Cheer up note */}
-                      <p className="text-[10px] text-body-subtle italic">
+                      <p className="text-[10px] text-[var(--color-neutral)] italic">
                         {isCompleted 
                           ? "🎉 Hãy rút tiền tiết kiệm để hoàn thành mục tiêu ngay hôm nay!" 
                           : `Cần chuẩn bị thêm ${formatVND(g.targetAmount - g.currentAmount)} nữa để đạt mốc.`}
@@ -1566,8 +1566,8 @@ export default function StudentBudgetTracker() {
             )}
 
             {/* Quick explanation info box about formula */}
-            <div className="bg-brand-softer/50 border border-border-brand-subtle/50 rounded-card p-3 text-[11px] text-fg-brand-strong leading-relaxed flex gap-2">
-              <Info size={14} className="text-fg-brand mt-0.5 flex-shrink-0" />
+            <div className="bg-indigo-50/50 border border-indigo-100/50 rounded-[var(--radius-card)] p-3 text-[11px] text-[var(--color-primary-hover)] leading-relaxed flex gap-2">
+              <Info size={14} className="text-[var(--color-primary)] mt-0.5 flex-shrink-0" />
               <div>
                 <span className="font-bold">Mẹo nhỏ Sức khỏe Kỹ năng:</span> Áp dụng quy tắc bỏ ống tiết kiệm tự động sau mỗi buổi học có thành tích cao (e.g. tăng điểm số ở game RPG hoặc trả lời đúng quiz) để biến kỷ luật tài chính thành niềm vui động lực!
               </div>

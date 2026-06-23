@@ -170,24 +170,24 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
 
   return (
     <Card className="p-5 mt-1 flex flex-col h-[650px]" id="chatbot-workspace">
-      
+
       {/* Voice Dialect settings bar */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-border-default pb-3 mb-4 gap-3">
+      <div className="flex flex-wrap items-center justify-between border-b border-[var(--color-border-subtle)] pb-3 mb-4 gap-3">
         <div className="flex items-center gap-2">
-          <MessageSquare className="text-fg-brand" size={18} />
+          <MessageSquare className="text-[var(--color-primary)]" size={18} />
           <div>
-            <h3 className="text-xs font-bold text-heading">Trợ Lý Thông Thái VietLearn AI</h3>
-            <p className="text-[10px] text-body-subtle">Đang đồng bộ ngữ liệu: <span className="font-semibold text-fg-brand">{activeFile ? activeFile.name : "Toàn bộ tài liệu mặc định"}</span></p>
+            <h3 className="text-[16px] font-bold text-[var(--color-text-primary)]">Trợ Lý Thông Thái VietLearn AI</h3>
+            <p className="text-[11px] text-[var(--color-neutral)]">Đang đồng bộ ngữ liệu: <span className="font-medium text-[var(--color-primary)]">{activeFile ? activeFile.name : "Toàn bộ tài liệu mặc định"}</span></p>
           </div>
         </div>
 
         {/* Audio Dialect choice */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase font-bold text-body-subtle tracking-wider">Đọc phát âm bằng giọng:</span>
+          <span className="text-[11px] uppercase font-medium text-[var(--color-neutral)] tracking-wider">Đọc phát âm bằng giọng:</span>
           <select
             value={selectedAccent}
             onChange={(e) => setSelectedAccent(e.target.value as any)}
-            className="text-[14px] font-bold border-2 border-border-default bg-neutral-primary rounded-xl px-2 py-1 focus:outline-none focus:border-border-brand"
+            className="text-[13px] font-medium border border-[var(--color-border-subtle)] bg-[var(--color-surface)] rounded-[6px] px-2 py-1.5 focus:outline-none focus:border-[var(--color-primary)] text-[var(--color-text-primary)]"
           >
             <option value="north">🎤 Miền Bắc (Hà Nội)</option>
             <option value="central">🎙️ Miền Trung (Huế)</option>
@@ -197,7 +197,7 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
       </div>
 
       {/* Messages Feed panel */}
-      <div className="flex-1 overflow-y-auto space-y-4 px-1.5 py-2 messages-board bg-neutral-secondary-medium rounded-xl border-2 border-border-default p-4 mb-4">
+      <div className="flex-1 overflow-y-auto space-y-4 px-1.5 py-2 messages-board bg-[var(--color-neutral-soft)] rounded-[12px] border border-[var(--color-border-subtle)] p-4 mb-4">
         {messages.map((m) => {
           const isUser = m.role === "user";
 
@@ -207,24 +207,23 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
               className={`flex flex-col max-w-[85%] ${isUser ? "ml-auto items-end" : "mr-auto items-start"} animate-fade-in`}
             >
               <div
-                className={`p-3.5 rounded-xl text-[14px] leading-[1.55] whitespace-pre-wrap shadow-xs border-2 ${
+                className={`p-3.5 rounded-[12px] text-[14px] leading-[1.55] whitespace-pre-wrap border ${
                   isUser
-                    ? "bg-brand border-border-brand-strong text-white rounded-tr-none"
-                    : "bg-neutral-primary border-border-default text-heading rounded-tl-none"
+                    ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white rounded-tr-none"
+                    : "bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)] rounded-tl-none"
                 }`}
               >
-                {/* Render markdown bolding/title blocks simply */}
                 {m.content}
               </div>
 
               {/* Message sub info (Timestamp + TTS reader trigger button only for assistant) */}
-              <div className="flex items-center gap-2 mt-1.5 text-[9px] text-body-subtle font-mono">
+              <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[var(--color-neutral)] font-mono">
                 <span>{m.timestamp}</span>
                 {!isUser && (
                   <button
                     onClick={() => handleTTSPlay(m.id, m.content)}
-                    className={`flex items-center gap-0.5 hover:text-fg-brand transition-all px-1 py-0.5 rounded ${
-                      isPlayingVoice === m.id ? "text-fg-brand font-bold bg-brand-softer" : "text-body-subtle"
+                    className={`flex items-center gap-0.5 hover:text-[var(--color-primary)] transition-all px-1 py-0.5 rounded-[4px] ${
+                      isPlayingVoice === m.id ? "text-[var(--color-primary)] font-bold bg-indigo-50" : "text-[var(--color-neutral)]"
                     }`}
                     title="Đọc văn bản bài trả lời này"
                   >
@@ -239,11 +238,11 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
 
         {loading && (
           <div className="flex flex-col max-w-[80%] mr-auto items-start animate-pulse">
-            <div className="bg-neutral-primary border-2 border-border-default p-3 rounded-xl rounded-tl-none text-[14px] text-body flex items-center gap-2">
-              <span className="w-2 h-2 bg-brand rounded-full animate-bounce" />
-              <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:0.2s]" />
-              <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:0.4s]" />
-              <span className="font-bold">VietLearn AI đang phân tích dữ liệu...</span>
+            <div className="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] p-3 rounded-[12px] rounded-tl-none text-[14px] text-[var(--color-text-secondary)] flex items-center gap-2">
+              <span className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce" />
+              <span className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce [animation-delay:0.2s]" />
+              <span className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce [animation-delay:0.4s]" />
+              <span className="font-medium">VietLearn AI đang phân tích dữ liệu...</span>
             </div>
           </div>
         )}
@@ -251,13 +250,13 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
 
       {/* Suggestion Quick Chips */}
       <div className="mb-3">
-        <span className="text-[9px] font-bold text-body-subtle uppercase tracking-widest block mb-1.5">Gợi ý truy vấn nhanh (Promptless AI):</span>
+        <span className="text-[11px] font-medium text-[var(--color-neutral)] uppercase tracking-widest block mb-1.5">Gợi ý truy vấn nhanh (Promptless AI):</span>
         <div className="flex flex-wrap gap-1.5">
           {quickChips.map((chip, idx) => (
             <button
               key={idx}
               onClick={() => handleSendMessage(chip.prompt)}
-              className="text-[12px] font-bold bg-neutral-primary hover:bg-neutral-secondary-medium text-heading border-2 border-border-default rounded-full py-1.5 px-3 transition shadow-xs active:translate-y-[2px] active:shadow-[0_0px_0_var(--color-border-default)] select-none"
+              className="text-[12px] font-medium bg-[var(--color-surface)] hover:bg-[var(--color-neutral-soft)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] rounded-full py-1.5 px-3 transition active:translate-y-[1px] select-none"
             >
               {chip.label}
             </button>
@@ -277,14 +276,14 @@ export default function ChatbotSection({ activeFile }: ChatbotSectionProps) {
               handleSendMessage();
             }
           }}
-          className="flex-1 text-[16px] border-2 border-border-default focus:border-border-brand focus:ring-2 focus:ring-brand-soft focus:outline-none rounded-xl py-3 px-4 bg-neutral-primary text-heading leading-[1.55]"
+          className="flex-1 text-[14px] border border-[var(--color-border-subtle)] focus:border-[var(--color-primary)] focus:shadow-[var(--shadow-focus-ring)] focus:outline-none rounded-[12px] py-3 px-4 bg-[var(--color-surface)] text-[var(--color-text-primary)] leading-[1.55] placeholder:text-[var(--color-neutral)] transition"
           placeholder={activeFile ? "Đặt câu hỏi về nội dung tài liệu..." : "Chat tự do hỏi đáp về Kỹ thuật, Lập trình di động, OCR..."}
         />
         <Button
           onClick={() => handleSendMessage()}
           disabled={loading || !userInput.trim()}
-          size="base"
-          icon={<Send size={18} />}
+          size="md"
+          icon={<Send size={16} />}
           className="px-4"
         >
           {null}

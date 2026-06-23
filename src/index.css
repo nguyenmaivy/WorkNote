@@ -1,295 +1,158 @@
+/* @import rules must come first — before any CSS content including Tailwind's expansion */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700,1&display=swap');
+
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "DIN 2014 Rounded", "Nunito", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "General Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
-  --color-neutral-primary-soft: var(--color-neutral-primary-soft-val);
-  --color-neutral-primary: var(--color-neutral-primary-val);
-  --color-neutral-primary-medium: var(--color-neutral-primary-medium-val);
-  --color-neutral-primary-strong: var(--color-neutral-primary-strong-val);
-  --color-neutral-secondary-soft: var(--color-neutral-secondary-soft-val);
-  --color-neutral-secondary: var(--color-neutral-secondary-val);
-  --color-neutral-secondary-medium: var(--color-neutral-secondary-medium-val);
-  --color-neutral-secondary-strong: var(--color-neutral-secondary-strong-val);
-  --color-neutral-tertiary-soft: var(--color-neutral-tertiary-soft-val);
-  --color-neutral-tertiary: var(--color-neutral-tertiary-val);
-  --color-neutral-tertiary-medium: var(--color-neutral-tertiary-medium-val);
-  --color-neutral-quaternary: var(--color-neutral-quaternary-val);
-  --color-quaternary-medium: var(--color-quaternary-medium-val);
-  --color-gray: var(--color-gray-val);
+  --color-primary: #6366F1;
+  --color-primary-hover: #4F46E5;
+  --color-secondary: #20970B;
 
-  --color-brand-softer: var(--color-brand-softer-val);
-  --color-brand-soft: var(--color-brand-soft-val);
-  --color-brand: var(--color-brand-val);
-  --color-brand-medium: var(--color-brand-medium-val);
-  --color-brand-strong: var(--color-brand-strong-val);
+  --color-neutral: #9C9C9C;
+  --color-neutral-soft: #F3F4F6;
+  --color-neutral-medium: #E5E7EB;
 
-  --color-success-soft: var(--color-success-soft-val);
-  --color-success: var(--color-success-val);
-  --color-success-medium: var(--color-success-medium-val);
-  --color-success-strong: var(--color-success-strong-val);
-  --color-danger-soft: var(--color-danger-soft-val);
-  --color-danger: var(--color-danger-val);
-  --color-danger-medium: var(--color-danger-medium-val);
-  --color-danger-strong: var(--color-danger-strong-val);
-  --color-warning-soft: var(--color-warning-soft-val);
-  --color-warning: var(--color-warning-val);
-  --color-warning-medium: var(--color-warning-medium-val);
-  --color-warning-strong: var(--color-warning-strong-val);
+  --color-bg: #FAFAFA;
+  --color-surface: #FFFFFF;
 
-  --color-dark: var(--color-dark-val);
-  --color-dark-strong: var(--color-dark-strong-val);
-  --color-disabled: var(--color-disabled-val);
+  --color-text-primary: #0A0A0A;
+  --color-text-secondary: #6B6B6B;
 
-  --color-heading: var(--color-heading-val);
-  --color-body: var(--color-body-val);
-  --color-body-subtle: var(--color-body-subtle-val);
+  --color-border-subtle: #E8E8EC;
+  --color-border-default: #D1D5DB;
 
-  --color-fg-brand-subtle: var(--color-fg-brand-subtle-val);
-  --color-fg-brand: var(--color-fg-brand-val);
-  --color-fg-brand-strong: var(--color-fg-brand-strong-val);
+  --color-success: #10B981;
+  --color-success-soft: #D1FAE5;
 
-  --color-fg-success: var(--color-fg-success-val);
-  --color-fg-success-strong: var(--color-fg-success-strong-val);
-  --color-fg-danger: var(--color-fg-danger-val);
-  --color-fg-danger-strong: var(--color-fg-danger-strong-val);
-  --color-fg-warning-subtle: var(--color-fg-warning-subtle-val);
-  --color-fg-warning: var(--color-fg-warning-val);
-  --color-fg-disabled: var(--color-fg-disabled-val);
+  --color-warning: #F59E0B;
+  --color-warning-soft: #FEF3C7;
 
-  --color-border-dark: var(--color-border-dark-val);
-  --color-border-buffer: var(--color-border-buffer-val);
-  --color-border-buffer-medium: var(--color-border-buffer-medium-val);
-  --color-border-buffer-strong: var(--color-border-buffer-strong-val);
-  --color-border-muted: var(--color-border-muted-val);
-  --color-border-light-subtle: var(--color-border-light-subtle-val);
-  --color-border-light: var(--color-border-light-val);
-  --color-border-light-medium: var(--color-border-light-medium-val);
-  --color-border-default-subtle: var(--color-border-default-subtle-val);
-  --color-border-default: var(--color-border-default-val);
-  --color-border-default-medium: var(--color-border-default-medium-val);
-  --color-border-default-strong: var(--color-border-default-strong-val);
-  --color-border-success-subtle: var(--color-border-success-subtle-val);
-  --color-border-success: var(--color-border-success-val);
-  --color-border-danger-subtle: var(--color-border-danger-subtle-val);
-  --color-border-danger: var(--color-border-danger-val);
-  --color-border-warning-subtle: var(--color-border-warning-subtle-val);
-  --color-border-warning: var(--color-border-warning-val);
-  --color-border-brand-subtle: var(--color-border-brand-subtle-val);
-  --color-border-brand-light: var(--color-border-brand-light-val);
-  --color-border-brand: var(--color-border-brand-val);
-  --color-border-dark-subtle: var(--color-border-dark-subtle-val);
+  --color-error: #EF4444;
+  --color-error-soft: #FEE2E2;
 
-  --radius-base: 12px;
-  --radius-default: 12px;
-  --radius-sm: 12px;
-  --radius-full: 9999px;
+  --radius-base: 6px;
+  --radius-card: 12px;
+  --radius-pill: 9999px;
 
-  --shadow-2xs: 0 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-xs: 0 2px 0 var(--color-border-default-val);
-  --shadow-sm: 0 4px 0 var(--color-border-default-val);
-  --shadow-md: 0 4px 0 var(--color-border-default-val), 0 6px 12px -4px rgb(0 0 0 / 0.06);
-  --shadow-lg: 0 6px 0 var(--color-border-default-val), 0 10px 20px -6px rgb(0 0 0 / 0.08);
-  --shadow-xl: 0 8px 0 var(--color-border-default-val), 0 16px 32px -8px rgb(0 0 0 / 0.1);
-  --shadow-2xl: 0 12px 24px -8px rgb(0 0 0 / 0.18);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-primary-glow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  --shadow-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.12);
 }
 
+/* ── Base ────────────────────────────────────────────────── */
 :root {
-  --color-neutral-primary-soft-val: #FFFFFF;
-  --color-neutral-primary-val: #FFFFFF;
-  --color-neutral-primary-medium-val: #FFFFFF;
-  --color-neutral-primary-strong-val: #FFFFFF;
-  --color-neutral-secondary-soft-val: #FFFFFF;
-  --color-neutral-secondary-val: #FFFFFF;
-  --color-neutral-secondary-medium-val: #F7F7F7;
-  --color-neutral-secondary-strong-val: #F7F7F7;
-  --color-neutral-tertiary-soft-val: #F7F7F7;
-  --color-neutral-tertiary-val: #F7F7F7;
-  --color-neutral-tertiary-medium-val: #E5E5E5;
-  --color-neutral-quaternary-val: #E5E5E5;
-  --color-quaternary-medium-val: #DBDBDB;
-  --color-gray-val: #AFAFAF;
-
-  --color-brand-softer-val: #E5FFC2;
-  --color-brand-soft-val: #C7F8A1;
-  --color-brand-val: #58CC03;
-  --color-brand-medium-val: #89E219;
-  --color-brand-strong-val: #58A700;
-
-  --color-success-soft-val: #E5FFC2;
-  --color-success-val: #58CC02;
-  --color-success-medium-val: #C7F8A1;
-  --color-success-strong-val: #58A700;
-  --color-danger-soft-val: #FFE5E5;
-  --color-danger-val: #FF4B4B;
-  --color-danger-medium-val: #FFC4C4;
-  --color-danger-strong-val: #E62E2E;
-  --color-warning-soft-val: #FFF8E0;
-  --color-warning-val: #FFC800;
-  --color-warning-medium-val: #FFE89B;
-  --color-warning-strong-val: #E6B400;
-
-  --shadow-brand: #58A700;
-  --shadow-success: #58A700;
-  --shadow-danger: #E62E2E;
-  --shadow-warning: #E6B400;
-  --shadow-secondary: #E5E5E5;
-  --shadow-dark: #2A2A2A;
-
-  --color-dark-val: #4B4B4B;
-  --color-dark-strong-val: #3C3C3C;
-  --color-disabled-val: #F7F7F7;
-
-  --color-heading-val: #4B4B4B;
-  --color-body-val: #777777;
-  --color-body-subtle-val: #AFAFAF;
-
-  --color-fg-brand-subtle-val: #C7F8A1;
-  --color-fg-brand-val: #58A700;
-  --color-fg-brand-strong-val: #3D7400;
-
-  --color-fg-success-val: #58A700;
-  --color-fg-success-strong-val: #3D7400;
-  --color-fg-danger-val: #E62E2E;
-  --color-fg-danger-strong-val: #B71F1F;
-  --color-fg-warning-subtle-val: #E6B400;
-  --color-fg-warning-val: #8A6F00;
-  --color-fg-disabled-val: #AFAFAF;
-
-  --color-border-dark-val: #4B4B4B;
-  --color-border-buffer-val: #FFFFFF;
-  --color-border-buffer-medium-val: #FFFFFF;
-  --color-border-buffer-strong-val: #FFFFFF;
-  --color-border-muted-val: #F7F7F7;
-  --color-border-light-subtle-val: #F7F7F7;
-  --color-border-light-val: #F7F7F7;
-  --color-border-light-medium-val: #F7F7F7;
-  --color-border-default-subtle-val: #E5E5E5;
-  --color-border-default-val: #E5E5E5;
-  --color-border-default-medium-val: #E5E5E5;
-  --color-border-default-strong-val: #DBDBDB;
-  --color-border-success-subtle-val: #C7F8A1;
-  --color-border-success-val: #58A700;
-  --color-border-danger-subtle-val: #FFC4C4;
-  --color-border-danger-val: #E62E2E;
-  --color-border-warning-subtle-val: #FFE89B;
-  --color-border-warning-val: #E6B400;
-  --color-border-brand-subtle-val: #C7F8A1;
-  --color-border-brand-light-val: #89E219;
-  --color-border-brand-val: #58CC03;
-  --color-border-dark-subtle-val: #4B4B4B;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-neutral-primary-soft-val: #131F24;
-    --color-neutral-primary-val: #131F24;
-    --color-neutral-primary-medium-val: #1F2C30;
-    --color-neutral-primary-strong-val: #2A3438;
-    --color-neutral-secondary-soft-val: #131F24;
-    --color-neutral-secondary-val: #131F24;
-    --color-neutral-secondary-medium-val: #1F2C30;
-    --color-neutral-secondary-strong-val: #2A3438;
-    --color-neutral-tertiary-soft-val: #131F24;
-    --color-neutral-tertiary-val: #1F2C30;
-    --color-neutral-tertiary-medium-val: #2A3438;
-    --color-neutral-quaternary-val: #37464F;
-    --color-quaternary-medium-val: #37464F;
-    --color-gray-val: #4B6B7C;
-
-    --color-brand-softer-val: #1A3300;
-    --color-brand-soft-val: #2D5500;
-    --color-brand-val: #58CC03;
-    --color-brand-medium-val: #4A8A02;
-    --color-brand-strong-val: #89E219;
-
-    --color-success-soft-val: #1A3300;
-    --color-success-val: #58CC02;
-    --color-success-medium-val: #2D5500;
-    --color-success-strong-val: #89E219;
-    --color-danger-soft-val: #4A0000;
-    --color-danger-val: #FF4B4B;
-    --color-danger-medium-val: #8A0000;
-    --color-danger-strong-val: #FF7373;
-    --color-warning-soft-val: #4A3700;
-    --color-warning-val: #FFC800;
-    --color-warning-medium-val: #8A6F00;
-    --color-warning-strong-val: #FFD41F;
-
-    --shadow-brand: #3D7400;
-    --shadow-success: #3D7400;
-    --shadow-danger: #B71F1F;
-    --shadow-warning: #B38C00;
-    --shadow-secondary: #2A3438;
-    --shadow-dark: #000000;
-
-    --color-dark-val: #4B4B4B;
-    --color-dark-strong-val: #2A2A2A;
-    --color-disabled-val: #1F2C30;
-
-    --color-heading-val: #FFFFFF;
-    --color-body-val: #AFAFAF;
-    --color-body-subtle-val: #777777;
-
-    --color-fg-brand-subtle-val: #2D5500;
-    --color-fg-brand-val: #89E219;
-    --color-fg-brand-strong-val: #C7F8A1;
-
-    --color-fg-success-val: #89E219;
-    --color-fg-success-strong-val: #C7F8A1;
-    --color-fg-danger-val: #FF7373;
-    --color-fg-danger-strong-val: #FFB0B0;
-    --color-fg-warning-subtle-val: #FFC800;
-    --color-fg-warning-val: #FFD41F;
-    --color-fg-disabled-val: #777777;
-
-    --color-border-dark-val: #AFAFAF;
-    --color-border-buffer-val: #131F24;
-    --color-border-buffer-medium-val: #1F2C30;
-    --color-border-buffer-strong-val: #2A3438;
-    --color-border-muted-val: #131F24;
-    --color-border-light-subtle-val: #131F24;
-    --color-border-light-val: #1F2C30;
-    --color-border-light-medium-val: #2A3438;
-    --color-border-default-subtle-val: #131F24;
-    --color-border-default-val: #37464F;
-    --color-border-default-medium-val: #37464F;
-    --color-border-default-strong-val: #4B6B7C;
-    --color-border-success-subtle-val: #2D5500;
-    --color-border-success-val: #89E219;
-    --color-border-danger-subtle-val: #8A0000;
-    --color-border-danger-val: #FF7373;
-    --color-border-warning-subtle-val: #8A6F00;
-    --color-border-warning-val: #FFC800;
-    --color-border-brand-subtle-val: #2D5500;
-    --color-border-brand-light-val: #89E219;
-    --color-border-brand-val: #89E219;
-    --color-border-dark-subtle-val: #2A3438;
-  }
-}
-
-html, body {
-  background-color: var(--color-neutral-primary-soft-val);
-  color: var(--color-body-val);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.5;
+
+  /* Render chữ nhất quán giữa Chrome / Safari / Firefox / Edge */
+  -webkit-font-smoothing: antialiased;   /* WebKit/Blink (Chrome, Safari, Edge) */
+  -moz-osx-font-smoothing: grayscale;    /* Firefox trên macOS */
+  text-rendering: optimizeLegibility;    /* bật kerning + ligature đồng đều */
+  -webkit-text-size-adjust: 100%;        /* khoá auto-scale chữ trên mobile Safari */
+  text-size-adjust: 100%;
 }
 
+/* Kế thừa smoothing cho toàn bộ cây DOM (một số trình duyệt cần reset rõ) */
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Display font for all headings — General Sans with tight tracking */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--color-heading-val);
+  font-family: "General Sans", var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
+  line-height: 1.1;
 }
 
-.button-pressable:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 var(--shadow-color) !important;
+/* Utility: apply display font to any element */
+.font-display {
+  font-family: "General Sans", var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.03em;
 }
 
-/* Hide scrollbar but keep scroll functionality */
+/* ── Scrollbar ───────────────────────────────────────────── */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;             /* Chrome, Safari, Opera */
+  display: none;
+}
+
+/* ── Transitions ─────────────────────────────────────────── */
+button {
+  transition: all 0.2s ease;
+}
+
+/* ── Fade-in animation ───────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+
+/* ── Glassmorphism (chỉ dùng cho lớp nổi, không dùng cho vùng đọc) ── */
+.glass-tint {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(168, 85, 247, 0.04));
+  backdrop-filter: blur(8px) saturate(130%);
+  -webkit-backdrop-filter: blur(8px) saturate(130%);
+}
+
+/* ── Dropzone: trạng thái kéo file vào (drag-active) ── */
+@keyframes dropzone-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.0); }
+  50%      { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.10), 0 0 22px rgba(99, 102, 241, 0.18) inset; }
+}
+.dropzone-active {
+  animation: dropzone-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.animate-bounce-soft { animation: bounce-soft 0.9s ease-in-out infinite; }
+
+/* ── Mascot trôi nhẹ khi thư viện trống ── */
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-7px) rotate(1.5deg); }
+}
+.animate-mascot-float { animation: mascot-float 3.6s ease-in-out infinite; }
+
+/* ── Thanh XP: hiệu ứng ánh sáng quét qua ── */
+@keyframes xp-shimmer {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+.xp-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: xp-shimmer 2.4s ease-in-out infinite;
+}
+
+/* ── Tôn trọng tùy chọn giảm chuyển động của hệ điều hành ── */
+@media (prefers-reduced-motion: reduce) {
+  .dropzone-active,
+  .animate-bounce-soft,
+  .animate-mascot-float,
+  .animate-fade-in,
+  .xp-shimmer::after {
+    animation: none !important;
+  }
 }

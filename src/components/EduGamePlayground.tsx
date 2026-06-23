@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { QuizQuestion } from "../types";
 import { Play, RotateCcw, Award, CheckCircle, XCircle, ChevronRight, HelpCircle, Gamepad2, Compass, ShieldAlert } from "lucide-react";
 import { Button } from "./ui/Button";
@@ -429,20 +429,20 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
     <Card className="p-6 overflow-hidden flex flex-col gap-6" id="edu-gameboard">
       
       {/* Tab Switcher */}
-      <div className="flex border-b-2 border-border-default pb-3 justify-between items-center flex-wrap gap-4">
+      <div className="flex border-b-2 border-[var(--color-border-subtle)] pb-3 justify-between items-center flex-wrap gap-4">
         <div>
-          <h2 className="text-lg font-bold text-heading flex items-center gap-2">
-            <Gamepad2 className="text-brand" size={24} />
+          <h2 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+            <Gamepad2 className="text-[var(--color-primary)]" size={24} />
             Hệ Trò Chơi Ôn Tập Kiến Thức
           </h2>
-          <p className="text-[14px] text-body font-bold">Hai chế độ học tập: Đi cảnh thám hiểm 2D hoặc thi tài giải đố đấu trường truyền thống.</p>
+          <p className="text-[14px] text-[var(--color-text-secondary)] font-bold">Hai chế độ học tập: Đi cảnh thám hiểm 2D hoặc thi tài giải đố đấu trường truyền thống.</p>
         </div>
         
-        <div className="flex bg-neutral-secondary-medium p-1 rounded-xl border-2 border-border-default">
+        <div className="flex bg-[var(--color-neutral-soft)] p-1 rounded-xl border-2 border-[var(--color-border-subtle)]">
           <button
             onClick={() => setActiveSubTab("rpg_quest")}
             className={`px-4 py-2 text-[14px] font-bold rounded-[10px] transition-all border-2 ${
-              activeSubTab === "rpg_quest" ? "bg-neutral-primary border-border-default text-heading shadow-xs" : "border-transparent text-body hover:text-heading"
+              activeSubTab === "rpg_quest" ? "bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)] shadow-xs" : "border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
             🧙‍♂️ Rừng Thám Hiểm 2D
@@ -450,7 +450,7 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
           <button
             onClick={() => setActiveSubTab("classic_quiz")}
             className={`px-4 py-2 text-[14px] font-bold rounded-[10px] transition-all border-2 ${
-              activeSubTab === "classic_quiz" ? "bg-neutral-primary border-border-default text-heading shadow-xs" : "border-transparent text-body hover:text-heading"
+              activeSubTab === "classic_quiz" ? "bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)] shadow-xs" : "border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
             🎯 Đấu Trường Trắc Nghiệm
@@ -464,26 +464,26 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
           
           {/* RPG Left Info and controls */}
           <div className="md:col-span-5 space-y-4">
-            <Card className="bg-brand-softer border-border-brand-subtle p-4">
-              <h4 className="text-[14px] font-bold text-fg-brand-strong flex items-center gap-1 uppercase tracking-wide">
+            <Card className="bg-indigo-50 border-indigo-100 p-4">
+              <h4 className="text-[14px] font-bold text-[var(--color-primary-hover)] flex items-center gap-1 uppercase tracking-wide">
                 <Compass size={18} /> Hướng Dẫn Chơi 2D Quest:
               </h4>
-              <ul className="text-fg-brand-strong text-[14px] font-bold space-y-1.5 list-disc list-inside mt-2.5 leading-relaxed">
-                <li>Sử dụng các phím <kbd className="bg-neutral-primary px-1.5 py-0.5 border-2 border-border-default rounded-md text-amber-600 font-black">W-A-S-D</kbd> hoặc nút di chuyển.</li>
+              <ul className="text-[var(--color-primary-hover)] text-[14px] font-bold space-y-1.5 list-disc list-inside mt-2.5 leading-relaxed">
+                <li>Sử dụng các phím <kbd className="bg-[var(--color-surface)] px-1.5 py-0.5 border-2 border-[var(--color-border-subtle)] rounded-md text-amber-600 font-black">W-A-S-D</kbd> hoặc nút di chuyển.</li>
                 <li>Di chuyển nhân vật thám hiểm tới gần <strong>3 lão sư đứng trên thảm cỏ</strong> để nhận thử thách kiểm tra kiến thức.</li>
-                <li>Trả lời đúng giúp bạn tích lũy <strong className="text-fg-brand">EXP</strong> để thăng cấp, kiếm bùa tốc biến di chuyển cực nhanh!</li>
+                <li>Trả lời đúng giúp bạn tích lũy <strong className="text-[var(--color-primary)]">EXP</strong> để thăng cấp, kiếm bùa tốc biến di chuyển cực nhanh!</li>
               </ul>
             </Card>
 
             {/* Custom On-Screen D-Pad for responsive touch screens / convenient plays */}
-            <Card className="bg-neutral-secondary-medium p-4 flex flex-col items-center gap-2">
-              <span className="text-[12px] font-bold text-body-subtle uppercase tracking-[0.8px]">NÚT BẤM DI CHUYỂN</span>
+            <Card className="bg-[var(--color-neutral-soft)] p-4 flex flex-col items-center gap-2">
+              <span className="text-[12px] font-bold text-[var(--color-neutral)] uppercase tracking-[0.8px]">NÚT BẤM DI CHUYỂN</span>
               <div className="grid grid-cols-3 gap-2 w-32">
                 <div />
                 <button
                   onClick={() => movePlayer("up")}
                   disabled={!!rpgActiveNpc}
-                  className="bg-neutral-primary hover:bg-neutral-secondary border-2 border-border-default text-heading font-black p-3.5 rounded-xl active:bg-brand-soft active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
+                  className="bg-[var(--color-surface)] hover:bg-[var(--color-neutral-soft)] border-2 border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-black p-3.5 rounded-xl active:bg-indigo-100 active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
                 >
                   ▲
                 </button>
@@ -491,21 +491,21 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
                 <button
                   onClick={() => movePlayer("left")}
                   disabled={!!rpgActiveNpc}
-                  className="bg-neutral-primary hover:bg-neutral-secondary border-2 border-border-default text-heading font-black p-3.5 rounded-xl active:bg-brand-soft active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
+                  className="bg-[var(--color-surface)] hover:bg-[var(--color-neutral-soft)] border-2 border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-black p-3.5 rounded-xl active:bg-indigo-100 active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
                 >
                   ◀
                 </button>
                 <button
                   onClick={() => movePlayer("down")}
                   disabled={!!rpgActiveNpc}
-                  className="bg-neutral-primary hover:bg-neutral-secondary border-2 border-border-default text-heading font-black p-3.5 rounded-xl active:bg-brand-soft active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
+                  className="bg-[var(--color-surface)] hover:bg-[var(--color-neutral-soft)] border-2 border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-black p-3.5 rounded-xl active:bg-indigo-100 active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
                 >
                   ▼
                 </button>
                 <button
                   onClick={() => movePlayer("right")}
                   disabled={!!rpgActiveNpc}
-                  className="bg-neutral-primary hover:bg-neutral-secondary border-2 border-border-default text-heading font-black p-3.5 rounded-xl active:bg-brand-soft active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
+                  className="bg-[var(--color-surface)] hover:bg-[var(--color-neutral-soft)] border-2 border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-black p-3.5 rounded-xl active:bg-indigo-100 active:translate-y-1 transition flex items-center justify-center shadow-xs disabled:opacity-50 select-none"
                 >
                   ▶
                 </button>
@@ -513,19 +513,19 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
             </Card>
 
             {/* XP progress bars */}
-            <Card className="bg-neutral-secondary-medium p-4">
-              <div className="flex justify-between text-[14px] font-bold text-heading mb-2">
+            <Card className="bg-[var(--color-neutral-soft)] p-4">
+              <div className="flex justify-between text-[14px] font-bold text-[var(--color-text-primary)] mb-2">
                 <span>Cấp độ: {playerLevel} (Cadet)</span>
                 <span>{playerXP} / {playerLevel * 100} XP</span>
               </div>
-              <div className="w-full bg-border-default h-3 rounded-full overflow-hidden border-2 border-border-default">
+              <div className="w-full bg-border-default h-3 rounded-full overflow-hidden border-2 border-[var(--color-border-subtle)]">
                 <div
-                  className="bg-brand h-full transition-all duration-300"
+                  className="bg-[var(--color-primary)] h-full transition-all duration-300"
                   style={{ width: `${Math.min(100, (playerXP / (playerLevel * 100)) * 100)}%` }}
                 />
               </div>
               {speedBoost && (
-                <div className="mt-2 text-[12px] text-brand-strong font-black animate-pulse">
+                <div className="mt-2 text-[12px] text-[var(--color-primary)]-strong font-black animate-pulse">
                   ⚡ Đang kích hoạt bùa Tăng Tốc (+150% Movement Speed)!
                 </div>
               )}
@@ -534,7 +534,7 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
 
           {/* RPG Canvas Game view screen */}
           <div className="md:col-span-7 flex flex-col gap-4">
-            <div className="relative border-4 border-slate-700 rounded-card overflow-hidden shadow-md mx-auto w-full max-w-[380px]">
+            <div className="relative border-4 border-slate-700 rounded-[var(--radius-card)] overflow-hidden shadow-md mx-auto w-full max-w-[380px]">
               <canvas
                 ref={canvasRef}
                 width={380}
@@ -551,13 +551,13 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
                     <span className="text-2xl">{rpgActiveNpc.avatar}</span>
                     <div>
                       <h4 className="text-xs font-bold text-green-400">{rpgActiveNpc.name}</h4>
-                      <p className="text-[10px] text-body-subtle">{rpgActiveNpc.topicName}</p>
+                      <p className="text-[10px] text-[var(--color-neutral)]">{rpgActiveNpc.topicName}</p>
                     </div>
                   </div>
 
                   {/* Proximity Question content body */}
                   <div className="my-2 text-xs">
-                    <p className="text-[11px] text-body-subtle mb-3 font-semibold">
+                    <p className="text-[11px] text-[var(--color-neutral)] mb-3 font-semibold">
                       "Hãy giải quyết câu hỏi này để chứng minh nỗ lực của ngươi:"
                     </p>
                     <p className="font-bold text-white text-[11px] mb-3 leading-normal">
@@ -579,8 +579,8 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
                             key={oIdx}
                             className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer hover:bg-slate-800/80 transition text-[10px] ${
                               rpgUserSelectedAnswer === opt
-                                ? "bg-indigo-950 border-border-brand text-indigo-300 font-bold"
-                                : "border-slate-800 text-body-subtle"
+                                ? "bg-indigo-950 border-[var(--color-primary)] text-indigo-300 font-bold"
+                                : "border-slate-800 text-[var(--color-neutral)]"
                             }`}
                           >
                             <input
@@ -628,7 +628,7 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
               )}
             </div>
 
-            <p className="text-[10px] text-body-subtle text-center italic">
+            <p className="text-[10px] text-[var(--color-neutral)] text-center italic">
               *Ấn phím W, A, S, D hoặc sử dụng bộ di chuyển ảo để dẫn lối anh hùng tìm kiếm học vấn.*
             </p>
           </div>
@@ -639,12 +639,12 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
       {activeSubTab === "classic_quiz" && (
         <div className="max-w-xl mx-auto w-full" id="quiz-dashboard">
           {quizFinished ? (
-            <Card className="bg-neutral-secondary-medium p-6 text-center space-y-4 animate-fade-in border-2">
-              <div className="w-16 h-16 bg-brand-soft rounded-full flex items-center justify-center text-fg-brand-strong mx-auto text-3xl font-black">
+            <Card className="bg-[var(--color-neutral-soft)] p-6 text-center space-y-4 animate-fade-in border-2">
+              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-[var(--color-primary-hover)] mx-auto text-3xl font-black">
                 {quizScore} / {activeQuizzes.length}
               </div>
-              <h3 className="text-xl font-black text-heading">Hoàn Thành Đấu Trường Giải Đố</h3>
-              <p className="text-[16px] text-body max-w-sm mx-auto font-bold">
+              <h3 className="text-xl font-black text-[var(--color-text-primary)]">Hoàn Thành Đấu Trường Giải Đố</h3>
+              <p className="text-[16px] text-[var(--color-text-secondary)] max-w-sm mx-auto font-bold">
                 Chúc mừng bạn đã kết thúc bài ôn tập! Việc làm trắc nghiệm lặp lại định kỳ giúp tối ưu hóa trí nhớ dài hạn.
               </p>
               <div className="pt-2">
@@ -660,14 +660,14 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
           ) : (
             <div className="space-y-4 animate-fade-in">
               {/* Question progress headers */}
-              <div className="flex justify-between items-center text-[12px] uppercase tracking-wider font-black text-body-subtle">
+              <div className="flex justify-between items-center text-[12px] uppercase tracking-wider font-black text-[var(--color-neutral)]">
                 <span>Câu hỏi {currentQuestionIndex + 1} của {activeQuizzes.length}</span>
-                <span className="text-fg-brand font-mono">Exam Engine Active</span>
+                <span className="text-[var(--color-primary)] font-mono">Exam Engine Active</span>
               </div>
 
               {/* Question card */}
               <Card className="p-5 mt-1">
-                <h4 className="text-[16px] font-black text-heading leading-[1.55]">
+                <h4 className="text-[16px] font-black text-[var(--color-text-primary)] leading-[1.55]">
                   {activeQuizzes[currentQuestionIndex]?.question}
                 </h4>
               </Card>
@@ -679,19 +679,19 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
                   const isCorrectAnswer = opt === activeQuizzes[currentQuestionIndex].correctAnswer;
                   const hasAnswered = selectedAnswers[currentQuestionIndex] !== undefined;
 
-                  let optStyle = "bg-neutral-primary border-border-default text-heading hover:bg-neutral-secondary-medium active:bg-brand-soft";
+                  let optStyle = "bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:bg-[var(--color-neutral-soft)] active:bg-indigo-100";
                   if (hasAnswered) {
                     if (isSelected) {
                       optStyle = isCorrectAnswer
-                        ? "bg-brand-soft border-border-brand-strong text-fg-brand-strong font-black"
+                        ? "bg-indigo-100 border-[var(--color-primary)] text-[var(--color-primary-hover)] font-black"
                         : "bg-rose-100 border-rose-400 text-rose-700 font-black";
                     } else if (isCorrectAnswer) {
-                      optStyle = "bg-brand-softer border-border-brand text-fg-brand font-black";
+                      optStyle = "bg-indigo-50 border-[var(--color-primary)] text-[var(--color-primary)] font-black";
                     } else {
-                      optStyle = "bg-neutral-primary border-border-default text-body-subtle pointer-events-none opacity-60";
+                      optStyle = "bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-neutral)] pointer-events-none opacity-60";
                     }
                   } else if (isSelected) {
-                    optStyle = "bg-brand-softer border-border-brand text-fg-brand-strong font-black shadow-xs";
+                    optStyle = "bg-indigo-50 border-[var(--color-primary)] text-[var(--color-primary-hover)] font-black shadow-xs";
                   }
 
                   return (
@@ -701,7 +701,7 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
                       onClick={() => handleQuizAnswerSelect(opt)}
                       className={`text-left text-[16px] p-4 rounded-xl border-2 transition-all duration-200 flex items-start gap-3 font-bold button-pressable select-none ${optStyle}`}
                     >
-                      <span className="w-6 h-6 rounded-full bg-neutral-secondary-medium border-2 border-border-default/60 font-black text-[12px] flex items-center justify-center mt-0.5 shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-[var(--color-neutral-soft)] border-2 border-[var(--color-border-subtle)]/60 font-black text-[12px] flex items-center justify-center mt-0.5 shrink-0">
                         {String.fromCharCode(65 + idx)}
                       </span>
                       <span className="flex-1 leading-[1.5]">{opt}</span>
@@ -712,12 +712,12 @@ export default function EduGamePlayground({ quizList }: EduGamePlaygroundProps) 
 
               {/* Feedbacks explanations */}
               {showExplanation && (
-                <Card className="bg-brand-softer border-border-brand-subtle p-5 animate-slide-up space-y-3">
-                  <div className="flex items-center gap-2 font-black text-fg-brand-strong text-[14px]">
-                    <Award size={18} className="text-brand" />
+                <Card className="bg-indigo-50 border-indigo-100 p-5 animate-slide-up space-y-3">
+                  <div className="flex items-center gap-2 font-black text-[var(--color-primary-hover)] text-[14px]">
+                    <Award size={18} className="text-[var(--color-primary)]" />
                     <span>LỜI KHUYÊN & GIẢI THÍCH CHUYÊN GIA:</span>
                   </div>
-                  <p className="text-heading leading-[1.55] font-bold text-[14px]">
+                  <p className="text-[var(--color-text-primary)] leading-[1.55] font-bold text-[14px]">
                     {activeQuizzes[currentQuestionIndex]?.explanation}
                   </p>
                   

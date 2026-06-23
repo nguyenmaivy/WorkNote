@@ -26,6 +26,10 @@ export interface UploadedFile {
   mindmap?: MindMapNode;
   status: "idle" | "processing" | "success" | "error";
   errorMsg?: string;
+  sourceUrl?: string; // URL gốc nếu file được nạp từ link — để "Thử lại" chạy lại được
+  blob?: Blob;        // dữ liệu file gốc (để nghe lại & lưu vào IndexedDB)
+  objectUrl?: string; // URL tạm phát lại file gốc — KHÔNG lưu, tạo lại từ blob mỗi lần nạp
+  createdAt?: number; // mốc thời gian thêm file — dùng để sắp xếp khi nạp lại
 }
 
 export interface ChatMessage {

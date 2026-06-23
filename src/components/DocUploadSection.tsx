@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { UploadedFile, QuizQuestion, MindMapNode } from "../types";
-import { Upload, FileText, Image, Music, Film, CheckCircle2, AlertTriangle, Play, Sparkles, Loader2, ArrowRight, Link, Globe } from "lucide-react";
+import { Upload, FileText, Image, Music, Film, CheckCircle2, AlertTriangle, Play, Sparkles, Loader2, ArrowRight, Link, Globe, Bot, Trash2 } from "lucide-react";
 import { SUPPORTED_FILE_TYPES } from "../constants";
 import { motion } from "motion/react";
 import { Button } from "./ui/Button";
@@ -10,6 +10,7 @@ interface DocUploadSectionProps {
   files: UploadedFile[];
   onAddFile: (file: UploadedFile) => void;
   onUpdateFile: (id: string, updated: Partial<UploadedFile>) => void;
+  onDeleteFile: (id: string) => void;
   activeFileId: string | null;
   onSelectActiveFile: (id: string) => void;
 }
@@ -18,6 +19,7 @@ export default function DocUploadSection({
   files,
   onAddFile,
   onUpdateFile,
+  onDeleteFile,
   activeFileId,
   onSelectActiveFile
 }: DocUploadSectionProps) {
@@ -160,22 +162,21 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
     setIsDragging(false);
   };
 
-  // Process files uploads
+  // Process files uploads — hỗ trợ kéo-thả NHIỀU file cùng lúc
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const droppedFiles = e.dataTransfer.files;
-    if (droppedFiles.length > 0) {
-      addFileToWorkspace(droppedFiles[0]);
-    }
+    Array.from(droppedFiles).forEach(addFileToWorkspace);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
-    if (selectedFiles && selectedFiles.length > 0) {
-      addFileToWorkspace(selectedFiles[0]);
+    if (selectedFiles) {
+      Array.from(selectedFiles).forEach(addFileToWorkspace);
     }
+    e.target.value = ""; // reset để chọn lại cùng file vẫn kích hoạt onChange
   };
 
   const getStageMessage = (percent: number, mimeType: string, fileName: string) => {
@@ -208,18 +209,113 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
   };
 
   const addFileToWorkspace = (rawFile: File) => {
-    const id = `file_${Date.now()}`;
+    // id duy nhất kể cả khi thêm nhiều file trong cùng mili-giây
+    const id = `file_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const newFile: UploadedFile = {
       id,
       name: rawFile.name,
       size: rawFile.size,
       mimeType: rawFile.type || "application/octet-stream",
-      status: "idle"
+      status: "idle",
+      blob: rawFile,            // giữ file gốc để nghe lại & lưu IndexedDB
+      createdAt: Date.now()
     };
 
     onAddFile(newFile);
-    // Gửi trực tiếp file thô lên server xử lý dưới dạng multipart stream
     processFileAI(newFile, rawFile);
+  };
+
+  // Lõi xử lý link — tách riêng để cả submit form lẫn "Thử lại" dùng chung
+  const runLinkPipeline = async (url: string, fileId: string) => {
+    const isYoutube = /youtube\.com|youtu\.be/i.test(url);
+    const progressMime = isYoutube ? "video/mp4" : "application/pdf";
+    const progressName = isYoutube ? "video_youtube.mp4" : "file_tu_link.pdf";
+
+    onUpdateFile(fileId, {
+      status: "processing",
+      errorMsg: undefined,
+      name: isYoutube ? "Đang lấy transcript từ YouTube..." : "Đang tải tệp trực tuyến...",
+    });
+
+    setFileProgress(prev => ({
+      ...prev,
+      [fileId]: {
+        percent: 10,
+        stage: isYoutube
+          ? "Đang kết nối YouTube và lấy phụ đề / transcript..."
+          : "Đang bắt đầu liên kết nguồn tải dữ liệu..."
+      }
+    }));
+
+    let currentPercent = 10;
+    const progressInterval = setInterval(() => {
+      currentPercent += Math.floor(Math.random() * 6) + 2;
+      if (currentPercent > 92) {
+        currentPercent = 92;
+      }
+      setFileProgress(prev => ({
+        ...prev,
+        [fileId]: {
+          percent: currentPercent,
+          stage: getStageMessage(currentPercent, progressMime, progressName)
+        }
+      }));
+    }, 700);
+
+    try {
+      const res = await fetch("/api/process-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url })
+      });
+
+      const data = await res.json();
+      clearInterval(progressInterval);
+
+      if (data.success) {
+        setFileProgress(prev => ({
+          ...prev,
+          [fileId]: { percent: 100, stage: "Hoàn tất xử lý tài nguyên liên kết!" }
+        }));
+
+        onUpdateFile(fileId, {
+          name: data.name,
+          size: data.size || 51200,
+          mimeType: data.mimeType || "application/pdf",
+          status: "success",
+          summary: data.summary,
+          extractedText: data.extractedText,
+          quiz: data.quiz,
+          mindmap: data.mindmap
+        });
+
+        onSelectActiveFile(fileId);
+        setFileUrl("");
+
+        setTimeout(() => {
+          setFileProgress(prev => {
+            const next = { ...prev };
+            delete next[fileId];
+            return next;
+          });
+        }, 3000);
+      } else {
+        throw new Error(data.error || "Không thể tải hoặc phân tích liên kết.");
+      }
+    } catch (err: any) {
+      clearInterval(progressInterval);
+      console.error(err);
+      onUpdateFile(fileId, {
+        name: isYoutube ? "Lỗi xử lý video YouTube" : "Lỗi liên kết URL",
+        status: "error",
+        errorMsg: err.message || "Tải tài nguyên thất bại. Hãy thử tệp khác hoặc đính kèm trực tiếp."
+      });
+      setFileProgress(prev => {
+        const next = { ...prev };
+        delete next[fileId];
+        return next;
+      });
+    }
   };
 
   const handleImportFromLink = async (e: React.FormEvent) => {
@@ -231,94 +327,31 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
 
     setUrlError(null);
     setIsFetchingUrl(true);
-    
+
+    const isYoutube = /youtube\.com|youtu\.be/i.test(fileUrl);
     const tempId = `link_${Date.now()}`;
-    const newFile: UploadedFile = {
+    onAddFile({
       id: tempId,
-      name: "Đang tải tệp trực tuyến...",
+      name: isYoutube ? "Đang lấy transcript từ YouTube..." : "Đang tải tệp trực tuyến...",
       size: 0,
-      mimeType: "application/pdf",
-      status: "processing"
-    };
-
-    onAddFile(newFile);
-
-    // Start progress tracking for this link file!
-    setFileProgress(prev => ({
-      ...prev,
-      [tempId]: { percent: 10, stage: "Đang bắt đầu liên kết nguồn tải dữ liệu..." }
-    }));
-
-    let currentPercent = 10;
-    const progressInterval = setInterval(() => {
-      currentPercent += Math.floor(Math.random() * 6) + 2;
-      if (currentPercent > 92) {
-        currentPercent = 92;
-      }
-      setFileProgress(prev => ({
-        ...prev,
-        [tempId]: { 
-          percent: currentPercent, 
-          stage: getStageMessage(currentPercent, "application/pdf", "file_tu_link.pdf")
-        }
-      }));
-    }, 700);
+      mimeType: isYoutube ? "video/mp4" : "application/pdf",
+      status: "processing",
+      sourceUrl: fileUrl.trim(),
+    });
 
     try {
-      const res = await fetch("/api/process-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: fileUrl })
-      });
-
-      const data = await res.json();
-      clearInterval(progressInterval);
-
-      if (data.success) {
-        setFileProgress(prev => ({
-          ...prev,
-          [tempId]: { percent: 100, stage: "Hoàn tất xử lý tài nguyên liên kết!" }
-        }));
-
-        onUpdateFile(tempId, {
-          name: data.name,
-          size: data.size || 51200,
-          mimeType: data.mimeType || "application/pdf",
-          status: "success",
-          summary: data.summary,
-          extractedText: data.extractedText,
-          quiz: data.quiz,
-          mindmap: data.mindmap
-        });
-
-        onSelectActiveFile(tempId);
-        setFileUrl("");
-
-        setTimeout(() => {
-          setFileProgress(prev => {
-            const next = { ...prev };
-            delete next[tempId];
-            return next;
-          });
-        }, 3000);
-      } else {
-        throw new Error(data.error || "Không thể tải hoặc phân tích liên kết.");
-      }
-    } catch (err: any) {
-      clearInterval(progressInterval);
-      console.error(err);
-      onUpdateFile(tempId, {
-        name: "Lỗi liên kết URL",
-        status: "error",
-        errorMsg: err.message || "Tải tài nguyên thất bại. Hãy thử tệp khác hoặc đính kèm trực tiếp."
-      });
-      setFileProgress(prev => {
-        const next = { ...prev };
-        delete next[tempId];
-        return next;
-      });
+      await runLinkPipeline(fileUrl.trim(), tempId);
     } finally {
       setIsFetchingUrl(false);
+    }
+  };
+
+  // "Thử lại" — chạy lại đúng nguồn: link thì gọi lại pipeline, file upload thì gọi AI
+  const retryFile = (file: UploadedFile) => {
+    if (file.sourceUrl) {
+      runLinkPipeline(file.sourceUrl, file.id);
+    } else {
+      processFileAI(file);
     }
   };
 
@@ -328,7 +361,6 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
 
     onUpdateFile(file.id, { status: "processing", errorMsg: undefined });
 
-    // Start progress tracking
     setFileProgress(prev => ({
       ...prev,
       [file.id]: { percent: 5, stage: "Đang nạp file vào bộ nhớ đệm..." }
@@ -336,15 +368,15 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
 
     let currentPercent = 5;
     const progressInterval = setInterval(() => {
-      currentPercent += Math.floor(Math.random() * 8) + 3; // increments by 3 to 10
+      currentPercent += Math.floor(Math.random() * 8) + 3;
       if (currentPercent > 97) {
         currentPercent = 97;
       }
-      
+
       setFileProgress(prev => ({
         ...prev,
-        [file.id]: { 
-          percent: currentPercent, 
+        [file.id]: {
+          percent: currentPercent,
           stage: getStageMessage(currentPercent, file.mimeType, file.name)
         }
       }));
@@ -357,7 +389,7 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
         formData.append("file", rawFile);
         formData.append("name", file.name);
         formData.append("mimeType", file.mimeType);
-        
+
         res = await fetch("/api/process-file", {
           method: "POST",
           body: formData
@@ -390,10 +422,8 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
           quiz: data.quiz,
           mindmap: data.mindmap
         });
-        // Set active immediately
         onSelectActiveFile(file.id);
 
-        // Gracefully remove progress bar after 3 seconds so clean metrics display
         setTimeout(() => {
           setFileProgress(prev => {
             const next = { ...prev };
@@ -437,50 +467,70 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
     onSelectActiveFile(workingFile.id);
   };
 
+  // Badge + accent màu theo trạng thái xử lý của file
+  const getStatusMeta = (status: UploadedFile["status"]) => {
+    switch (status) {
+      case "success":
+        return { label: "Sẵn sàng", accent: "var(--color-success)", badge: "text-emerald-700 bg-emerald-50 border-emerald-200/70", pulse: false };
+      case "processing":
+        return { label: "Đang xử lý", accent: "var(--color-primary)", badge: "text-[var(--color-primary-hover)] bg-indigo-50 border-indigo-200/70", pulse: true };
+      case "error":
+        return { label: "Lỗi nạp", accent: "var(--color-error)", badge: "text-red-700 bg-red-50 border-red-200/70", pulse: false };
+      default:
+        return { label: "Hàng đợi", accent: "var(--color-warning)", badge: "text-amber-700 bg-amber-50 border-amber-200/70", pulse: true };
+    }
+  };
+
   // Get file icons matching mimeType
   const getFileIcon = (mime: string) => {
     if (mime.includes("pdf")) return <FileText className="text-red-500" size={18} />;
     if (mime.includes("image")) return <Image className="text-blue-500" size={18} />;
     if (mime.includes("audio") || mime.includes("mp3")) return <Music className="text-emerald-500" size={18} />;
     if (mime.includes("video") || mime.includes("mp4")) return <Film className="text-purple-500" size={18} />;
-    return <FileText className="text-body" size={18} />;
+    return <FileText className="text-[var(--color-text-secondary)]" size={18} />;
   };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" id="upload-workspace-section">
-      
+
       {/* Upload Panel */}
       <div className="lg:col-span-5 flex flex-col gap-5">
-        <Card className="p-6 flex flex-col gap-5">
+        <Card className="p-6 md:p-8 flex flex-col gap-6">
           <div>
-            <h3 className="text-[18px] font-black text-heading">Tải Lên File Học Tập</h3>
-            <p className="text-[15px] text-body font-bold mt-1">Đẩy file giáo trình PDF, Docs, Ảnh bài thu hoạch, hoặc file Nói MP3/MP4 để bắt đầu bóc tách thông tin.</p>
+            <h3 className="text-[24px] md:text-[28px] font-bold text-[var(--color-text-primary)] leading-tight">Tải Lên File Học Tập</h3>
+            <p className="text-[15px] text-[var(--color-text-secondary)] mt-2">Đẩy file giáo trình PDF, Docs, Ảnh bài thu hoạch, hoặc file Nói MP3/MP4 để bắt đầu bóc tách thông tin.</p>
           </div>
 
-          {/* Tab Selector */}
-          <div className="flex bg-neutral-secondary-medium p-1 rounded-xl border-2 border-border-default mb-2">
-            <button
-              onClick={() => setUploadTab("file")}
-              className={`flex-1 py-1.5 px-3 text-[14px] font-bold rounded-[10px] transition-all flex items-center justify-center gap-1.5 ${
-                uploadTab === "file"
-                  ? "bg-neutral-primary text-heading shadow-xs border-2 border-border-default"
-                  : "text-body hover:text-heading border-2 border-transparent"
-              }`}
-            >
-              <Upload size={14} />
-              Tệp cục bộ
-            </button>
-            <button
-              onClick={() => setUploadTab("link")}
-              className={`flex-1 py-1.5 px-3 text-[14px] font-bold rounded-[10px] transition-all flex items-center justify-center gap-1.5 ${
-                uploadTab === "link"
-                  ? "bg-neutral-primary text-heading shadow-xs border-2 border-border-default"
-                  : "text-body hover:text-heading border-2 border-transparent"
-              }`}
-            >
-              <Link size={14} />
-              Nhập Link / URL
-            </button>
+          {/* Segmented Control — pill trượt mượt giữa 2 chế độ */}
+          <div className="flex bg-[var(--color-neutral-soft)] p-1 rounded-[8px] border border-[var(--color-border-subtle)] mb-2">
+            {([
+              { id: "file" as const, icon: Upload, label: "Tệp cục bộ" },
+              { id: "link" as const, icon: Link, label: "Nhập Link / URL" },
+            ]).map((tab) => {
+              const Icon = tab.icon;
+              const active = uploadTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setUploadTab(tab.id)}
+                  className={`relative flex-1 py-1.5 px-3 text-[13px] font-medium rounded-[6px] transition-colors flex items-center justify-center gap-1.5 ${
+                    active ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                  }`}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="upload-seg-pill"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      className="absolute inset-0 bg-[var(--color-surface)] rounded-[6px] shadow-sm border border-[var(--color-border-subtle)]"
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    <Icon size={13} />
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {uploadTab === "file" ? (
@@ -490,10 +540,10 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
               onDragLeave={handleDragLeave}
               onDrop={handleFileDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center min-h-[140px] ${
+              className={`group relative border-2 border-dashed rounded-[12px] p-6 text-center cursor-pointer transition-colors flex flex-col items-center justify-center min-h-[150px] overflow-hidden ${
                 isDragging
-                  ? "border-border-brand bg-brand-softer"
-                  : "border-border-default hover:border-border-brand hover:bg-neutral-secondary-medium"
+                  ? "border-[var(--color-primary)] glass-tint dropzone-active"
+                  : "border-[var(--color-border-subtle)] hover:border-[var(--color-primary)] hover:glass-tint"
               }`}
             >
               <input
@@ -502,42 +552,63 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                 onChange={handleFileSelect}
                 className="hidden"
                 accept={SUPPORTED_FILE_TYPES.accept}
+                multiple
               />
-              <motion.div 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-10 h-10 rounded-full bg-brand-softer text-fg-brand flex items-center justify-center mb-2.5"
+              <div
+                className={`w-11 h-11 rounded-full bg-indigo-50 text-[var(--color-primary)] flex items-center justify-center mb-2.5 transition-transform group-hover:scale-110 ${
+                  isDragging ? "animate-bounce-soft" : ""
+                }`}
               >
                 <Upload size={18} />
-              </motion.div>
-              <p className="text-[15px] font-bold text-heading">Kéo thả tệp tin vào đây</p>
-              <p className="text-[13px] text-body-subtle mt-1">Hoặc nhấp chuột để duyệt file cục bộ từ máy tính</p>
+              </div>
+              <p className="text-[15px] font-medium text-[var(--color-text-primary)]">
+                {isDragging ? "Thả ra để mình bóc tách nhé! ✨" : "Kéo thả một hoặc nhiều tệp vào đây"}
+              </p>
+              <p className="text-[13px] text-[var(--color-neutral)] mt-1">Hoặc nhấp chuột để duyệt & chọn nhiều file cùng lúc</p>
+
+              {/* Chip định dạng file được hỗ trợ */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3">
+                {[
+                  { label: "PDF", Icon: FileText, color: "text-red-500" },
+                  { label: "PNG", Icon: Image, color: "text-blue-500" },
+                  { label: "MP3", Icon: Music, color: "text-emerald-500" },
+                  { label: "MP4", Icon: Film, color: "text-purple-500" },
+                ].map(({ label, Icon, color }) => (
+                  <span
+                    key={label}
+                    className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-full py-0.5 px-2 text-[var(--color-text-secondary)]"
+                  >
+                    <Icon size={10} className={color} />
+                    {label}
+                  </span>
+                ))}
+              </div>
             </div>
           ) : (
             /* Paste URL Web Link Form */
             <form onSubmit={handleImportFromLink} className="flex flex-col gap-3 min-h-[140px] justify-center">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-bold text-body flex items-center gap-1">
-                  <Globe size={11} className="text-fg-brand" />
-                  Đường dẫn liên kết trực tuyến (Audio / File):
+                <label className="text-[11px] font-medium text-[var(--color-text-secondary)] flex items-center gap-1">
+                  <Globe size={11} className="text-[var(--color-primary)]" />
+                  Dán link YouTube hoặc đường dẫn file trực tuyến:
                 </label>
                 <div className="relative font-sans">
                   <input
                     type="url"
                     value={fileUrl}
                     onChange={(e) => setFileUrl(e.target.value)}
-                    placeholder="https://example.com/bai-thi-tieng-anh.mp3 hoặc .pdf ..."
-                    className="w-full text-[16px] p-3 bg-neutral-primary border-2 border-border-default rounded-xl outline-none focus:border-border-brand focus:ring-2 focus:ring-brand-soft transition"
+                    placeholder="https://youtube.com/watch?v=... hoặc .mp3 / .pdf ..."
+                    className="w-full text-[14px] py-[10px] px-[14px] bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-[6px] outline-none focus:border-[var(--color-primary)] focus:shadow-[var(--shadow-focus-ring)] transition text-[var(--color-text-primary)] placeholder:text-[var(--color-neutral)]"
                     required
                   />
                 </div>
-                <p className="text-[13px] text-body-subtle">
-                  Hỗ trợ tải tệp trực tuyến công khai (.mp3, .wav, .pdf, .docx, .png, .jpg...) để lọc dịch và học tập bằng AI.
+                <p className="text-[12px] text-[var(--color-neutral)]">
+                  <span className="font-semibold text-[var(--color-primary)]">YouTube:</span> tự lấy transcript → dịch Tiếng Việt → tóm tắt → lưu thành note. Cũng hỗ trợ file công khai (.mp3, .pdf, .docx, .png...).
                 </p>
               </div>
 
               {urlError && (
-                <p className="text-[10px] font-medium text-rose-600 flex items-center gap-1.5">
+                <p className="text-[12px] font-medium text-[var(--color-error)] flex items-center gap-1.5">
                   ⚠️ {urlError}
                 </p>
               )}
@@ -555,70 +626,96 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                 ) : (
                   <>
                     <Sparkles size={16} />
-                    Tải Link & Phân Tích OCR
+                    Lấy nội dung & Phân tích bằng AI
                   </>
                 )}
               </Button>
             </form>
           )}
 
-          {/* Presets Trigger items */}
-          <div className="border-t-2 border-border-default pt-4">
-            <span className="text-[15px] font-black text-body-subtle uppercase tracking-[0.8px] block mb-2.5">
-              HỌC TẬP THỬ NGHIỆM NHANH (Presets)
-            </span>
-            <div className="flex flex-col gap-2">
-              {presets.map((preset) => {
-                const alreadyExists = files.some((f) => f.id === preset.id);
-
-                return (
-                  <Card
-                    key={preset.id}
-                    interactive={!alreadyExists}
-                    onClick={() => !alreadyExists && activatePreset(preset)}
-                    className={`p-3 flex items-center justify-between ${
-                      alreadyExists
-                        ? "opacity-60 cursor-not-allowed bg-neutral-secondary-medium"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 truncate pr-2">
-                      <Sparkles size={18} className="text-fg-brand flex-shrink-0" />
-                      <span className="truncate font-bold text-[15px] text-heading">{preset.name}</span>
-                    </div>
-                    {!alreadyExists && <span className="text-[12px] bg-brand-soft text-fg-brand-strong font-bold px-2 py-1 rounded-full uppercase flex-shrink-0 tracking-[0.8px]">Dùng mẫu</span>}
-                  </Card>
-                );
-              })}
-            </div>
+        {/* ── Preset samples ── */}
+        <div className="border-t border-[var(--color-border-subtle)] pt-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--color-neutral)] mb-3">
+            Thử nhanh với dữ liệu mẫu
+          </p>
+          <div className="flex flex-col gap-2">
+            {presets.map((preset) => {
+              const exists = files.some((f) => f.id === preset.id);
+              const isAudio = preset.mimeType.includes("audio");
+              return (
+                <button
+                  key={preset.id}
+                  disabled={exists}
+                  onClick={() => activatePreset(preset)}
+                  className={`text-left p-3 rounded-[8px] border transition-all flex items-center justify-between gap-2 ${
+                    exists
+                      ? "bg-[var(--color-neutral-soft)] text-[var(--color-neutral)] border-[var(--color-border-subtle)] cursor-not-allowed"
+                      : "bg-indigo-50/60 text-[var(--color-text-primary)] border-indigo-200/60 hover:bg-indigo-50 hover:border-indigo-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    {isAudio
+                      ? <Music size={13} className="text-emerald-500 flex-shrink-0" />
+                      : <FileText size={13} className="text-red-400 flex-shrink-0" />}
+                    <span className="text-[13px] font-medium truncate">{preset.name}</span>
+                  </div>
+                  {!exists && (
+                    <span className="text-[11px] font-bold bg-indigo-100 text-[var(--color-primary-hover)] px-2 py-0.5 rounded-[4px] uppercase tracking-wide flex-shrink-0">
+                      Dùng mẫu
+                    </span>
+                  )}
+                  {exists && (
+                    <span className="text-[11px] text-[var(--color-success)] flex items-center gap-1 flex-shrink-0">
+                      <CheckCircle2 size={12} /> Đã nạp
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
+        </div>
         </Card>
       </div>
 
       {/* Uploaded Repository Items list and content viewer */}
       <div className="lg:col-span-7 flex flex-col gap-5">
-        <Card className="p-6 flex flex-col gap-5 min-h-[400px]">
+        <Card className="p-6 md:p-8 flex flex-col gap-6 min-h-[400px]">
           <div>
-            <h3 className="text-[18px] font-black text-heading">Danh Mục Files Đang Hoạt Động</h3>
-            <p className="text-[15px] text-body font-bold mt-1">Chọn một file để bóc tách thông tin hoặc xem tóm tắt AI chi tiết phía dưới.</p>
+            <h3 className="text-[24px] md:text-[28px] font-bold text-[var(--color-text-primary)] leading-tight">Danh Mục Files Đang Hoạt Động</h3>
+            <p className="text-[15px] text-[var(--color-text-secondary)] mt-2">Chọn một file để bóc tách thông tin hoặc xem tóm tắt AI chi tiết phía dưới.</p>
           </div>
 
           {files.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center border-2 border-border-default rounded-xl bg-neutral-secondary-medium p-8 text-center">
-              <FileText size={48} className="text-body-subtle mb-4" />
-              <p className="text-[18px] font-bold text-heading">Thư viện file trống</p>
-              <p className="text-[15px] text-body-subtle max-w-[320px] mt-2">Hãy kéo file bài học của bạn lên hoặc nhấp "Dùng mẫu" ở bên trái để nạp kho tri thức ngay lập tức!</p>
+            <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-[var(--color-border-subtle)] rounded-[12px] glass-tint p-8 text-center">
+              {/* Bong bóng thoại của linh vật */}
+              <div className="relative mb-3">
+                <div className="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] shadow-sm rounded-2xl rounded-bl-sm px-4 py-2 text-[13px] font-medium text-[var(--color-text-primary)] max-w-[260px]">
+                  Đang đói kiến thức, thả file vào đây để mình bóc tách nhé! 🍽️
+                </div>
+              </div>
+
+              {/* Mascot AI trôi nhẹ */}
+              <div className="animate-mascot-float w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[#a855f7] flex items-center justify-center text-white shadow-[var(--shadow-primary-glow)]">
+                <Bot size={32} />
+              </div>
+
+              <p className="text-[16px] font-bold text-[var(--color-text-primary)] mt-4">Thư viện đang trống</p>
+              <p className="text-[14px] text-[var(--color-neutral)] max-w-[320px] mt-1">Kéo file bài học lên hoặc nhấp <span className="font-semibold text-[var(--color-primary)]">"Dùng mẫu"</span> bên trái để nạp kho tri thức ngay!</p>
             </div>
           ) : (
             <div className="flex flex-col gap-2.5">
               {files.map((file) => {
                 const isActive = file.id === activeFileId;
+                const statusMeta = getStatusMeta(file.status);
 
                 return (
                   <Card
                     key={file.id}
-                    className={`p-3.5 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 ${
-                      isActive ? "bg-brand-softer border-border-brand ring-2 ring-border-brand-subtle" : "hover:border-border-default-strong"
+                    style={{ borderLeftWidth: 3, borderLeftColor: statusMeta.accent }}
+                    className={`p-3.5 transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 animate-fade-in ${
+                      isActive
+                        ? "bg-indigo-50 border-[var(--color-primary)] ring-2 ring-indigo-100"
+                        : "hover:border-[var(--color-border-default)]"
                     }`}
                   >
                     <div
@@ -629,27 +726,34 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                         }
                       }}
                     >
-                      <div className="p-2 bg-surface-muted rounded-card border border-border-default">
+                      <div className="p-2 bg-[var(--color-neutral-soft)] rounded-[8px] border border-[var(--color-border-subtle)]">
                         {getFileIcon(file.mimeType)}
                       </div>
                       <div className="truncate min-w-0 flex-1">
-                        <p className={`text-[15px] font-bold truncate pr-3 ${isActive ? "text-fg-brand-strong" : "text-heading"}`}>
-                          {file.name}
-                        </p>
-                        
+                        <div className="flex items-center gap-2 pr-3">
+                          <p className={`text-[14px] font-medium truncate ${isActive ? "text-[var(--color-primary-hover)]" : "text-[var(--color-text-primary)]"}`}>
+                            {file.name}
+                          </p>
+                          <span
+                            className={`shrink-0 text-[10px] font-bold uppercase tracking-wide rounded-full py-0.5 px-2 border ${statusMeta.badge} ${statusMeta.pulse ? "animate-pulse" : ""}`}
+                          >
+                            {statusMeta.label}
+                          </span>
+                        </div>
+
                         {file.status === "processing" && fileProgress[file.id] ? (
                           <div className="mt-2 w-full pr-4">
                             <div className="flex justify-between items-center mb-1 gap-2">
-                              <span className="text-[10px] text-fg-brand font-semibold animate-pulse truncate max-w-[85%]">
+                              <span className="text-[10px] text-[var(--color-primary)] font-medium animate-pulse truncate max-w-[85%]">
                                 🔄 {fileProgress[file.id].stage}
                               </span>
-                              <span className="text-[10px] text-body font-mono font-bold">
+                              <span className="text-[10px] text-[var(--color-text-secondary)] font-mono font-bold">
                                 {fileProgress[file.id].percent}%
                               </span>
                             </div>
-                            <div className="w-full bg-surface-muted h-2 rounded-full overflow-hidden relative">
+                            <div className="w-full bg-[var(--color-neutral-soft)] h-1.5 rounded-full overflow-hidden relative">
                               <div
-                                className="bg-gradient-to-r from-indigo-500 to-indigo-700 h-full rounded-full transition-all duration-300 ease-out"
+                                className="bg-[var(--color-primary)] h-full rounded-full transition-all duration-300 ease-out"
                                 style={{ width: `${fileProgress[file.id].percent}%` }}
                               />
                             </div>
@@ -657,22 +761,26 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                         ) : file.status === "success" && fileProgress[file.id]?.percent === 100 ? (
                           <div className="mt-2 w-full pr-4">
                             <div className="flex justify-between items-center mb-1 gap-2">
-                              <span className="text-[10px] text-green-600 font-bold flex items-center gap-1">
+                              <span className="text-[10px] text-[var(--color-success)] font-medium flex items-center gap-1">
                                 ✅ {fileProgress[file.id].stage}
                               </span>
-                              <span className="text-[10px] text-green-600 font-mono font-bold">
+                              <span className="text-[10px] text-[var(--color-success)] font-mono font-bold">
                                 100%
                               </span>
                             </div>
-                            <div className="w-full bg-green-50 h-2 rounded-full overflow-hidden relative border border-green-150">
+                            <div className="w-full bg-emerald-50 h-1.5 rounded-full overflow-hidden relative">
                               <div
-                                className="bg-green-600 h-full rounded-full transition-all duration-500"
+                                className="bg-[var(--color-success)] h-full rounded-full transition-all duration-500"
                                 style={{ width: "100%" }}
                               />
                             </div>
                           </div>
+                        ) : file.status === "error" ? (
+                          <p className="text-[12px] text-[var(--color-error)] mt-0.5 leading-snug line-clamp-2 pr-3">
+                            {file.errorMsg || "Tải tài nguyên thất bại."}
+                          </p>
                         ) : (
-                          <p className="text-[12px] text-body-subtle font-mono mt-0.5">
+                          <p className="text-[12px] text-[var(--color-neutral)] font-mono mt-0.5">
                             {(file.size / 1024).toFixed(1)} KB • {file.mimeType.split("/")[1]?.toUpperCase() || "UNKNOWN"}
                           </p>
                         )}
@@ -683,7 +791,7 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                     <div className="flex items-center gap-2">
                       {file.status === "idle" && (
                         <Button
-                          size="xs"
+                          size="sm"
                           onClick={() => processFileAI(file)}
                           icon={<ArrowRight size={13} />}
                         >
@@ -692,15 +800,15 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                       )}
 
                       {file.status === "processing" && (
-                        <span className="text-[10px] font-bold text-fg-brand flex items-center gap-1 bg-brand-softer py-1.5 px-3 rounded-card animate-pulse">
-                          <Loader2 size={13} className="animate-spin" /> Đang định dạng...
+                        <span className="text-[11px] font-medium text-[var(--color-primary)] flex items-center gap-1 bg-indigo-50 py-1.5 px-3 rounded-[12px] animate-pulse">
+                          <Loader2 size={12} className="animate-spin" /> Đang định dạng...
                         </span>
                       )}
 
                       {file.status === "success" && !isActive && (
                         <Button
                           variant="secondary"
-                          size="xs"
+                          size="sm"
                           onClick={() => onSelectActiveFile(file.id)}
                         >
                           Kích hoạt
@@ -708,17 +816,28 @@ Văn bản ghi chép khảo sát và lý thuyết về biến thể ngữ âm c�
                       )}
 
                       {file.status === "success" && isActive && (
-                        <span className="text-[10px] font-bold text-green-700 bg-green-50 border border-green-200/60 py-1.5 px-3 rounded-card flex items-center gap-1">
-                          <CheckCircle2 size={13} /> ACTIVE KNOWLEDGE
+                        <span className="text-[11px] font-medium text-[var(--color-success)] bg-emerald-50 border border-emerald-200/60 py-1.5 px-3 rounded-[12px] flex items-center gap-1">
+                          <CheckCircle2 size={12} /> ACTIVE
                         </span>
                       )}
 
                       {file.status === "error" && (
-                        <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-card py-1 px-2.5 text-rose-700 text-[10px] font-semibold">
+                        <div className="flex items-center gap-1 bg-[var(--color-error-soft)] border border-[var(--color-error)]/30 rounded-[8px] py-1 px-2.5 text-[var(--color-error)] text-[11px] font-medium">
                           <AlertTriangle size={12} /> Lỗi nạp
-                          <button onClick={() => processFileAI(file)} className="underline hover:text-rose-950 font-bold ml-1">Thử lại</button>
+                          <button onClick={() => retryFile(file)} className="underline hover:opacity-80 font-bold ml-1">Thử lại</button>
                         </div>
                       )}
+
+                      {/* Nút xóa file khỏi kho (xóa luôn trong IndexedDB) */}
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Xóa "${file.name}" khỏi kho lưu trữ?`)) onDeleteFile(file.id);
+                        }}
+                        title="Xóa file này"
+                        className="p-1.5 rounded-[8px] text-[var(--color-neutral)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-soft)] transition-colors flex-shrink-0"
+                      >
+                        <Trash2 size={15} />
+                      </button>
                     </div>
                   </Card>
                 );

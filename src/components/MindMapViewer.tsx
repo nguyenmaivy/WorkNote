@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { MindMapNode } from "../types";
 import { Plus, Trash, ChevronRight, ChevronDown, RefreshCw, ZoomIn, ZoomOut, Download } from "lucide-react";
 import { Button } from "./ui/Button";
@@ -228,10 +228,10 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
   return (
     <Card className="p-6 overflow-hidden flex flex-col h-[700px]" id="mindmap-workspace">
       {/* Mindmap controllers */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-border-default pb-4 mb-4 gap-4">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-[var(--color-border-subtle)] pb-4 mb-4 gap-4">
         <div>
-          <h2 className="text-lg font-bold text-heading">Sơ Đồ Tư Duy Tương Tác</h2>
-          <p className="text-[14px] text-body">Tự động cấu trúc theo cây nội dung (I, II, III). Nhấp để thu gọn, chỉnh sửa hoặc tạo nhánh mới.</p>
+          <h2 className="text-[24px] font-bold text-[var(--color-text-primary)]">Sơ Đồ Tư Duy Tương Tác</h2>
+          <p className="text-[14px] text-[var(--color-text-secondary)]">Tự động cấu trúc theo cây nội dung (I, II, III). Nhấp để thu gọn, chỉnh sửa hoặc tạo nhánh mới.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -242,7 +242,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
           >
             <ZoomOut size={16} />
           </Button>
-          <span className="text-[14px] font-bold text-body px-2">{Math.round(zoom * 100)}%</span>
+          <span className="text-[14px] font-bold text-[var(--color-text-secondary)] px-2">{Math.round(zoom * 100)}%</span>
           <Button
             variant="secondary"
             size="sm"
@@ -264,7 +264,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
       </div>
 
       {/* SVG Canvas Board */}
-      <div className="relative flex-1 bg-neutral-secondary-medium rounded-xl overflow-auto border-2 border-border-default">
+      <div className="relative flex-1 bg-[var(--color-neutral-soft)] rounded-xl overflow-auto border-2 border-[var(--color-border-subtle)]">
         <div
           className="absolute origin-top-left transition-all duration-150 p-8"
           style={{
@@ -310,7 +310,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
             return (
               <div
                 key={node.id}
-                className="absolute flex items-center gap-1 bg-white select-none pointer-events-auto rounded-xl border-2 border-border-default shadow-xs transition-all hover:shadow-[0_4px_0_var(--color-border-default)] py-2 px-3 hover:border-border-brand hover:-translate-y-1 group"
+                className="absolute flex items-center gap-1 bg-white select-none pointer-events-auto rounded-xl border-2 border-[var(--color-border-subtle)] shadow-xs transition-all hover:shadow-[0_4px_0_var(--color-border-default)] py-2 px-3 hover:border-[var(--color-primary)] hover:-translate-y-1 group"
                 style={{
                   left: `${node.x}px`,
                   top: `${node.y}px`,
@@ -322,7 +322,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
                 {node.id !== "root" && (
                   <button
                     onClick={() => toggleCollapse(node.id)}
-                    className="p-1 rounded-lg hover:bg-neutral-secondary-medium text-body-subtle hover:text-heading transition"
+                    className="p-1 rounded-lg hover:bg-[var(--color-neutral-soft)] text-[var(--color-neutral)] hover:text-[var(--color-text-primary)] transition"
                   >
                     {node.collapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
                   </button>
@@ -340,17 +340,17 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
                       onKeyDown={(e) => {
                         if (e.key === "Enter") saveEditNode(node.id);
                       }}
-                      className="w-full text-[14px] bg-neutral-primary border-2 border-border-brand focus:outline-none rounded-lg px-2 py-1 font-bold text-heading"
+                      className="w-full text-[14px] bg-[var(--color-surface)] border-2 border-[var(--color-primary)] focus:outline-none rounded-lg px-2 py-1 font-bold text-[var(--color-text-primary)]"
                     />
                   ) : (
                     <div
                       onDoubleClick={() => handleEditNode(node.id, node.label)}
                       className={`text-[14px] truncate cursor-pointer py-0.5 ${
                         node.id === "root"
-                          ? "text-fg-brand-strong font-black"
+                          ? "text-[var(--color-primary-hover)] font-black"
                           : node.parentId === "root"
-                          ? "text-heading font-bold"
-                          : "text-body font-bold"
+                          ? "text-[var(--color-text-primary)] font-bold"
+                          : "text-[var(--color-text-secondary)] font-bold"
                       }`}
                       title="Nhấp đúp chuột để sửa nội dung"
                     >
@@ -363,7 +363,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
                 <div className="hidden group-hover:flex items-center gap-0.5 ml-auto">
                   <button
                     onClick={() => addChildNode(node.id)}
-                    className="p-1.5 rounded-lg hover:bg-brand-soft text-fg-brand transition"
+                    className="p-1.5 rounded-lg hover:bg-indigo-100 text-[var(--color-primary)] transition"
                     title="Thêm nhánh mới"
                   >
                     <Plus size={14} />

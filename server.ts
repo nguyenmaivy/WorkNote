@@ -12,6 +12,7 @@ import processFileRouter from "./server/routes/processFile.js";
 import processLinkRouter from "./server/routes/processLink.js";
 import chatRouter from "./server/routes/chat.js";
 import ttsRouter from "./server/routes/tts.js";
+import ttsReadRouter from "./server/routes/ttsRead.js";
 import translateRouter from "./server/routes/translate.js";
 import translateAudioRouter from "./server/routes/translateAudio.js";
 
@@ -39,6 +40,7 @@ app.use("/api/process-file", processFileRouter);
 app.use("/api/process-link", processLinkRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/tts", ttsRouter);
+app.use("/api/tts-read", ttsReadRouter);
 app.use("/api/translate", translateRouter);
 app.use("/api/translate-live-audio", translateAudioRouter);
 

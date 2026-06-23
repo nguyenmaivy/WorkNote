@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Type } from "@google/genai";
 import { GEMINI_MODEL } from "../config.js";
-import { getAiClient, geminiLimiter, hasApiKey } from "../services/geminiService.js";
+import { getAiClient, geminiLimiter, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 
 const router = Router();
 
@@ -62,7 +62,8 @@ router.post("/", async (req, res): Promise<any> => {
     const ai = getAiClient();
     const cleanMime = (mimeType || "audio/webm").split(";")[0].trim().toLowerCase();
 
-    const parsedData = await geminiLimiter.run(async () => {
+    const parsedData = await geminiLimiter.run(() =>
+      withGeminiRetry(async () => {
       const response = await ai.models.generateContent({
         model: GEMINI_MODEL,
         contents: [
@@ -92,7 +93,8 @@ Do not add any markdown wrappers or extra text.`,
         },
       });
       return JSON.parse(response.text || "{}");
-    });
+      })
+    );
 
     return res.json({
       success: true,
@@ -101,7 +103,7 @@ Do not add any markdown wrappers or extra text.`,
     });
   } catch (error: any) {
     console.error("Error in /api/translate-live-audio:", error);
-    res.status(500).json({ error: error.message || "Failed to transcribe and translate live audio" });
+    res.status(500).json({ error: friendlyGeminiError(error) });
   }
 });
 

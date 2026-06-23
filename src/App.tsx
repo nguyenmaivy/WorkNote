@@ -17,6 +17,9 @@ import StudentBudgetTracker from "./components/StudentBudgetTracker";
 
 import { Button } from "./components/ui/Button";
 import { Card } from "./components/ui/Card";
+import { LevelBar } from "./components/ui/LevelBar";
+import { CopyButton } from "./components/ui/CopyButton";
+import { ReadAloudText } from "./components/ui/ReadAloudText";
 
 import {
   Sparkles,
@@ -33,12 +36,12 @@ export default function App() {
 
   // Custom hooks — tách toàn bộ logic phức tạp
   const { hasApiKey } = useApiStatus();
-  const { files, activeFileId, activeFile, setActiveFileId, handleAddFile, handleUpdateFile } =
+  const { files, activeFileId, activeFile, setActiveFileId, handleAddFile, handleUpdateFile, handleRemoveFile } =
     useFileManager();
   const translation = useTranslation(activeFile);
 
   return (
-    <div className="min-h-screen bg-neutral-primary-soft text-body font-sans flex flex-col antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text-primary)] font-sans flex flex-col antialiased overflow-x-hidden">
       {/* Demo Banner */}
       {!hasApiKey && (
         <div className="bg-amber-500 text-amber-950 px-4 py-2.5 text-[13px] font-bold text-center flex items-center justify-center gap-2 shadow-sm border-b border-amber-600/20">
@@ -53,49 +56,40 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Glass Header */}
-      <header className="bg-neutral-primary-soft border-b-2 border-border-default sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center text-white shadow-brand shadow-sm">
-              <Sparkles size={24} className="animate-pulse" />
+      {/* Main Header — 72px brand bar */}
+      <header className="bg-[var(--color-surface)]/90 backdrop-blur-md border-b border-[var(--color-border-subtle)] sticky top-0 z-40">
+        <div className="max-w-[1280px] mx-auto px-6 h-[72px] flex items-center justify-between gap-6">
+          {/* Brand mark */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="w-10 h-10 rounded-[10px] bg-gradient-to-br from-[var(--color-primary)] to-[#a855f7] flex items-center justify-center text-white shadow-[var(--shadow-primary-glow)]">
+              <Sparkles size={20} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-[24px] font-black text-heading tracking-tight">
-                  VietLearn AI Lab
-                </h1>
-                <span className="px-2.5 py-1 bg-brand-softer border-2 border-border-brand-subtle text-fg-brand-strong rounded-full text-[11px] font-black uppercase tracking-wider">
-                  v3.5 Active
-                </span>
-              </div>
-              <p className="text-[14px] text-body font-bold">
-                Nền tảng Ôn tập 2D RPG, Mindmap &amp; Phòng Lab Âm Thanh Đa Ngữ
-              </p>
-            </div>
+            <span className="text-[20px] font-bold text-[var(--color-text-primary)] tracking-[-0.03em] font-display">
+              VietLearn AI Lab
+            </span>
+            <span className="hidden sm:inline text-[11px] font-bold text-[var(--color-primary-hover)] bg-indigo-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+              v3.5
+            </span>
           </div>
 
-          {/* Quick status counters */}
-          <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-            <div className="bg-neutral-secondary-medium border-2 border-border-default rounded-xl py-2 px-4 flex items-center gap-2">
-              <FolderOpen size={16} className="text-body" />
-              <span className="text-[14px] font-bold text-heading">
-                Tài liệu: {files.length}
-              </span>
+          {/* Status pills */}
+          <div className="flex items-center gap-2">
+            <LevelBar files={files} />
+            <div className="hidden md:flex items-center gap-1.5 text-[12px] font-medium text-[var(--color-text-secondary)] bg-[var(--color-neutral-soft)] rounded-full py-1 px-3">
+              <FolderOpen size={12} />
+              <span>{files.length} tài liệu</span>
             </div>
-            <div className="bg-brand-softer border-2 border-border-brand-subtle rounded-xl py-2 px-4 flex items-center gap-2">
-              <CloudLightning size={16} className="text-fg-brand" />
-              <span className="text-[14px] font-bold text-fg-brand-strong">
-                AI Engine: {hasApiKey ? "Gemini-Active ⚡" : "Local Mock 🔒"}
-              </span>
+            <div className={`flex items-center gap-1.5 text-[12px] font-medium rounded-full py-1 px-3 ${hasApiKey ? "text-[var(--color-success)] bg-[var(--color-success-soft)]" : "text-[var(--color-neutral)] bg-[var(--color-neutral-soft)]"}`}>
+              <CloudLightning size={12} />
+              <span>{hasApiKey ? "Gemini-Active" : "Local Mock"}</span>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Core Tabs Navigator */}
-      <nav className="bg-neutral-primary-soft border-b-2 border-border-default sticky top-[81px] z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 overflow-x-auto scrollbar-hide flex">
+      {/* Tab navigation — sticky below header */}
+      <nav className="bg-[var(--color-surface)]/90 backdrop-blur-md border-b border-[var(--color-border-subtle)] sticky top-[72px] z-30">
+        <div className="max-w-[1280px] mx-auto px-6 overflow-x-auto scrollbar-hide flex h-14 gap-1">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id;
@@ -103,19 +97,21 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setCurrentTab(tab.id)}
-                className={`py-[16px] px-[20px] border-b-[4px] font-bold text-[15px] uppercase tracking-[0.6px] transition-colors flex flex-col items-center gap-1 flex-shrink-0 relative translate-y-[2px] ${
+                className={`relative h-full px-4 rounded-t-[8px] font-semibold text-[15px] transition-colors flex items-center gap-2 shrink-0 ${
                   isActive
-                    ? "border-border-brand text-fg-brand"
-                    : "border-transparent text-body hover:text-heading hover:border-border-default-strong"
+                    ? "text-[var(--color-primary)]"
+                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-neutral-soft)]"
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  <Icon size={18} />
-                  <span>{tab.label}</span>
-                </div>
-                <span className="text-[12px] text-body-subtle font-normal hidden lg:inline tracking-normal normal-case">
-                  {tab.desc}
-                </span>
+                <Icon size={17} />
+                <span>{tab.label}</span>
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-underline"
+                    transition={{ type: "spring", stiffness: 400, damping: 34 }}
+                    className="absolute left-3 right-3 -bottom-px h-[3px] rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[#a855f7]"
+                  />
+                )}
               </button>
             );
           })}
@@ -123,41 +119,48 @@ export default function App() {
       </nav>
 
       {/* Main Workspace */}
-      <main className="flex-1 max-w-[1152px] w-full mx-auto px-[24px] py-[48px]">
-        {/* Active document summary card */}
+      <main className="flex-1 max-w-[1280px] w-full mx-auto px-6 py-8 md:py-12">
+
+        {/* ── Editorial page heading ── */}
+        <div className="mb-8 md:mb-10">
+          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--color-neutral)] mb-3">
+            {TABS.find(t => t.id === currentTab)?.desc}
+          </p>
+          <h1 className="text-[36px] md:text-[48px] lg:text-[56px] font-bold text-[var(--color-text-primary)] leading-[1.05] tracking-[-0.04em]">
+            {TABS.find(t => t.id === currentTab)?.label}
+          </h1>
+        </div>
+
+        {/* Active document info strip */}
         {activeFile && currentTab !== "upload" && (
-          <Card className="mb-6 p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 animate-fade-in">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 px-3 bg-brand-softer border-2 border-border-brand-subtle rounded-xl text-[12px] font-bold text-fg-brand-strong uppercase">
-                {activeFile.mimeType.split("/")[1] || "DOC"}
+          <Card className="mb-8 px-5 py-3.5 flex flex-col md:flex-row md:items-center justify-between gap-3 animate-fade-in">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-[6px] bg-[var(--color-neutral-soft)] flex items-center justify-center text-[var(--color-text-secondary)]">
+                <FileCheck size={17} />
               </div>
-              <div>
-                <p className="text-[15px] font-bold text-heading">
-                  Tài liệu hoạt động:{" "}
-                  <span className="text-fg-brand">"{activeFile.name}"</span>
-                </p>
-                <p className="text-[13px] text-body-subtle">
-                  Đã nạp thành công quizzes ôn tập và cấu trúc Mindmap.
+              <div className="flex flex-col min-w-0">
+                <p className="text-[12px] text-[var(--color-neutral)] font-medium uppercase tracking-wider">Tài liệu đang hoạt động</p>
+                <p className="text-[15px] font-bold truncate max-w-[220px] md:max-w-[420px] text-[var(--color-text-primary)]">
+                  {activeFile.name}
                 </p>
               </div>
             </div>
-              <Button 
-                variant="tertiary" 
-                size="sm"
-                onClick={() => setCurrentTab("upload")}
-              >
-                Thay đổi tài liệu ở thư viện
-              </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentTab("upload")}
+            >
+              Đổi tài liệu
+            </Button>
           </Card>
         )}
 
-        {/* Tab Content — each wrapped in ErrorBoundary and motion.div */}
-        <motion.div 
+        {/* Tab Content */}
+        <motion.div
           key={currentTab}
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0.6, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="transition-all"
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           {currentTab === "upload" && (
             <ErrorBoundary label="Tài Liệu & OCR">
@@ -165,6 +168,7 @@ export default function App() {
                 files={files}
                 onAddFile={handleAddFile}
                 onUpdateFile={handleUpdateFile}
+                onDeleteFile={handleRemoveFile}
                 activeFileId={activeFileId}
                 onSelectActiveFile={setActiveFileId}
               />
@@ -218,35 +222,50 @@ export default function App() {
         {/* Summary & Translation section (upload tab + active file) */}
         {currentTab === "upload" && activeFile && (
           <Card className="mt-[48px] p-6 md:p-8 flex flex-col gap-4 animate-fade-in">
-            <div className="border-b-2 border-border-default pb-3">
-              <h3 className="text-[20px] font-bold text-heading flex items-center gap-1.5">
-                <FileCheck className="text-success" size={20} />
+            <div className="border-b border-[var(--color-border-subtle)] pb-3">
+              <h3 className="text-[20px] font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
+                <FileCheck className="text-[var(--color-success)]" size={20} />
                 Phần Tóm Tắt & Nội Dung Tài Liệu Phân Tích
               </h3>
-              <p className="text-[14px] text-body-subtle mt-0.5">
+              <p className="text-[14px] text-[var(--color-neutral)] mt-0.5">
                 Văn bản chi tiết được AI trích xuất và tóm tắt theo phong cách dễ học.
               </p>
             </div>
 
+            {/* Nghe lại file gốc — đối chiếu xem AI bóc tách có đúng không */}
+            {activeFile.objectUrl &&
+              (activeFile.mimeType.includes("audio") || activeFile.mimeType.includes("video")) && (
+                <div className="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] p-4 rounded-[12px] flex flex-col gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.6px] font-medium text-[var(--color-neutral)] flex items-center gap-1.5">
+                    🎧 Nghe lại file gốc đã tải lên
+                  </span>
+                  {activeFile.mimeType.includes("video") ? (
+                    <video src={activeFile.objectUrl} controls className="w-full rounded-[8px] max-h-[260px] bg-black" />
+                  ) : (
+                    <audio src={activeFile.objectUrl} controls className="w-full" />
+                  )}
+                </div>
+              )}
+
             {/* Multi-language Translation Portal */}
-            <div className="bg-neutral-primary border-2 border-border-default p-4 rounded-xl flex flex-col gap-3">
+            <div className="bg-[var(--color-surface)] border border-[var(--color-border-subtle)] p-4 rounded-[12px] flex flex-col gap-3">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-brand-soft text-fg-brand-strong flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-[8px] bg-indigo-100 text-[var(--color-primary-hover)] flex items-center justify-center flex-shrink-0">
                     <Languages size={15} />
                   </div>
                   <div>
-                    <h4 className="text-[14px] font-bold text-heading flex items-center gap-1.5 flex-wrap">
+                    <h4 className="text-[14px] font-bold text-[var(--color-text-primary)] flex items-center gap-1.5 flex-wrap">
                       Dịch Thuật Đa Ngôn Ngữ (Hỗ trợ Audio & Tài liệu) 🌐
                       {(activeFile.mimeType.includes("audio") ||
                         activeFile.mimeType.includes("mp3") ||
                         activeFile.mimeType.includes("wav")) && (
-                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[11px] font-bold">
+                        <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-[4px] text-[11px] font-bold">
                           🎵 HỖ TRỢ FILE ÂM THANH
                         </span>
                       )}
                     </h4>
-                    <p className="text-[13px] text-body">
+                    <p className="text-[13px] text-[var(--color-text-secondary)]">
                       Dịch thuật bài tóm tắt tổng quan hoặc nội dung ghi âm chính xác sang nhiều
                       ngôn ngữ khác nhau.
                     </p>
@@ -257,18 +276,18 @@ export default function App() {
                   <select
                     value={translation.translateSourceField}
                     onChange={(e) => translation.changeSourceField(e.target.value as any)}
-                    className="p-1.5 px-3 bg-white border-2 border-border-default rounded-xl text-[14px] font-bold text-heading outline-none focus:border-border-brand"
+                    className="py-[10px] px-[14px] bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-[6px] text-[14px] font-medium text-[var(--color-text-primary)] outline-none focus:border-[var(--color-primary)]"
                   >
                     <option value="extractedText">Dịch: Bản Ghi Âm / OCR</option>
                     <option value="summary">Dịch: Bản Tóm Tắt AI</option>
                   </select>
 
-                  <span className="text-body-subtle text-[14px]">➜</span>
+                  <span className="text-[var(--color-neutral)] text-[14px]">➜</span>
 
                   <select
                     value={translation.translateTargetLang}
                     onChange={(e) => translation.changeTargetLang(e.target.value)}
-                    className="p-1.5 px-3 bg-white border-2 border-border-default rounded-xl text-[14px] font-bold text-heading outline-none focus:border-border-brand"
+                    className="py-[10px] px-[14px] bg-[var(--color-surface)] border border-[var(--color-border-subtle)] rounded-[6px] text-[14px] font-medium text-[var(--color-text-primary)] outline-none focus:border-[var(--color-primary)]"
                   >
                     {SUPPORTED_LANGUAGES.map((lang) => (
                       <option key={lang.code} value={lang.code}>
@@ -278,7 +297,7 @@ export default function App() {
                   </select>
 
                   <Button
-                    variant="brand"
+                    variant="primary"
                     size="sm"
                     onClick={translation.handleTranslate}
                     disabled={translation.isTranslating}
@@ -291,51 +310,58 @@ export default function App() {
 
               {/* Translation Result */}
               {translation.translatedText && (
-                <Card className="p-4 mt-2 border-border-brand-subtle animate-fade-in">
-                  <div className="flex justify-between items-center border-b border-border-brand-subtle pb-2 mb-2">
-                    <span className="text-[12px] font-bold text-fg-brand-strong uppercase tracking-wider flex items-center gap-1">
+                <Card className="p-4 mt-2 border-indigo-100 animate-fade-in">
+                  <div className="flex justify-between items-center border-b border-indigo-50 pb-2 mb-2">
+                    <span className="text-[12px] font-bold text-[var(--color-primary-hover)] uppercase tracking-wider flex items-center gap-1">
                       🌎 KẾT QUẢ DỊCH SANG:{" "}
                       {LANGUAGE_NAME_MAP[translation.translateTargetLang] ||
                         translation.translateTargetLang}
                     </span>
                     <button
                       onClick={() => navigator.clipboard.writeText(translation.translatedText)}
-                      className="text-[13px] font-bold text-body hover:text-fg-brand flex items-center gap-1"
+                      className="text-[13px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] flex items-center gap-1 transition-colors"
                     >
                       <Copy size={14} /> Sao chép bản dịch
                     </button>
                   </div>
-                  <div className="prose prose-indigo max-w-none text-heading font-sans leading-relaxed whitespace-pre-wrap">
+                  <div className="prose prose-indigo max-w-none text-[var(--color-text-primary)] font-sans leading-relaxed whitespace-pre-wrap">
                     {translation.translatedText}
                   </div>
                 </Card>
               )}
 
               {translation.translationError && (
-                <div className="bg-danger-soft text-fg-danger-strong border-2 border-border-danger-subtle p-3 rounded-xl text-[14px] font-bold">
+                <div className="bg-[var(--color-error-soft)] text-[var(--color-error)] border border-[var(--color-error)]/30 p-3 rounded-[8px] text-[14px] font-medium">
                   ⚠️ Có lỗi xảy ra trong quá trình dịch thuật: {translation.translationError}
                 </div>
               )}
             </div>
 
             {/* OCR + Summary panels */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[32px] text-[16px] leading-[1.55]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-[32px] text-[15px] leading-[1.55]">
               <Card className="p-5 overflow-y-auto max-h-[350px]">
-                <span className="text-[14px] uppercase tracking-[0.6px] font-bold text-heading block mb-2">
-                  TÓM TẮT AI (Markdown)
-                </span>
-                <div className="prose max-w-none text-body whitespace-pre-wrap">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-[11px] uppercase tracking-[0.6px] font-medium text-[var(--color-neutral)]">
+                    TÓM TẮT AI (Markdown)
+                  </span>
+                  <CopyButton text={activeFile.summary} />
+                </div>
+                <div className="prose max-w-none text-[var(--color-text-secondary)] whitespace-pre-wrap select-text">
                   {activeFile.summary}
                 </div>
               </Card>
 
-              <Card className="p-5 overflow-y-auto max-h-[350px]">
-                <span className="text-[14px] uppercase tracking-[0.6px] font-bold text-heading block mb-2">
-                  VĂN BẢN TRÍCH XUẤT OCR / AUDIO TRANSCRIPTION
-                </span>
-                <p className="text-body whitespace-pre-wrap font-mono text-[14px] leading-[1.5] select-all">
-                  {activeFile.extractedText}
-                </p>
+              <Card className="p-5">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-[11px] uppercase tracking-[0.6px] font-medium text-[var(--color-neutral)]">
+                    VĂN BẢN TRÍCH XUẤT OCR / AUDIO TRANSCRIPTION
+                  </span>
+                  <CopyButton text={activeFile.extractedText} />
+                </div>
+                <ReadAloudText
+                  text={activeFile.extractedText}
+                  textClassName="text-[var(--color-text-secondary)] whitespace-pre-wrap font-mono text-[13px] leading-[1.6] select-text"
+                />
               </Card>
             </div>
           </Card>
@@ -343,8 +369,8 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-neutral-primary-soft border-t-2 border-border-default py-[48px] text-center text-[15px] text-body">
-        <p className="font-bold text-heading text-[16px]">© 2026 VietLearn AI Studio • Xây dựng bởi Trí Tuệ Nhân Tạo</p>
+      <footer className="bg-[var(--color-surface)] border-t border-[var(--color-border-subtle)] py-[48px] text-center text-[15px] text-[var(--color-text-secondary)]">
+        <p className="font-bold text-[var(--color-text-primary)] text-[16px]">© 2026 VietLearn AI Studio • Xây dựng bởi Trí Tuệ Nhân Tạo</p>
         <p className="mt-[8px]">
           Sử dụng Google Gemini-3.5-flash và TTS Model. Dữ liệu lưu trữ cục bộ bảo mật.
         </p>

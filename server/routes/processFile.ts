@@ -3,11 +3,13 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { UPLOAD_DIR, GEMINI_MODEL } from "../config.js";
-import { getAiClient, geminiLimiter, hasApiKey } from "../services/geminiService.js";
+import { getAiClient, geminiLimiter, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 import {
   getSafeGeminiPayload,
   buildFileAnalysisPrompt,
   FILE_ANALYSIS_RESPONSE_SCHEMA,
+  looseParseJson,
+  normalizeAnalysis,
 } from "../services/fileService.js";
 
 const router = Router();
@@ -103,22 +105,31 @@ router.post("/", upload.single("file"), async (req, res): Promise<any> => {
         ? [payload.filePart, promptMessage]
         : [promptMessage + `\n\nNội dung văn bản:\n${payload.textContent}`];
 
-    const parsedData = await geminiLimiter.run(async () => {
-      const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
-        contents: contentsPayload,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: FILE_ANALYSIS_RESPONSE_SCHEMA,
-        },
-      });
-      return JSON.parse(response.text || "{}");
-    });
+    const rawText = await geminiLimiter.run(() =>
+      withGeminiRetry(async () => {
+        const response = await ai.models.generateContent({
+          model: GEMINI_MODEL,
+          contents: contentsPayload,
+          config: {
+            responseMimeType: "application/json",
+            responseSchema: FILE_ANALYSIS_RESPONSE_SCHEMA,
+          },
+        });
+        return response.text || "";
+      })
+    );
 
-    return res.json({ success: true, ...parsedData });
+    const parsedData = looseParseJson(rawText);
+    if (!parsedData) {
+      return res.status(400).json({
+        error: "Nội dung tệp quá dài hoặc phức tạp để phân tích trọn vẹn. Hãy thử tệp ngắn gọn hơn.",
+      });
+    }
+
+    return res.json({ success: true, ...normalizeAnalysis(parsedData, name) });
   } catch (error: any) {
     console.error("Error in /api/process-file:", error);
-    res.status(500).json({ error: error.message || "Failed to process file" });
+    res.status(500).json({ error: friendlyGeminiError(error) });
   } finally {
     if (tempFilePath) {
       fs.promises.unlink(tempFilePath).catch((e) =>

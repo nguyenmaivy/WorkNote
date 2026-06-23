@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 interface ErrorBoundaryProps {
   /** Tên module/tab đang được bảo vệ — hiển thị trong fallback UI */
@@ -49,7 +49,7 @@ function createErrorBoundary() {
         "div",
         {
           className:
-            "bg-rose-50 border border-rose-200 rounded-card p-8 flex flex-col items-center justify-center text-center gap-4 min-h-[200px]",
+            "bg-rose-50 border border-rose-200 rounded-[var(--radius-card)] p-8 flex flex-col items-center justify-center text-center gap-4 min-h-[200px]",
         },
         React.createElement(
           "div",

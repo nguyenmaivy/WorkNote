@@ -6,12 +6,12 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Card({ interactive = false, className = '', children, ...props }: CardProps) {
-  const baseClasses = "bg-neutral-primary-soft border-2 rounded-xl text-body";
+  const baseClasses = "bg-[var(--color-surface)] border border-[#D1D5DB] rounded-[var(--radius-card)] overflow-hidden transition-all duration-200 shadow-[0_1px_4px_rgba(0,0,0,0.06)]";
   
-  const staticClasses = "border-default shadow-xs";
+  const staticClasses = "";
   
-  // Interactive cards need a specific active state: shift down 2px, shadow shrink
-  const interactiveClasses = "border-default shadow-xs hover:bg-brand-softer hover:border-brand-subtle transition-all duration-100 ease-out cursor-pointer active:translate-y-[2px] active:shadow-[0_0px_0_var(--color-border-default)] select-none";
+  // Interactive cards: shift up 2px, add shadow
+  const interactiveClasses = "hover:-translate-y-[2px] hover:shadow-[var(--shadow-card-hover)] cursor-pointer select-none";
 
   return (
     <div 

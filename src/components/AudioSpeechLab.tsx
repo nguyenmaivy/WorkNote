@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+﻿import React, { useState, useRef, useEffect } from "react";
 import { 
   Mic, 
   Square, 
@@ -389,17 +389,17 @@ export default function AudioSpeechLab() {
     <div className="flex flex-col gap-5 w-full" id="audiomodel-section">
       
       {/* Tab select headbar */}
-      <div className="flex items-center justify-between border-b border-border-default pb-3 flex-wrap gap-2.5">
-        <div className="flex gap-1 bg-surface-muted p-1 rounded-card">
+      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3 flex-wrap gap-2.5">
+        <div className="flex gap-1 bg-[var(--color-neutral-soft)] p-1 rounded-[var(--radius-card)]">
           <button
             onClick={() => {
               stopLiveTranslation();
               setActiveLabTab("dialect");
             }}
-            className={`py-2 px-4 rounded-card text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`py-2 px-4 rounded-[var(--radius-card)] text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeLabTab === "dialect"
-                ? "bg-white text-fg-brand-strong shadow-sm"
-                : "text-body hover:text-heading"
+                ? "bg-white text-[var(--color-primary-hover)] shadow-sm"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
             🎙️ Phân Tích Phương Ngữ & TTS
@@ -407,17 +407,17 @@ export default function AudioSpeechLab() {
           
           <button
             onClick={() => setActiveLabTab("live-translate")}
-            className={`py-2 px-4 rounded-card text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`py-2 px-4 rounded-[var(--radius-card)] text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeLabTab === "live-translate"
-                ? "bg-white text-fg-brand-strong shadow-sm"
-                : "text-body hover:text-heading"
+                ? "bg-white text-[var(--color-primary-hover)] shadow-sm"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
             ⚡ Dịch Live Video & Audio (Bilingual Subtitles)
           </button>
         </div>
 
-        <span className="text-[12px] bg-brand-soft text-fg-brand-strong font-black px-3 py-1.5 rounded-full uppercase tracking-wider border-2 border-border-brand-subtle">
+        <span className="text-[12px] bg-indigo-100 text-[var(--color-primary-hover)] font-black px-3 py-1.5 rounded-full uppercase tracking-wider border-2 border-indigo-100">
           {activeLabTab === "dialect" ? "Acoustic Audio Lab" : "Live Captioner"}
         </span>
       </div>
@@ -427,16 +427,16 @@ export default function AudioSpeechLab() {
         <Card className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Voice Recorder Block */}
-          <div className="flex flex-col gap-6 border-b-2 md:border-b-0 md:border-r-2 border-border-default pb-6 md:pb-0 md:pr-8">
+          <div className="flex flex-col gap-6 border-b-2 md:border-b-0 md:border-r-2 border-[var(--color-border-subtle)] pb-6 md:pb-0 md:pr-8">
             <div>
-              <h3 className="text-lg font-bold text-heading flex items-center gap-1.5">
+              <h3 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
                 <Mic className="text-rose-500 animate-pulse" size={24} />
                 Hệ Ghi Âm & Kiểm Tra Giọng Đọc
               </h3>
-              <p className="text-[14px] font-bold text-body mt-1">Cấp quyền micro để ghi lại giọng vùng miền của bạn và nghe lại dòng chảy âm học.</p>
+              <p className="text-[14px] font-bold text-[var(--color-text-secondary)] mt-1">Cấp quyền micro để ghi lại giọng vùng miền của bạn và nghe lại dòng chảy âm học.</p>
             </div>
 
-            <div className="bg-neutral-secondary-medium rounded-xl p-6 flex flex-col items-center justify-center border-2 border-border-default min-h-[180px]">
+            <div className="bg-[var(--color-neutral-soft)] rounded-xl p-6 flex flex-col items-center justify-center border-2 border-[var(--color-border-subtle)] min-h-[180px]">
               {isRecording ? (
                 <div className="flex flex-col items-center gap-4">
                   <div className="w-16 h-16 rounded-full bg-rose-500 flex items-center justify-center text-white cursor-pointer hover:bg-rose-600 transition animate-bounce" onClick={stopRecording}>
@@ -464,32 +464,32 @@ export default function AudioSpeechLab() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-3">
-                  <button onClick={startRecording} className="w-16 h-16 rounded-full bg-brand flex items-center justify-center text-white cursor-pointer hover:bg-brand-medium transition shadow-md shadow-indigo-100">
+                  <button onClick={startRecording} className="w-16 h-16 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white cursor-pointer hover:bg-[var(--color-primary-hover)] transition shadow-md shadow-indigo-100">
                     <Mic size={24} />
                   </button>
-                  <span className="text-body font-semibold text-xs mt-1">Bấm để bắt đầu thu âm</span>
-                  <p className="text-[10px] text-body-subtle text-center max-w-[200px]">Hãy thử đọc cụm từ khó: "Răng rứa chi rứa chi chi á"</p>
+                  <span className="text-[var(--color-text-secondary)] font-semibold text-xs mt-1">Bấm để bắt đầu thu âm</span>
+                  <p className="text-[10px] text-[var(--color-neutral)] text-center max-w-[200px]">Hãy thử đọc cụm từ khó: "Răng rứa chi rứa chi chi á"</p>
                 </div>
               )}
 
               {/* Recorded audio play button */}
               {recordedBlobUrl && (
-                <div className="mt-5 w-full bg-white border border-border-default rounded-card p-3 flex items-center justify-between gap-3 animate-fade-in">
-                  <span className="text-xs font-semibold text-heading">✓ Đã thu âm xong</span>
+                <div className="mt-5 w-full bg-white border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-3 flex items-center justify-between gap-3 animate-fade-in">
+                  <span className="text-xs font-semibold text-[var(--color-text-primary)]">✓ Đã thu âm xong</span>
                   <audio src={recordedBlobUrl} controls className="h-8 max-w-[180px]" />
                 </div>
               )}
             </div>
 
             {/* Phonological Insights */}
-            <div className="bg-brand-soft rounded-xl p-4 text-[14px] text-fg-brand-strong border-2 border-border-brand-subtle">
-              <h4 className="font-black flex items-center gap-1.5 text-fg-brand-strong mb-1.5">
+            <div className="bg-indigo-100 rounded-xl p-4 text-[14px] text-[var(--color-primary-hover)] border-2 border-indigo-100">
+              <h4 className="font-black flex items-center gap-1.5 text-[var(--color-primary-hover)] mb-1.5">
                 <Sparkles size={16} /> Đặc trưng Phương Ngữ Tiếng Việt:
               </h4>
-              <ul className="space-y-1.5 list-disc list-inside text-fg-brand-strong font-bold leading-relaxed">
-                <li><strong className="text-fg-brand-strong font-black">Bắc (Hà Nội):</strong> Nguyên âm đầy đủ chuẩn mực, 6 thanh điệu dứt khoát. Giữ âm sắc nín họng ở thanh ngã rất tinh chỉnh.</li>
-                <li><strong className="text-fg-brand-strong font-black">Trung (Huế/Vinh):</strong> Tông phẳng trầm, độ cao hẹp. Có xu hướng chuyển "hỏi/ngã" sang dấu nặng hơn, dùng nhiều đại từ phương địa chi địa.</li>
-                <li><strong className="text-fg-brand-strong font-black">Nam (Sài Gòn):</strong> Gộp thanh hỏi và ngã thành một. Thay đổi âm đầu r, v thành y và g (Cá rô → Cá gô, Đi về → Đi dề).</li>
+              <ul className="space-y-1.5 list-disc list-inside text-[var(--color-primary-hover)] font-bold leading-relaxed">
+                <li><strong className="text-[var(--color-primary-hover)] font-black">Bắc (Hà Nội):</strong> Nguyên âm đầy đủ chuẩn mực, 6 thanh điệu dứt khoát. Giữ âm sắc nín họng ở thanh ngã rất tinh chỉnh.</li>
+                <li><strong className="text-[var(--color-primary-hover)] font-black">Trung (Huế/Vinh):</strong> Tông phẳng trầm, độ cao hẹp. Có xu hướng chuyển "hỏi/ngã" sang dấu nặng hơn, dùng nhiều đại từ phương địa chi địa.</li>
+                <li><strong className="text-[var(--color-primary-hover)] font-black">Nam (Sài Gòn):</strong> Gộp thanh hỏi và ngã thành một. Thay đổi âm đầu r, v thành y và g (Cá rô → Cá gô, Đi về → Đi dề).</li>
               </ul>
             </div>
           </div>
@@ -497,23 +497,23 @@ export default function AudioSpeechLab() {
           {/* Text To Speech Playground */}
           <div className="flex flex-col gap-5 justify-between">
             <div>
-              <h3 className="text-lg font-bold text-heading flex items-center gap-1.5">
-                <Volume2 className="text-fg-brand" size={24} />
+              <h3 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
+                <Volume2 className="text-[var(--color-primary)]" size={24} />
                 Phòng Dịch Giọng Nói Tiếng Việt
               </h3>
-              <p className="text-[14px] font-bold text-body mt-1">Nhập văn bản tiếng Việt bất kỳ, chọn miền ngữ điệu phát âm để thử thách năng lực dịch giọng nói.</p>
+              <p className="text-[14px] font-bold text-[var(--color-text-secondary)] mt-1">Nhập văn bản tiếng Việt bất kỳ, chọn miền ngữ điệu phát âm để thử thách năng lực dịch giọng nói.</p>
             </div>
 
             <textarea
               value={textToSpeak}
               onChange={(e) => setTextToSpeak(e.target.value)}
-              className="w-full text-[14px] font-bold p-3.5 border-2 border-border-default focus:border-border-brand focus:outline-none rounded-xl bg-neutral-primary min-h-[100px] text-heading leading-normal"
+              className="w-full text-[14px] font-bold p-3.5 border-2 border-[var(--color-border-subtle)] focus:border-[var(--color-primary)] focus:outline-none rounded-xl bg-[var(--color-surface)] min-h-[100px] text-[var(--color-text-primary)] leading-normal"
               placeholder="Nhập câu viết bằng tiếng lóng, không dấu hoặc có dấu để nghe thử phát âm..."
             />
 
             {/* Dialect region selective button */}
             <div className="space-y-2">
-              <label className="text-[10px] uppercase font-bold text-body-subtle tracking-wider">Chọn âm điệu vùng miền:</label>
+              <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)] tracking-wider">Chọn âm điệu vùng miền:</label>
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { id: "north", label: "Hà Nội (Bắc)", icon: "🎤" },
@@ -525,8 +525,8 @@ export default function AudioSpeechLab() {
                     onClick={() => setSelectedRegion(reg.id as any)}
                     className={`py-2 px-2 text-xs rounded-lg font-medium transition-all flex flex-col items-center gap-1 border ${
                       selectedRegion === reg.id
-                        ? "bg-brand text-white border-indigo-600 shadow-sm"
-                        : "bg-white text-body border-border-default hover:bg-surface-muted"
+                        ? "bg-[var(--color-primary)] text-white border-indigo-600 shadow-sm"
+                        : "bg-white text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:bg-[var(--color-neutral-soft)]"
                     }`}
                   >
                     <span className="text-base">{reg.icon}</span>
@@ -539,7 +539,7 @@ export default function AudioSpeechLab() {
             {/* Pitch / speed configuration */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-[11px] font-medium text-body">
+                <div className="flex justify-between text-[11px] font-medium text-[var(--color-text-secondary)]">
                   <span>Tốc độ đọc:</span>
                   <span>{ttsSpeed}x</span>
                 </div>
@@ -550,12 +550,12 @@ export default function AudioSpeechLab() {
                   step="0.1"
                   value={ttsSpeed}
                   onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-surface-muted rounded-lg appearance-none cursor-pointer accent-brand"
+                  className="w-full h-1.5 bg-[var(--color-neutral-soft)] rounded-lg appearance-none cursor-pointer accent-brand"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-[11px] font-medium text-body">
+                <div className="flex justify-between text-[11px] font-medium text-[var(--color-text-secondary)]">
                   <span>Độ Cao (Pitch):</span>
                   <span>{ttsPitch}x</span>
                 </div>
@@ -566,7 +566,7 @@ export default function AudioSpeechLab() {
                   step="0.1"
                   value={ttsPitch}
                   onChange={(e) => setTtsPitch(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-surface-muted rounded-lg appearance-none cursor-pointer accent-brand"
+                  className="w-full h-1.5 bg-[var(--color-neutral-soft)] rounded-lg appearance-none cursor-pointer accent-brand"
                 />
               </div>
             </div>
@@ -599,7 +599,7 @@ export default function AudioSpeechLab() {
             </div>
 
             {ttsStatus && (
-              <p className="text-[12px] text-fg-brand text-center font-black bg-brand-soft border-2 border-border-brand-subtle rounded-xl py-1.5 px-2 animate-pulse">
+              <p className="text-[12px] text-[var(--color-primary)] text-center font-black bg-indigo-100 border-2 border-indigo-100 rounded-xl py-1.5 px-2 animate-pulse">
                 ⚡ {ttsStatus}
               </p>
             )}
@@ -612,13 +612,13 @@ export default function AudioSpeechLab() {
         <Card className="p-6 flex flex-col gap-6">
           
           {/* Header instructions info */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b-2 border-border-default pb-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b-2 border-[var(--color-border-subtle)] pb-4">
             <div>
-              <h3 className="text-lg font-bold text-heading flex items-center gap-2">
-                <Languages className="text-fg-brand" size={24} />
+              <h3 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                <Languages className="text-[var(--color-primary)]" size={24} />
                 Trung Tâm Thuyết Phụ Đề & Dịch Thuật Video Trực Tiếp
               </h3>
-              <p className="text-[14px] font-bold text-body mt-1">
+              <p className="text-[14px] font-bold text-[var(--color-text-secondary)] mt-1">
                 Tự động bắt âm thanh từ Video bạn phát hoặc Microphone để bóc tách lời thoại và hiển thị dịch song ngữ trực quan thời gian thực.
               </p>
             </div>
@@ -627,14 +627,14 @@ export default function AudioSpeechLab() {
             <div className="flex flex-wrap items-center gap-2.5">
               
               {/* Select Source Input */}
-              <div className="flex items-center gap-1.5 bg-surface-muted border border-border-default rounded-card px-2.5 py-1">
-                <span className="text-[10px] uppercase font-black text-body-subtle">Nguồn:</span>
+              <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] px-2.5 py-1">
+                <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Nguồn:</span>
                 <button
                   type="button"
                   onClick={() => !isLiveTranslating && setLiveInputSource("mic")}
                   disabled={isLiveTranslating}
                   className={`px-2 py-1 text-[10px] font-extrabold rounded-lg transition-all ${
-                    liveInputSource === "mic" ? "bg-brand text-white" : "text-body hover:text-heading"
+                    liveInputSource === "mic" ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
                   } disabled:opacity-50`}
                 >
                   🎤 Mic
@@ -644,7 +644,7 @@ export default function AudioSpeechLab() {
                   onClick={() => !isLiveTranslating && setLiveInputSource("display")}
                   disabled={isLiveTranslating}
                   className={`px-2 py-1 text-[10px] font-extrabold rounded-lg transition-all flex items-center gap-1 ${
-                    liveInputSource === "display" ? "bg-brand text-white" : "text-body hover:text-heading"
+                    liveInputSource === "display" ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
                   } disabled:opacity-50`}
                   title="Chia sẻ tab trình duyệt hoặc màn hình hệ thống kèm tiếng để dịch trực tiếp"
                 >
@@ -653,13 +653,13 @@ export default function AudioSpeechLab() {
               </div>
 
               {/* Source Lang Selection */}
-              <div className="flex items-center gap-1.5 bg-surface-muted border border-border-default rounded-card px-2.5 py-1">
-                <span className="text-[10px] uppercase font-black text-body-subtle">Gốc:</span>
+              <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] px-2.5 py-1">
+                <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Gốc:</span>
                 <select
                   value={liveSourceLang}
                   onChange={(e) => setLiveSourceLang(e.target.value)}
                   disabled={isLiveTranslating}
-                  className="bg-transparent border-0 outline-none text-xs text-heading font-bold"
+                  className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
                 >
                   <option value="auto">🌐 Tự Nhiên (Auto)</option>
                   <option value="en">🇺🇸 Tiếng Anh (English)</option>
@@ -670,13 +670,13 @@ export default function AudioSpeechLab() {
               </div>
 
               {/* Target Lang Selection */}
-              <div className="flex items-center gap-1.5 bg-surface-muted border border-border-default rounded-card px-2.5 py-1">
-                <span className="text-[10px] uppercase font-black text-body-subtle">Đích:</span>
+              <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] px-2.5 py-1">
+                <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Đích:</span>
                 <select
                   value={liveTargetLang}
                   onChange={(e) => setLiveTargetLang(e.target.value)}
                   disabled={isLiveTranslating}
-                  className="bg-transparent border-0 outline-none text-xs text-heading font-bold"
+                  className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
                 >
                   <option value="vi">🇻🇳 Tiếng Việt</option>
                   <option value="en">🇺🇸 Tiếng Anh</option>
@@ -691,12 +691,12 @@ export default function AudioSpeechLab() {
             {/* Left side controller console */}
             <div className="lg:col-span-4 flex flex-col gap-4">
               
-              <div className="bg-surface-muted rounded-card p-5 border border-border-default flex flex-col items-center justify-center text-center gap-3">
+              <div className="bg-[var(--color-neutral-soft)] rounded-[var(--radius-card)] p-5 border border-[var(--color-border-subtle)] flex flex-col items-center justify-center text-center gap-3">
                 
                 {isLiveTranslating ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="relative flex justify-center items-center">
-                      <div className="absolute w-14 h-14 bg-brand/25 rounded-full animate-ping" />
+                      <div className="absolute w-14 h-14 bg-[var(--color-primary)]/25 rounded-full animate-ping" />
                       <button
                         onClick={stopLiveTranslation}
                         className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white cursor-pointer hover:bg-red-700 transition relative z-10"
@@ -710,7 +710,7 @@ export default function AudioSpeechLab() {
                       <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping" />
                       Live Translating
                     </span>
-                    <p className="text-[10px] text-body-subtle max-w-[200px]" style={{ wordBreak: "break-word" }}>
+                    <p className="text-[10px] text-[var(--color-neutral)] max-w-[200px]" style={{ wordBreak: "break-word" }}>
                       Mô hình Gemini 3.5 đang tự động bắt tiếng, chuyển văn bản gốc và hiển thị bản dịch song ngữ ở bảng bên phải.
                     </p>
                   </div>
@@ -718,12 +718,12 @@ export default function AudioSpeechLab() {
                   <div className="flex flex-col items-center gap-3">
                     <button
                       onClick={startLiveTranslation}
-                      className="w-14 h-14 rounded-full bg-brand flex items-center justify-center text-white cursor-pointer hover:bg-brand-medium transition shadow-md shadow-indigo-100"
+                      className="w-14 h-14 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white cursor-pointer hover:bg-[var(--color-primary-hover)] transition shadow-md shadow-indigo-100"
                     >
                       <Play size={20} fill="white" />
                     </button>
-                    <span className="text-xs font-black text-heading">Bắt đầu dịch âm thanh gốc</span>
-                    <p className="text-[10px] text-body-subtle max-w-[180px]">
+                    <span className="text-xs font-black text-[var(--color-text-primary)]">Bắt đầu dịch âm thanh gốc</span>
+                    <p className="text-[10px] text-[var(--color-neutral)] max-w-[180px]">
                       Hệ thống sẽ chạy chu kỳ bắt âm chuẩn hóa 3 giây một lần liên tục để dịch thuật qua WebSocket.
                     </p>
                   </div>
@@ -732,7 +732,7 @@ export default function AudioSpeechLab() {
               </div>
 
               {/* Instructions Guide Alert */}
-              <div className="bg-amber-50/50 rounded-card p-4 text-amber-900 border border-amber-100/40 flex gap-2.5 items-start">
+              <div className="bg-amber-50/50 rounded-[var(--radius-card)] p-4 text-amber-900 border border-amber-100/40 flex gap-2.5 items-start">
                 <Info size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
                 <div className="text-[11px] leading-relaxed">
                   <h4 className="font-bold text-amber-800">Hướng dẫn bắt tiếng máy tính:</h4>
@@ -749,8 +749,8 @@ export default function AudioSpeechLab() {
             {/* Right side live subtitles viewer (8 cols) */}
             <div className="lg:col-span-8 flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-body uppercase tracking-widest flex items-center gap-1">
-                  <Activity size={10} className="text-fg-brand animate-pulse" />
+                <span className="text-[10px] font-black text-[var(--color-text-secondary)] uppercase tracking-widest flex items-center gap-1">
+                  <Activity size={10} className="text-[var(--color-primary)] animate-pulse" />
                   Bảng phụ đề song ngữ trực tiếp
                 </span>
 
@@ -768,7 +768,7 @@ export default function AudioSpeechLab() {
                     type="button"
                     onClick={exportSubtitlesTxt}
                     disabled={liveTranscript.length === 0}
-                    className="text-[10px] font-bold text-fg-brand hover:text-fg-brand-strong disabled:opacity-30 transition flex items-center gap-1"
+                    className="text-[10px] font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] disabled:opacity-30 transition flex items-center gap-1"
                     title="Xuất kịch bản phụ đề ra tệp .txt"
                   >
                     <Download size={11} /> Xuất chữ (.txt)
@@ -777,13 +777,13 @@ export default function AudioSpeechLab() {
               </div>
 
               {/* Scrolling screen subtitles wrapper */}
-              <div className="bg-slate-900 rounded-card p-5 border border-slate-800 flex-1 min-h-[250px] max-h-[350px] overflow-y-auto flex flex-col gap-4 text-slate-100 font-sans shadow-inner scrollbar-thin">
+              <div className="bg-slate-900 rounded-[var(--radius-card)] p-5 border border-slate-800 flex-1 min-h-[250px] max-h-[350px] overflow-y-auto flex flex-col gap-4 text-slate-100 font-sans shadow-inner scrollbar-thin">
                 
                 {liveTranscript.length === 0 ? (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-body border border-dashed border-slate-800 rounded-card">
+                  <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-[var(--color-text-secondary)] border border-dashed border-slate-800 rounded-[var(--radius-card)]">
                     <span className="text-xl mb-1 flex items-center justify-center animate-pulse">📺</span>
-                    <p className="text-xs font-bold text-body-subtle">Rạp Phụ Đề Đang Đóng</p>
-                    <p className="text-[10px] text-body mt-0.5 max-w-[280px]">
+                    <p className="text-xs font-bold text-[var(--color-neutral)]">Rạp Phụ Đề Đang Đóng</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 max-w-[280px]">
                       Vui lòng chọn nút kích hoạt phía bên trái và bật phát video bài giảng trên máy tính của bạn để phụ đề đồng hành xuất hiện tại đây!
                     </p>
                   </div>
@@ -795,7 +795,7 @@ export default function AudioSpeechLab() {
                         idx === liveTranscript.length - 1 ? "opacity-100 font-medium" : "opacity-75"
                       }`}
                     >
-                      <div className="flex justify-between items-center text-[9px] font-mono text-fg-brand">
+                      <div className="flex justify-between items-center text-[9px] font-mono text-[var(--color-primary)]">
                         <span>⏱️ Mốc [{line.time}]</span>
                         {line.isDemo && (
                           <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded-full text-[8px] font-black">
@@ -805,7 +805,7 @@ export default function AudioSpeechLab() {
                       </div>
                       
                       {line.original && (
-                        <p className="text-xs text-body-subtle italic font-medium leading-relaxed">
+                        <p className="text-xs text-[var(--color-neutral)] italic font-medium leading-relaxed">
                           "{line.original}"
                         </p>
                       )}
@@ -815,7 +815,7 @@ export default function AudioSpeechLab() {
                           ➟ {line.translated}
                         </p>
                       ) : (
-                        <p className="text-[10px] text-body italic">
+                        <p className="text-[10px] text-[var(--color-text-secondary)] italic">
                           (Dịch giả đang tính toán...)
                         </p>
                       )}
@@ -829,7 +829,7 @@ export default function AudioSpeechLab() {
 
               {/* Status footer line */}
               {liveStatus && (
-                <div className="text-[9px] font-mono text-body bg-surface-muted border border-border-default/50 py-1.5 px-3 rounded-card flex items-center justify-between">
+                <div className="text-[9px] font-mono text-[var(--color-text-secondary)] bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)]/50 py-1.5 px-3 rounded-[var(--radius-card)] flex items-center justify-between">
                   <span className="truncate">{liveStatus}</span>
                   {isLiveTranslating && (
                     <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping flex-shrink-0" />

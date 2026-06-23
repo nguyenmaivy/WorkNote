@@ -1,27 +1,26 @@
 import React from 'react';
 
-export type ButtonVariant = 
-  | 'brand' 
-  | 'secondary' 
-  | 'tertiary' 
-  | 'success' 
-  | 'danger' 
-  | 'warning' 
-  | 'dark' 
-  | 'ghost';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'destructive'
+  | 'danger'
+  | 'brand'
+  | 'tertiary';
 
-export type ButtonSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'base' | 'lg';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function Button({ 
-  variant = 'brand', 
-  size = 'base', 
+  variant = 'primary', 
+  size = 'md', 
   icon, 
   children, 
   disabled, 
@@ -29,66 +28,44 @@ export function Button({
   ...props 
 }: ButtonProps) {
   
-  const baseClasses = "inline-flex items-center justify-center border-2 font-bold uppercase tracking-[0.8px] transition-all duration-100 ease-out select-none outline-none";
+  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-200 ease-out select-none outline-none rounded-[6px] hover:-translate-y-[1px]";
   
-  // Size classes
+  // Genesis Sizes
   const sizeClasses = {
-    xs: "text-[12px] px-[14px] py-[8px] rounded-[12px]",
-    sm: "text-[13px] px-[16px] py-[10px] rounded-[12px]",
-    base: "text-[15px] px-[20px] py-[14px] rounded-[12px]",
-    lg: "text-[16px] px-[28px] py-[16px] rounded-[12px]",
-    xl: "text-[17px] px-[32px] py-[18px] rounded-[12px]",
+    xs:   "text-[12px] px-2.5 h-[28px]",
+    sm:   "text-[13px] px-3 h-[32px]",
+    md:   "text-[14px] px-4 h-[38px]",
+    base: "text-[14px] px-4 h-[38px]",
+    lg:   "text-[15px] px-5 h-[44px]",
   };
 
-  // Variant classes (bg, text, border, hover)
-  // Note: Focus rings could be added with focus-visible
+  // Genesis Variants
   const variantClasses = {
-    brand: "bg-brand border-transparent text-white hover:bg-brand-medium focus-visible:ring-4 focus-visible:ring-brand-soft",
-    secondary: "bg-neutral-primary-soft border-default text-body hover:bg-neutral-secondary-medium hover:text-heading focus-visible:ring-4 focus-visible:ring-neutral-tertiary",
-    tertiary: "bg-neutral-primary-soft border-default text-fg-brand hover:bg-brand-softer focus-visible:ring-4 focus-visible:ring-brand-soft",
-    success: "bg-success border-transparent text-white hover:bg-success-medium focus-visible:ring-4 focus-visible:ring-success-soft",
-    danger: "bg-danger border-transparent text-white hover:bg-danger-medium focus-visible:ring-4 focus-visible:ring-danger-soft",
-    warning: "bg-warning border-transparent text-dark hover:bg-warning-medium focus-visible:ring-4 focus-visible:ring-warning-soft",
-    dark: "bg-dark border-transparent text-white hover:bg-dark-strong focus-visible:ring-4 focus-visible:ring-neutral-tertiary",
-    ghost: "bg-transparent border-transparent text-heading hover:bg-neutral-secondary-medium focus-visible:ring-4 focus-visible:ring-neutral-tertiary",
+    primary:     "bg-[var(--color-primary)] text-white border border-transparent hover:bg-[var(--color-primary-hover)] hover:shadow-[var(--shadow-primary-glow)] focus-visible:shadow-[var(--shadow-focus-ring)]",
+    brand:       "bg-[var(--color-primary)] text-white border border-transparent hover:bg-[var(--color-primary-hover)] hover:shadow-[var(--shadow-primary-glow)] focus-visible:shadow-[var(--shadow-focus-ring)]",
+    secondary:   "bg-transparent text-[var(--color-text-primary)] border border-[var(--color-border-default)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] focus-visible:shadow-[var(--shadow-focus-ring)]",
+    ghost:       "bg-transparent text-[var(--color-text-secondary)] border border-transparent hover:text-[var(--color-primary)] hover:bg-[var(--color-neutral-soft)] focus-visible:shadow-[var(--shadow-focus-ring)]",
+    tertiary:    "bg-transparent text-[var(--color-text-secondary)] border border-transparent hover:text-[var(--color-primary)] hover:bg-[var(--color-neutral-soft)] focus-visible:shadow-[var(--shadow-focus-ring)]",
+    destructive: "bg-transparent text-[var(--color-error)] border border-[var(--color-error)] hover:bg-[var(--color-error-soft)] focus-visible:shadow-[var(--shadow-focus-ring)]",
+    danger:      "bg-transparent text-[var(--color-error)] border border-[var(--color-error)] hover:bg-[var(--color-error-soft)] focus-visible:shadow-[var(--shadow-focus-ring)]",
   };
 
-  // Drop-shadow style strings (Tailwind v4 allows arbitrary var usage, but we can set style directly for simplicity of dynamic values)
-  const getShadowStyle = (v: ButtonVariant, d: boolean) => {
-    if (d || v === 'ghost') return {};
-    return {
-      boxShadow: `0 4px 0 var(--shadow-${v === 'secondary' || v === 'tertiary' ? 'secondary' : v})`
-    };
-  };
-
-  const disabledClasses = "bg-disabled border-default text-fg-disabled cursor-not-allowed opacity-100 hover:bg-disabled active:translate-y-0 active:shadow-none";
+  const disabledClasses = "opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-none";
   
-  // The pressed state drops the button 2px down and reduces shadow by 2px (handled in CSS or active variant)
-  const activeClasses = (disabled || variant === 'ghost') 
-    ? "" 
-    : "active:translate-y-[2px] active:shadow-[0_2px_0_var(--shadow-color)]"; // Wait, dynamic shadow color on active is tricky in pure tailwind class without custom css, so we might need a style hack or just let the style object be updated.
-  
-  const isGhostOrDisabled = disabled || variant === 'ghost';
-
   return (
     <button
       disabled={disabled}
       className={`
         ${baseClasses} 
         ${sizeClasses[size]} 
-        ${disabled ? disabledClasses : variantClasses[variant]} 
-        ${isGhostOrDisabled ? '' : 'button-pressable'} 
+        ${variantClasses[variant]}
+        ${disabled ? disabledClasses : ''}
         ${className}
       `}
-      style={{
-        ...getShadowStyle(variant, !!disabled),
-        // Custom property to allow hover/active to easily reference the shadow color
-        ['--shadow-color' as any]: `var(--shadow-${variant === 'secondary' || variant === 'tertiary' ? 'secondary' : variant})`
-      }}
       {...props}
     >
-      <div className="flex items-center gap-[8px]">
-        {icon && <span className="flex items-center justify-center w-[18px] h-[18px] [&>svg]:w-full [&>svg]:h-full">{icon}</span>}
+      <div className="flex items-center gap-2">
+        {icon && <span className="flex items-center justify-center shrink-0">{icon}</span>}
         {children && <span>{children}</span>}
       </div>
     </button>

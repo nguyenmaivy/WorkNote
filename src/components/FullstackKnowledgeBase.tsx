@@ -1,22 +1,25 @@
 ﻿import React, { useState } from "react";
 import { techTopics } from "../data/techTopics";
-import { 
-  BookOpen, 
-  Code, 
-  Layers, 
-  MessageSquare, 
-  ShieldAlert, 
-  Cpu, 
-  Heart, 
-  Share2, 
-  Zap, 
-  ArrowRight, 
-  ShieldCheck, 
+import {
+  BookOpen,
+  Code,
+  Layers,
+  MessageSquare,
+  ShieldAlert,
+  Cpu,
+  Heart,
+  Share2,
+  Zap,
+  ArrowRight,
+  ShieldCheck,
   CheckCircle2,
   Server,
   Globe,
   Database,
-  Smartphone
+  Smartphone,
+  Search,
+  Sparkles,
+  GraduationCap,
 } from "lucide-react";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
@@ -191,6 +194,44 @@ const persistFiles = (files) => {
 
   return (
     <div className="flex flex-col gap-6 w-full animate-fade-in" id="knowledgebase-section">
+      {/* ── Hero Search Section — Stitch Knowledge Hub ─────────── */}
+      <section className="relative overflow-hidden rounded-[16px] px-6 py-8 md:py-10 text-center bg-gradient-to-br from-[var(--color-primary)]/5 via-white to-[var(--color-secondary)]/5 border border-[var(--color-border-subtle)]">
+        <div
+          aria-hidden
+          className="absolute inset-0 z-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 0% 0%, var(--color-primary) 0%, transparent 35%), radial-gradient(circle at 100% 100%, var(--color-secondary) 0%, transparent 35%)",
+          }}
+        />
+        <div className="relative z-10 max-w-2xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--color-border-subtle)] shadow-[var(--shadow-card)] text-[12px] font-medium text-[var(--color-secondary)]">
+            <Sparkles size={13} /> AI-curated technical mastery paths
+          </div>
+          <h2 className="text-[28px] md:text-[34px] font-bold text-[var(--color-text-primary)] tracking-tight font-display leading-tight">
+            Knowledge Hub
+          </h2>
+          <p className="text-[14px] md:text-[16px] text-[var(--color-text-secondary)] leading-relaxed">
+            Welcome back, Scholar. Explore deep learning resources and start your next
+            technical mastery path or document analysis.
+          </p>
+          <div className="mt-6 flex items-center bg-white shadow-[0_8px_28px_rgba(26,28,28,0.08)] rounded-full p-1.5 border border-[var(--color-border-subtle)] focus-within:border-[var(--color-primary)] focus-within:shadow-[var(--shadow-primary-glow)] transition-all">
+            <Search size={18} className="mx-3 text-[var(--color-primary)] shrink-0" />
+            <input
+              className="w-full py-2.5 pr-3 bg-transparent border-none focus:ring-0 focus:outline-none text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]"
+              placeholder="Search documentation, courses, or analysis files…"
+              type="text"
+            />
+            <button
+              onClick={() => setKnowledgeTab("topics")}
+              className="bg-[var(--color-primary)] text-white px-5 py-2.5 rounded-full text-[13px] font-medium hover:bg-[var(--color-primary-hover)] active:scale-95 transition-all whitespace-nowrap"
+            >
+              Explore
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Tab Switcher at the top of Technical Area */}
       <div className="flex bg-[var(--color-neutral-soft)] p-1.5 rounded-[var(--radius-card)] border border-[var(--color-border-subtle)]/40 max-w-md self-center md:self-start">
         <button
@@ -724,6 +765,34 @@ const persistFiles = (files) => {
           </div>
         </div>
       )}
+
+      {/* ── Knowledge Stats Footer — Stitch style ──────────────── */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-[var(--color-border-subtle)]">
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Total Modules</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-text-primary)] leading-tight">
+            {techTopics.length * 16}
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Hours Learned</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-text-primary)] leading-tight">
+            42.5
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Certificates</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-text-primary)] leading-tight">
+            3
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Lab Score</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-primary)] leading-tight">
+            88%
+          </p>
+        </div>
+      </section>
     </div>
   );
 }

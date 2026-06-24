@@ -1,0 +1,321 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RPG Games &amp; Puzzles - VietLearn AI Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-container-high": "#e6e8ea", "secondary-fixed": "#89f5e7", "tertiary-fixed": "#e1e0ff", "on-primary": "#ffffff", "tertiary-container": "#4c4ed9", "inverse-surface": "#2d3133", "surface-variant": "#e0e3e5", background: "#f7f9fb", "on-surface": "#191c1e", "secondary-fixed-dim": "#6bd8cb", "on-surface-variant": "#434654", "surface-tint": "#1353d8", "surface-dim": "#d8dadc", "primary-fixed": "#dbe1ff", "on-secondary-fixed-variant": "#005049", "on-tertiary-fixed-variant": "#2f2ebe", "primary-container": "#1a56db", "surface-container": "#eceef0", "outline-variant": "#c3c5d7", "inverse-on-surface": "#eff1f3", "surface-container-low": "#f2f4f6", "surface-container-highest": "#e0e3e5", "on-tertiary-container": "#dbdaff", surface: "#f7f9fb", "tertiary-fixed-dim": "#c0c1ff", "surface-bright": "#f7f9fb", "on-primary-container": "#d4dcff", "on-secondary-container": "#006f66", "on-secondary-fixed": "#00201d", "on-primary-fixed": "#00174d", "inverse-primary": "#b5c4ff", "secondary-container": "#86f2e4", "error-container": "#ffdad6", secondary: "#006a61", "on-tertiary": "#ffffff", "on-error-container": "#93000a", primary: "#003fb1", "on-background": "#191c1e", "primary-fixed-dim": "#b5c4ff", error: "#ba1a1a", "on-secondary": "#ffffff", tertiary: "#3231c1", "on-tertiary-fixed": "#07006c", "on-primary-fixed-variant": "#003dab", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", outline: "#737686"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {sm: "12px", "container-max": "1280px", lg: "48px", gutter: "24px", xl: "80px", base: "8px", xs: "4px", md: "24px"}, fontFamily: {"headline-lg-mobile": ["Inter"], "title-md": ["Inter"], "body-md": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], caption: ["Inter"], "body-lg": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}], "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}], "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}], caption: ["12px", {lineHeight: "16px", fontWeight: "400"}], "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}]}}}};</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(0, 106, 97, 0.15);
+            border: 1px solid rgba(0, 106, 97, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-primary/20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm dark:bg-inverse-surface/80">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Button -->
+<button class="lg:hidden text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-inverse-primary hidden md:block">VietLearn AI Lab</h1>
+<h1 class="font-title-md text-title-md font-bold text-primary dark:text-inverse-primary md:hidden">VietLearn</h1>
+</div>
+<div class="flex-1 max-w-md mx-4 hidden md:block">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors bg-surface/50 backdrop-blur-sm" placeholder="Search lessons, games..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 p-2 rounded-full hover:bg-surface-variant relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 p-1 rounded-full hover:bg-surface-variant">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A small circular avatar image showing a stylized 3D rendered student character with a friendly expression, wearing glasses and a blue hoodie, set against a solid light blue background. The style is modern, clean, and corporate friendly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsMx10OXFfpSi_6YppBPqHU4j2kjTORn6PDnNx7H1DqIRedrWGbQQ1IBAPBT1oEIJZIem5WPk-oM3xFsD7BGysQ7W3iBf50raOxp2LVb33NDpH7wMdDi0O2b-tztir9xVN5GePrahmdSsoJF5mOOgM8x6hBbLkN7UvWTuASyceAvI_SK98rotL6gAvGQfPJCxNhAy4H6m_5WRM2jCyaeRzE3GStd2IopkxYPKDq543eO1o7GBm8PfAOoLQp_tnmccC56hjPkZvP3yd">
+</button>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-16 max-w-container-max mx-auto">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-16 hidden lg:flex flex-col bg-surface-container-low dark:bg-surface-container-highest shadow-sm p-4 gap-base z-40 pb-20 overflow-y-auto">
+<div class="mb-6 px-2">
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-1">Learning Hub</h2>
+<div class="flex items-center gap-2 mt-4">
+<img class="w-10 h-10 rounded-full object-cover border-2 border-primary-container" data-alt="A small circular avatar image showing a stylized 3D rendered student character with a friendly expression, wearing glasses and a blue hoodie, set against a solid light blue background. The style is modern, clean, and corporate friendly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhggJopyuAppJN2JhkMTgo6qiWUTd0fnSpmi03rotQrpMqpOP_2Ut9eVGyryPWRqpFFhz37dwJc0C6sHtvtwv-B6gImnmSwewooihLDxLRAxFM7Eqg_XLV2qS019zIh9B5dzEhfSEM-pmqTUwlMZJJgyoeDXWV2c6ItOgBefmggBXYbTnXvh-tJogIYvvcYZ5BAydlEJglTPNWJSrPx3dflFvw45h4S9AppmjjZpZPX-Kb8vf7_3ZN0HPwegKyMKjwrynhMcLLE17g">
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">User Avatar</p>
+<p class="font-caption text-caption text-on-surface-variant">Academic Level 4</p>
+</div>
+</div>
+<button class="w-full mt-4 bg-primary text-on-primary font-label-md text-label-md py-2.5 rounded-lg flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Study Session
+                </button>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">folder_open</span>
+<span class="font-label-md text-label-md">Library</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">smart_toy</span>
+<span class="font-label-md text-label-md">AI Chatbot</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">account_tree</span>
+<span class="font-label-md text-label-md">Mind Maps</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2.5 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined icon-fill">sports_esports</span>
+<span class="font-label-md text-label-md">RPG Games</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">graphic_eq</span>
+<span class="font-label-md text-label-md">Audio Lab</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">menu_book</span>
+<span class="font-label-md text-label-md">Knowledge</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Spending</span>
+</a>
+</div>
+<div class="mt-auto border-t border-outline-variant/30 pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 text-on-surface-variant hover:bg-surface-variant rounded-lg hover:text-primary transition-all duration-200 active:scale-95 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full lg:ml-64 p-4 md:p-gutter lg:p-lg overflow-y-auto pb-24 lg:pb-lg">
+<!-- Hero Section -->
+<section class="mb-8 relative rounded-xl overflow-hidden bg-primary/5 p-6 md:p-8 border border-primary/10">
+<div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 100% 0%, #1a56db 0%, transparent 50%);"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+<div class="max-w-2xl">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary">swords</span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider font-semibold">Gamified Learning</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-3">Knowledge Quests &amp; Puzzles</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Level up your understanding through interactive challenges. Explore 2D worlds, solve logic puzzles, and master your academic subjects in a distraction-free, immersive environment.</p>
+</div>
+<div class="hidden md:flex flex-col gap-3 bg-surface p-4 rounded-xl shadow-sm border border-outline-variant/30 min-w-[200px]">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Daily Streak</span>
+<span class="flex items-center text-orange-500 font-bold"><span class="material-symbols-outlined text-[18px] mr-1 icon-fill">local_fire_department</span> 12</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-orange-400 w-3/4 rounded-full"></div>
+</div>
+<p class="font-caption text-caption text-on-surface-variant text-right">3 days to next tier</p>
+</div>
+</div>
+</section>
+<!-- Grid Layout for Main Content -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Left Column (Games Grid) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">view_cozy</span>
+                        Active Challenges
+                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+<!-- RPG Game Card -->
+<div class="group bg-surface rounded-xl border border-outline-variant/40 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative cursor-pointer flex flex-col h-full hover:-translate-y-1">
+<div class="h-32 bg-surface-container-low relative w-full overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A clean, pixel-art style or low-poly 2D top-down landscape showing a small medieval-academic hybrid village. There are trees, a stone path, and a stylized library building. The color palette uses corporate blues, soft greens, and warm grays, maintaining a bright, modern light-mode aesthetic without looking too chaotic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDmbOQcPwITZuBSNOb2Z3EmDyfg208TYNqQ_ADz1Wf4pOpDDlbnsYrOoREXZUO4HPm79lNY_iRPsfd-q8RVLkSUHupO98m1F25L5OfvUhAIaYiiHE8PkhIAamzUoEoXYmDij3CcgLw_d1nBAE-I9au--Bh9dkF7jgztcw41fm00N3ILLXezs5L09HTRAdfRLCzhYJqyuPeHqiK6iiZQ22vLrqoS0tPKCCzHAyrAFOYyZmVh9OkNKgV9UtyERDQtXsZfbPUsS4dbb0-u')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+<span class="absolute top-3 left-3 bg-primary text-on-primary font-caption text-caption px-2 py-1 rounded-md font-semibold flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">map</span> RPG Quest
+                                </span>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<h4 class="font-title-md text-title-md text-on-surface mb-2">Knowledge Kingdom</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 flex-1">Explore a top-down world by answering technology-related questions to unlock new regions.</p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/20">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+<span class="font-caption text-caption text-on-surface-variant">Est. 20 min</span>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 px-4 py-1.5 rounded-lg font-label-md text-label-md transition-colors">Play Now</button>
+</div>
+</div>
+</div>
+<!-- Puzzle Game Card -->
+<div class="group bg-surface rounded-xl border border-outline-variant/40 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative cursor-pointer flex flex-col h-full hover:-translate-y-1">
+<div class="h-32 bg-surface-container-low relative w-full overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A clean, modern graphic showing an abstract representation of computer memory banks or a logic puzzle grid. It uses glowing cyan and primary blue geometric shapes against a soft off-white background. The aesthetic is highly organized, high-tech but minimalist, fitting a modern corporate light-mode theme." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDqO-rm2s90DcLg4UYlY0FKf0jmv7JTgWXfJj6_UtvAc_9SCKUpgbnewjsY1U9kjdjtYhsBrDvLbth4NF5_i3VLXF8Sg9FggxItqi3n7KvyI5zPm5of2U21nhpzXhW6-XmVBt5QcSSyGI6LufrbjaqFmoyoGzp7F6U4e0Aj5_l1BiXUgKGcxK1YLAeCDD7DCw6AFUmH-O4pJxAZ9jF9xHoLf8FgQzbicTR2IRE8t7f6JIbwVk7ZGtFABOlGFT-pTmBL5J52epBhpjy2')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+<span class="absolute top-3 left-3 bg-secondary text-on-secondary font-caption text-caption px-2 py-1 rounded-md font-semibold flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">extension</span> Puzzle
+                                </span>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<h4 class="font-title-md text-title-md text-on-surface mb-2">Binary Breach</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 flex-1">A logic-based puzzle game testing your algorithmic thinking and sequence recognition.</p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/20">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+<span class="font-caption text-caption text-on-surface-variant">Est. 15 min</span>
+</div>
+<button class="bg-primary/10 text-primary hover:bg-primary/20 px-4 py-1.5 rounded-lg font-label-md text-label-md transition-colors">Play Now</button>
+</div>
+</div>
+</div>
+<!-- Quick Quiz Card -->
+<div class="group bg-surface rounded-xl border border-outline-variant/40 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden relative cursor-pointer flex flex-col h-full md:col-span-2 hover:-translate-y-1">
+<div class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-tertiary/10 to-transparent pointer-events-none"></div>
+<div class="p-5 flex flex-col md:flex-row items-start md:items-center gap-4 relative z-10">
+<div class="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary text-2xl">timer</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-title-md text-title-md text-on-surface">Quick Quiz Challenge</h4>
+<span class="bg-surface-container-high text-on-surface-variant font-caption text-caption px-2 py-0.5 rounded-full">Trivia</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">A rapid-fire timed trivia mode covering mixed subjects. Test your recall speed.</p>
+</div>
+<button class="w-full md:w-auto bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-2 rounded-lg font-label-md text-label-md transition-colors font-semibold shadow-sm mt-2 md:mt-0">Start Timer</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Stats & Progress) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Student Progress Panel -->
+<div class="bg-surface rounded-xl border border-outline-variant/40 shadow-sm p-5 flex flex-col gap-5">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary">monitoring</span>
+                            Student Progress
+                        </h3>
+<!-- XP Level -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-outline-variant/20">
+<div class="flex justify-between items-end mb-2">
+<div>
+<span class="font-caption text-caption text-on-surface-variant uppercase tracking-wider block mb-1">Current Level</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">Lvl 24</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md text-on-surface font-semibold">8,450 XP</span>
+<span class="font-caption text-caption text-on-surface-variant block">/ 10,000 XP</span>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[84.5%] rounded-full relative">
+<div class="absolute inset-0 bg-white/20 w-full h-full animate-[pulse_2s_ease-in-out_infinite]"></div>
+</div>
+</div>
+</div>
+<!-- Leaderboard Position -->
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-surface-container-low transition-colors border border-transparent hover:border-outline-variant/20 cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold font-title-md">
+                                    #4
+                                </div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Class Leaderboard</p>
+<p class="font-caption text-caption text-secondary">Top 10% this week</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<!-- Recent Rewards Panel -->
+<div class="bg-surface rounded-xl border border-outline-variant/40 shadow-sm p-5 ai-glow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 opacity-50">
+<span class="material-symbols-outlined text-secondary text-4xl">workspace_premium</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2 mb-4 relative z-10">
+<span class="material-symbols-outlined text-secondary">stars</span>
+                            Recent Rewards
+                        </h3>
+<div class="grid grid-cols-3 gap-3 relative z-10">
+<!-- Badge 1 -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-surface-container-low border border-outline-variant/30 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md group-hover:border-primary/40 relative">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist flat-design icon representing a shield with a binary code pattern on it. The shield is primarily gold and blue, rendered in a crisp, clean corporate vector style against a transparent or very light gray circular background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeNmNVG2ojLMD1mfnYP3FH8pe-w5qbr4KxoiGBuDzFZfMEVtQ16GIvM7DDSJxrGPUB5qE4VS6fEgMRMH9ku4TZjTkFZbyaIYkKAsNKwDZgLJiWQ2v9YiE4NCWfJT2bk4eVwVjb4HCyEdtWDALubFb6Aao43BpTaU8xhziq4Ob3TAjybj9lT8phfOvcnmqJVFYZ0rTvSLpqqOVRCDECRgUuddeREBXi4GHcRnrFtFu7VFuAWfobhcgOK2v7wCUFirgVDIPXkwewvyJF">
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full border-2 border-surface flex items-center justify-center">
+<span class="text-[10px] text-white font-bold">x2</span>
+</div>
+</div>
+<span class="font-caption text-caption text-center text-on-surface-variant group-hover:text-primary transition-colors line-clamp-2 leading-tight">Logic Defender</span>
+</div>
+<!-- Badge 2 -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-surface-container-low border border-outline-variant/30 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md group-hover:border-tertiary/40">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist flat-design icon representing a small glowing lightbulb merged with a puzzle piece. The icon uses soft yellows and teal, rendered in a crisp, clean corporate vector style against a very light gray circular background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByB2f5NRm4IleZCYZk4WGB3ikCBwCdLHqhpsR1u5NUJBpUl33DOxBDExIXR-_auPLs7iY07x_-UhEVaTVYhhJSftnZAPB-jLZOYrdW8dZbhICbUDzB0pEqKo-Vz9V66n_5_mW5T_OUxW_BVgzdb7rZky2rcxd7ab60vOL_s4XJIhMINDW0x2c1zLKUAHrIRi09DJ4r822bUaPL01er8JSX7nlUUPHgNJJH6mkHjxy1hdomKyqD8R6Y5RWbypgDsnI3L9JdDHiAAG7O">
+</div>
+<span class="font-caption text-caption text-center text-on-surface-variant group-hover:text-primary transition-colors line-clamp-2 leading-tight">Quick Thinker</span>
+</div>
+<!-- Token/Coin -->
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md">
+<span class="font-title-md text-title-md text-yellow-700 font-bold">50</span>
+</div>
+<span class="font-caption text-caption text-center text-on-surface-variant group-hover:text-primary transition-colors line-clamp-2 leading-tight">Tokens</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full lg:hidden z-50 bg-surface/90 backdrop-blur-lg shadow-lg dark:bg-inverse-surface/90 flex justify-around items-center h-16 px-2 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant tap-highlight-transparent p-2 rounded-xl min-w-[64px]" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-caption text-caption mt-1">Learn</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant tap-highlight-transparent p-2 rounded-xl min-w-[64px]" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-caption text-caption mt-1">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-3 py-1 tap-highlight-transparent min-w-[64px]" href="#">
+<span class="material-symbols-outlined icon-fill">videogame_asset</span>
+<span class="font-caption text-caption mt-1 font-semibold">Play</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant tap-highlight-transparent p-2 rounded-xl min-w-[64px]" href="#">
+<span class="material-symbols-outlined">headphones</span>
+<span class="font-caption text-caption mt-1">Audio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:bg-surface-variant tap-highlight-transparent p-2 rounded-xl min-w-[64px]" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-caption text-caption mt-1">Stats</span>
+</a>
+</nav>
+</body></html>

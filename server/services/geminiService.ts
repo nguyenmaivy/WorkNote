@@ -95,7 +95,7 @@ export function friendlyGeminiError(err: any): string {
   if (/503|UNAVAILABLE|high demand|overloaded/i.test(msg))
     return "Máy chủ AI đang quá tải tạm thời. Vui lòng thử lại sau ít giây.";
   if (/429|RESOURCE_EXHAUSTED|quota/i.test(msg))
-    return "Đã đạt giới hạn lượt gọi AI. Vui lòng chờ một lát rồi thử lại.";
+    return "Đã đạt giới hạn lượt gọi AI miễn phí của Gemini (gói free chỉ ~5 lượt/phút). Hãy chờ khoảng 1 phút rồi thử lại, hoặc nâng cấp gói API để xử lý video/link mượt hơn.";
   if (/400|INVALID_ARGUMENT/i.test(msg))
     return "Định dạng tệp không được AI hỗ trợ hoặc tệp bị lỗi.";
   if (/API key|PERMISSION_DENIED|401|403/i.test(msg))

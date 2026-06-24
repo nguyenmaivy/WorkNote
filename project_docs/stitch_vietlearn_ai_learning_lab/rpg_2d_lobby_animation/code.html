@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width,initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_THREEJS_START:ANIMATION_LOBBY_2D class="fixed inset-0 w-full h-full bg-transparent" -->
+<div class="fixed inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_LOBBY_2D" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_LOBBY_2D');
+  if (!container) return;
+
+  const width = container.clientWidth || window.innerWidth;
+  const height = container.clientHeight || window.innerHeight;
+
+  const scene = new THREE.Scene();
+  
+  // Orthographic camera for that 2D Pixel Art feel
+  const aspect = width / height;
+  const d = 10;
+  const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+  camera.position.z = 20;
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  const textureLoader = new THREE.TextureLoader();
+
+  // Background - Using the Pixel Art Village Map
+  const bgTexture = textureLoader.load('https://lh3.googleusercontent.com/aida-public/AB6AXuAuHfgUr6CiiT07u2pojvoKNd8b8izfDaBncZIIn4JYizqYFaP4s5BMj4IRf49ZYTJ6iRvTx2uwRS71FAUywlFp5yC7eeK1oPnIZhpxV7wTRo3y_ncI_XM2ntt-zLgrvGEwgnW3q7C8HlcUOxjzHpsxZlL-FXetrkVJSpytunmD7oqm8cM4QYryL4B2QW2Ow8g56r-gUvw4vxcOypwBjUHoYEKRjXbnh1mFiqcavdGMXkoAEeTbBCKReflNmBhLfEsUlgyQRaFyqktA');
+  bgTexture.magFilter = THREE.NearestFilter;
+  bgTexture.minFilter = THREE.NearestFilter;
+  const bgGeo = new THREE.PlaneGeometry(30 * aspect, 30);
+  const bgMat = new THREE.MeshBasicMaterial({ map: bgTexture, transparent: true });
+  const background = new THREE.Mesh(bgGeo, bgMat);
+  background.position.z = -5;
+  scene.add(background);
+
+  // Player Character - The Elemental Mage
+  const playerTexture = textureLoader.load('https://lh3.googleusercontent.com/aida/AP1WRLvQ_c-vg3yr-X_WOlkpwt25DSJhnlPtBwZf7Dr8TEuh5kFloIFAbcj77FQ1rSR2ZrCV3syQDNmqpgo0FpJzFcFVXyUAYJceW5r-5Uc3aP6bS2Q-r69Rz9wFCvwU0_loxi5JJUydj0EvsOM-OCvHMwjONvAVqZNq4Sei3ywEs7G5rJ7oH5WSUreK2ViZrDfDY7qV_TabtqrYfoBGNn5lUe4hkRHiISym0kBBctRaLDGdYImVOvUuoTBj5ACJ');
+  playerTexture.magFilter = THREE.NearestFilter;
+  playerTexture.minFilter = THREE.NearestFilter;
+  const playerGeo = new THREE.PlaneGeometry(3, 3);
+  const playerMat = new THREE.MeshBasicMaterial({ map: playerTexture, transparent: true });
+  const player = new THREE.Mesh(playerGeo, playerMat);
+  player.position.set(0, 0, 0);
+  scene.add(player);
+
+  // Other Characters (NPCs/Waiting Players)
+  const charactersData = [
+    { id: 'https://lh3.googleusercontent.com/aida/AP1WRLsDEvyPe6cg-CRdPkX4azHlQOVouzxMPml1oN19rk2MPLP6ZIIquvxqJgmbXxSwTge3HfuogmEhCZZUbi21EUp_HpyDU4HDIkvqDkRV4r-NzDVtgOELlrgae7RFOET66VskKDIm0x-3I0CrPwr6accYW27l2qC8rbymqHsJfEdCdpLV4Cu942Ahfc4NGxT0GMI-UjxBZAsBVsOlbkT-Dxd-z-p-oGf1iuoV5MQw8LDnxicT2Txx903CZc92', x: -5, y: 3 },
+    { id: 'https://lh3.googleusercontent.com/aida/AP1WRLsFk_cusvfNTX1xyJF-9q1Gx5ADiYsZl0bZz3BhImcd10ldaSFAzzuWU98Hk4jCQPLgBKLlSM2gsegrnO_RTqrnw3fjOilYoUovkl_T4dsmDymes2mLXCvrnnspAeHpyl7NR2MrwCguM9XG4Q1JjCzwvMH9ZpmxJR44PQKFV8xKEtXNPXZD-R_HUJTnLok3YZLA9oFEv8rcZzLsaKIoVQZVdiFr2Nw4COgDfvZbQcUB5XPdaw5zyRq6Mf_6', x: 6, y: -2 },
+    { id: 'https://lh3.googleusercontent.com/aida/AP1WRLtd3BzH9zGik2h2oLDMZ4hOvgOtVklcTp2VhKNVfMDdrCU7O2Otl-7hARwjWAD742r778JxP3b8F6qzWO_CPlW9-KJF_i-0mVNyOIba0pzfr3DwgPvGZRA1tWI7yKDfFXal3GS5yFu73JYNKTXqMIp91-t2HimO9GLLX7hA4IFpnWKvWoDq4AcxcoIW_uQ1HfWLG0LfaL6_ANka9LsNCVRy1VQo8q9LKQiYDjl1N9bbJBP9dvEzhNfDhdI', x: -4, y: -6 },
+    { id: 'https://lh3.googleusercontent.com/aida/AP1WRLtr0HdyOjwHaXXLdaYbRaGAwT6uGolX26f6SDhJCc6UOCQDd5wpasIDnuhce5g4fy77dgWPMe7o7S7ZfkUAp7S5PfnGdlPAOTNq6RGybg-eXmF_7jY9ZmPfobmf_8xXohcOABxoq4LrGSb0xdLmX_b0lrghY-OjdoA3ErzPOFs8qw8DfewrSLUT-XRN3vxpkwsD7htXDdi0MyOa41GH_7Eg8qd5b5gv_EYR5uXG-gD45_QOFrkLnjRblpkY', x: 8, y: 5 }
+  ];
+
+  charactersData.forEach(data => {
+    const tex = textureLoader.load(data.id);
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
+    const char = new THREE.Mesh(playerGeo, mat);
+    char.position.set(data.x, data.y, 0.1);
+    scene.add(char);
+  });
+
+  // Movement State
+  const keys = {};
+  const playerState = {
+    x: 0,
+    y: 0,
+    speed: 0.12,
+    isFacingLeft: false
+  };
+
+  window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
+  window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    let dx = 0;
+    let dy = 0;
+    if (keys['w'] || keys['arrowup']) dy += playerState.speed;
+    if (keys['s'] || keys['arrowdown']) dy -= playerState.speed;
+    if (keys['a'] || keys['arrowleft']) { dx -= playerState.speed; playerState.isFacingLeft = true; }
+    if (keys['d'] || keys['arrowright']) { dx += playerState.speed; playerState.isFacingLeft = false; }
+
+    playerState.x += dx;
+    playerState.y += dy;
+
+    // Boundary constraints
+    playerState.x = Math.max(-12, Math.min(12, playerState.x));
+    playerState.y = Math.max(-8, Math.min(8, playerState.y));
+
+    player.position.x = playerState.x;
+    player.position.y = playerState.y;
+
+    // Sprite flipping
+    player.scale.x = playerState.isFacingLeft ? -1 : 1;
+
+    // Idle/Walk "bob"
+    const time = Date.now() * 0.005;
+    if (dx !== 0 || dy !== 0) {
+      player.position.y += Math.abs(Math.sin(time * 2)) * 0.15;
+    } else {
+      player.position.y += Math.sin(time) * 0.05;
+    }
+
+    // Smooth camera follow
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, player.position.x, 0.1);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, player.position.y, 0.1);
+
+    renderer.render(scene, camera);
+  }
+
+  window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    renderer.setSize(w, h);
+    const aspect = w / h;
+    camera.left = -d * aspect;
+    camera.right = d * aspect;
+    camera.top = d;
+    camera.bottom = -d;
+    camera.updateProjectionMatrix();
+  });
+
+  animate();
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_LOBBY_2D -->
+
+</body></html>

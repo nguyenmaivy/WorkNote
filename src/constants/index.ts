@@ -14,19 +14,68 @@ import type { LucideIcon } from "lucide-react";
 
 export interface TabConfig {
   id: TabId;
+  /** Short label shown in the sidebar */
   label: string;
+  /** Full hero heading shown above the page content */
+  pageTitle: string;
   icon: LucideIcon;
+  /** Subtitle shown under the hero heading */
   desc: string;
+  /** If true, App.tsx skips the page header + paddings; component fills viewport */
+  fullBleed?: boolean;
 }
 
 export const TABS: TabConfig[] = [
-  { id: "upload", label: "Tài Liệu & OCR", icon: FileText, desc: "Tải file & bóc tách" },
-  { id: "chat", label: "Trợ Lý AI", icon: MessageSquare, desc: "Hỏi đáp ngữ cảnh" },
-  { id: "mindmap", label: "Sơ Đồ Tư Duy", icon: Network, desc: "Cây phẳng phân tầng" },
-  { id: "game", label: "Trò Chơi 2D & Quiz", icon: Gamepad2, desc: "Vui chơi ôn bài" },
-  { id: "audiolab", label: "Lab Âm Thanh", icon: Mic, desc: "Ghi âm & TTS" },
-  { id: "knowledge", label: "Thư Viện Kỹ Thuật", icon: BookOpen, desc: "Giải đáp 8 chuyên mục" },
-  { id: "budget", label: "Sổ Chi Tiêu & Tiết Kiệm", icon: PiggyBank, desc: "Quản lý chi tiêu học tập" },
+  {
+    id: "upload",
+    label: "Library",
+    pageTitle: "Document Library",
+    icon: FileText,
+    desc: "Upload, organize, and extract text from your study materials.",
+  },
+  {
+    id: "chat",
+    label: "AI Chatbot",
+    pageTitle: "Gemini AI Assistant",
+    icon: MessageSquare,
+    desc: "Chat with AI grounded in your active document — ask questions, summarize, translate, on demand.",
+    fullBleed: true,
+  },
+  {
+    id: "mindmap",
+    label: "Mind Maps",
+    pageTitle: "AI-Powered Mind Map Editor",
+    icon: Network,
+    desc: "Visualize your knowledge as a hierarchical tree — expand, collapse, and edit branches directly.",
+  },
+  {
+    id: "game",
+    label: "RPG Games",
+    pageTitle: "Academic RPG Lobby",
+    icon: Gamepad2,
+    desc: "Review knowledge through an integrated 2D RPG game with quizzes generated from your materials.",
+  },
+  {
+    id: "audiolab",
+    label: "Audio Lab",
+    pageTitle: "Multilingual Audio Lab",
+    icon: Mic,
+    desc: "Advanced AI-driven Text-to-Speech synthesis and real-time translation focusing on regional Vietnamese dialects.",
+  },
+  {
+    id: "knowledge",
+    label: "Knowledge",
+    pageTitle: "Knowledge Hub",
+    icon: BookOpen,
+    desc: "Welcome back, Scholar. Explore our deep learning resources and start your next technical mastery path or document analysis.",
+  },
+  {
+    id: "budget",
+    label: "Spending",
+    pageTitle: "Student Spending Diary",
+    icon: PiggyBank,
+    desc: "Manage personal finances, track spending, and visualize your study savings fund.",
+  },
 ];
 
 // ─── Supported Languages ──────────────────────────────────────────────────────
@@ -37,20 +86,19 @@ export interface LanguageOption {
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: "vi", label: "Tiếng Việt (Vietnamese)" },
-  { code: "en", label: "Tiếng Anh (English)" },
-  { code: "ja", label: "Tiếng Nhật (Japanese)" },
-  { code: "ko", label: "Tiếng Hàn (Korean)" },
-  { code: "zh", label: "Tiếng Trung (Chinese)" },
-  { code: "fr", label: "Tiếng Pháp (French)" },
+  { code: "vi", label: "Vietnamese" },
+  { code: "en", label: "English" },
+  { code: "ja", label: "Japanese" },
+  { code: "ko", label: "Korean" },
+  { code: "zh", label: "Chinese" },
+  { code: "fr", label: "French" },
 ];
 
 /**
- * Map code → Vietnamese display name.
- * Dùng khi cần tra cứu nhanh tên ngôn ngữ từ mã code.
+ * Map code → display name.
  */
 export const LANGUAGE_NAME_MAP: Record<string, string> = Object.fromEntries(
-  SUPPORTED_LANGUAGES.map((l) => [l.code, l.label.split(" (")[0]])
+  SUPPORTED_LANGUAGES.map((l) => [l.code, l.label])
 );
 
 // ─── Accent / Dialect Options ─────────────────────────────────────────────────
@@ -62,9 +110,9 @@ export interface AccentOption {
 }
 
 export const ACCENT_OPTIONS: AccentOption[] = [
-  { value: "north", label: "Miền Bắc (Hà Nội)", emoji: "🎤" },
-  { value: "central", label: "Miền Trung (Huế)", emoji: "🎙️" },
-  { value: "south", label: "Miền Nam (Sài Gòn)", emoji: "📣" },
+  { value: "north", label: "Northern (Hanoi)", emoji: "🎤" },
+  { value: "central", label: "Central (Huế)", emoji: "🎙️" },
+  { value: "south", label: "Southern (Saigon)", emoji: "📣" },
 ];
 
 // ─── Quick Chat Chips ─────────────────────────────────────────────────────────
@@ -75,15 +123,31 @@ export interface QuickChip {
 }
 
 export const QUICK_CHAT_CHIPS: QuickChip[] = [
-  { label: "📝 Tóm tắt nhanh", prompt: "Hãy làm một tóm tắt bằng các gạch đầu dòng ngắn gọn về bài học này giúp tôi." },
-  { label: "🌐 Dịch sang English", prompt: "Hãy dịch tài liệu bài học này sang tiếng Anh và lưu ý giữ nguyên hoàn toàn cấu trúc các gạch đầu dòng, dấu dòng hoặc heading nhé." },
-  { label: "🎤 Đọc bằng giọng 3 Miền", prompt: "Hãy phân tích chi tiết sự khác biệt về phát âm và thanh điệu ngữ âm tiếng Việt giữa ba miền Bắc, Trung, Nam." },
-  { label: "🧙‍♂️ Tạo đề trắc nghiệm", prompt: "Hãy soạn ra giúp tôi 3 câu hỏi trắc nghiệm ôn tập nhanh có kèm đáp án và lý do giải thích cụ thể dựa trên bài học." },
+  {
+    label: "📝 Quick summary",
+    prompt: "Give me a concise bullet-point summary of this lesson.",
+  },
+  {
+    label: "🌐 Translate to Vietnamese",
+    prompt:
+      "Translate this lesson into Vietnamese, preserving all bullet points, list structure, and headings exactly.",
+  },
+  {
+    label: "🎤 3-region pronunciation",
+    prompt:
+      "Analyze in detail the differences in pronunciation and tone of Vietnamese between the three regions: North, Central, and South.",
+  },
+  {
+    label: "🧙‍♂️ Generate quiz",
+    prompt:
+      "Generate 3 multiple-choice review questions with the correct answer and a brief explanation for each, based on this lesson.",
+  },
 ];
 
 // ─── Supported File Types ───────────────────────────────────────────────────────
 
 export const SUPPORTED_FILE_TYPES = {
   extensions: [".pdf", ".txt", ".md", ".csv", ".docx", ".xlsx", ".png", ".jpg", ".jpeg", ".mp3", ".wav"],
-  accept: "application/pdf, text/plain, text/markdown, text/csv, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, image/png, image/jpeg, audio/mpeg, audio/wav"
+  accept:
+    "application/pdf, text/plain, text/markdown, text/csv, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, image/png, image/jpeg, audio/mpeg, audio/wav",
 };

@@ -1,0 +1,230 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Document Analysis Lab - VietLearn AI Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"secondary-container": "#86f2e4", "inverse-primary": "#b5c4ff", "tertiary-container": "#4c4ed9", "surface-container-high": "#e6e8ea", "on-tertiary": "#ffffff", secondary: "#006a61", outline: "#737686", "secondary-fixed": "#89f5e7", "on-primary-container": "#d4dcff", "on-error-container": "#93000a", "on-background": "#191c1e", "error-container": "#ffdad6", background: "#f7f9fb", "on-secondary-fixed-variant": "#005049", "on-tertiary-fixed": "#07006c", "inverse-surface": "#2d3133", tertiary: "#3231c1", "surface-bright": "#f7f9fb", "outline-variant": "#c3c5d7", "surface-variant": "#e0e3e5", "surface-dim": "#d8dadc", "on-surface-variant": "#434654", "on-secondary-container": "#006f66", "surface-container-lowest": "#ffffff", "on-tertiary-container": "#dbdaff", "tertiary-fixed": "#e1e0ff", "surface-container-low": "#f2f4f6", "surface-container": "#eceef0", surface: "#f7f9fb", "primary-fixed-dim": "#b5c4ff", "primary-fixed": "#dbe1ff", "inverse-on-surface": "#eff1f3", "tertiary-fixed-dim": "#c0c1ff", "on-tertiary-fixed-variant": "#2f2ebe", "on-secondary-fixed": "#00201d", "secondary-fixed-dim": "#6bd8cb", "on-secondary": "#ffffff", "on-primary-fixed-variant": "#003dab", "surface-container-highest": "#e0e3e5", error: "#ba1a1a", "on-primary-fixed": "#00174d", "primary-container": "#1a56db", "surface-tint": "#1353d8", "on-primary": "#ffffff", primary: "#003fb1", "on-surface": "#191c1e", "on-error": "#ffffff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {xs: "4px", md: "24px", lg: "48px", "container-max": "1280px", xl: "80px", sm: "12px", base: "8px", gutter: "24px"}, fontFamily: {caption: ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "title-md": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {caption: ["12px", {lineHeight: "16px", fontWeight: "400"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}], "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}], "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}]}}}};</script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .ai-sparkle {
+            background: linear-gradient(135deg, #1a56db, #86f2e4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #c3c5d7;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md dark:bg-inverse-surface/80 text-primary dark:text-inverse-primary fixed top-0 w-full z-50 shadow-sm">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary cursor-pointer active:opacity-70 hover:text-primary transition-colors duration-200 lg:hidden">menu</span>
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary">VietLearn AI Lab</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low rounded-full border-none text-body-md focus:ring-2 focus:ring-primary w-64" placeholder="Search..." type="text">
+</div>
+<button class="p-2 hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center justify-center">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex pt-16 flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-label-md text-label-md h-[calc(100vh-64px)] w-64 fixed left-0 top-16 hidden lg:flex flex-col shadow-sm border-r border-surface-container-high z-40">
+<div class="p-4 flex flex-col gap-base h-full">
+<!-- Header -->
+<div class="flex items-center gap-sm mb-md p-2">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold overflow-hidden">
+<img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvw-tJsV2rnKDeyNXIOluB2VB8gW6CHYFEls4ZkGvq4AKMLt8QGzdX61BalxmrRSQyN2WV89tM2EEd31fjEzLvi5hk1nxVKTW_NTHsD5dpR5hRdil4WWX_B92mIueFP29ooKbEz4n9KgDiMrxXyBs0okp5PDN5E9nXYh7sgqH7FeU9k813n0ihv70_-ScN-BmgbKRfXv3cyKoQJM7I7giAHEc_ftOnoUzy9bppgoaLm52UaqmFqzl_PFx2DcBa0CHLyXKcY5RHW7Sb">
+</div>
+<div>
+<div class="font-title-md text-title-md text-on-surface">Learning Hub</div>
+<div class="font-caption text-caption text-on-surface-variant">Academic Level 4</div>
+</div>
+</div>
+<!-- CTA -->
+<button class="bg-primary text-on-primary font-label-md text-label-md py-2 px-4 rounded-full w-full mb-md hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Study Session
+                </button>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto flex flex-col gap-xs custom-scrollbar">
+<a class="hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95 bg-primary-container text-on-primary-container font-bold" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+                        Library
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+                        AI Chatbot
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                        Mind Maps
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+                        RPG Games
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">graphic_eq</span>
+                        Audio Lab
+                    </a>
+<a class="rounded-lg flex items-center gap-sm px-4 py-3 active:scale-95 transition-transform text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+                        Knowledge
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                        Spending
+                    </a>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto pt-md border-t border-surface-container-high flex flex-col gap-xs">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+                        Settings
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">help</span>
+                        Help
+                    </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="lg:ml-64 flex-1 flex flex-col h-full bg-surface-bright relative">
+<!-- Lab Content -->
+<div class="flex-1 overflow-hidden flex flex-col p-md gap-md relative max-w-[1280px] mx-auto w-full">
+<!-- Split View Area -->
+<div class="flex-1 flex gap-md min-h-0">
+<!-- Left Pane: Original Content -->
+<div class="flex-1 flex flex-col bg-surface rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">description</span>
+<h2 class="font-title-md text-title-md text-on-surface">Original Content</h2>
+</div>
+<div class="flex gap-2">
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-variant rounded-md transition-colors"><span class="material-symbols-outlined text-[20px]">zoom_in</span></button>
+<button class="p-1.5 text-on-surface-variant hover:bg-surface-variant rounded-md transition-colors"><span class="material-symbols-outlined text-[20px]">zoom_out</span></button>
+</div>
+</div>
+<div class="flex-1 p-lg overflow-y-auto custom-scrollbar bg-surface-bright relative">
+<!-- Content area -->
+<div class="max-w-3xl mx-auto space-y-6">
+<div class="h-8 bg-surface-container rounded w-3/4 animate-pulse"></div>
+<div class="space-y-3">
+<div class="h-4 bg-surface-container rounded w-full animate-pulse"></div>
+<div class="h-4 bg-surface-container rounded w-full animate-pulse"></div>
+<div class="h-4 bg-surface-container rounded w-5/6 animate-pulse"></div>
+<div class="h-4 bg-surface-container rounded w-full animate-pulse"></div>
+</div>
+<div class="p-md border border-outline-variant rounded-lg bg-surface flex flex-col items-center justify-center text-center mt-xl opacity-50">
+<span class="material-symbols-outlined text-[48px] text-outline mb-4">document_scanner</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Select or drop a file to view original content here.</p>
+<p class="font-caption text-caption text-outline mt-1">Supports PDF, DOCX, MP3, JPG</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Pane: AI Analysis & Audio Gen -->
+<div class="flex-1 flex flex-col gap-md min-h-0">
+<!-- AI Analysis Section -->
+<div class="flex-[2] flex flex-col bg-surface rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined ai-sparkle">auto_awesome</span>
+<h2 class="font-title-md text-title-md text-on-surface">AI Translation &amp; Analysis</h2>
+</div>
+<div class="flex gap-2">
+<select class="bg-surface border border-outline-variant text-body-md font-body-md rounded-md px-2 py-1 focus:outline-none focus:border-primary text-sm">
+<option>English to Vietnamese</option>
+<option>Summarize</option>
+<option>Extract Key Terms</option>
+</select>
+</div>
+</div>
+<div class="flex-1 p-md overflow-y-auto custom-scrollbar relative">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent to-surface-container-lowest/50 pointer-events-none"></div>
+<!-- Empty State for AI Analysis -->
+<div class="h-full flex flex-col items-center justify-center text-center opacity-70">
+<span class="material-symbols-outlined text-[48px] ai-sparkle mb-4">analytics</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Waiting for document to analyze...</p>
+</div>
+</div>
+</div>
+<!-- Audio Generation Section -->
+<div class="flex-1 flex flex-col bg-surface rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">record_voice_over</span>
+<h2 class="font-title-md text-title-md text-on-surface">Audio Synthesis</h2>
+</div>
+<div class="p-md flex flex-col gap-4">
+<div class="flex items-center gap-md">
+<div class="flex-1">
+<label class="block font-label-md text-label-md text-on-surface mb-1">Voice Preset</label>
+<select class="w-full bg-surface border border-outline-variant text-body-md font-body-md rounded-lg px-3 py-2 focus:outline-none focus:border-primary transition-colors">
+<option>Mai - Northern Vietnamese (Female)</option>
+<option>Nam - Southern Vietnamese (Male)</option>
+<option>Emma - US English (Female)</option>
+</select>
+</div>
+<div class="flex-1">
+<label class="block font-label-md text-label-md text-on-surface mb-1">Pacing</label>
+<div class="flex items-center gap-2 h-[42px]">
+<span class="material-symbols-outlined text-outline text-sm">directions_walk</span>
+<input class="flex-1 accent-primary" max="2" min="0.5" step="0.1" type="range" value="1">
+<span class="material-symbols-outlined text-outline text-sm">directions_run</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center hover:bg-primary hover:text-on-primary transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex flex-col justify-center">
+<div class="h-1 w-32 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-0"></div>
+</div>
+<span class="font-caption text-caption text-outline mt-1">00:00 / 00:00</span>
+</div>
+</div>
+<button class="bg-surface text-on-surface border border-outline-variant font-label-md text-label-md px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-surface-variant transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">graphic_eq</span>
+                                    Generate Audio
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -501,16 +501,35 @@ export default function StudentBudgetTracker() {
   });
 
   return (
-    <div className="flex flex-col gap-8 w-full animate-fade-in" id="budget-tracker-root">
-      
+    <div className="flex flex-col gap-6 w-full animate-fade-in" id="budget-tracker-root">
+      {/* ── Stitch Date Selector Pill ───────────────────────────── */}
+      <div className="flex items-center justify-center gap-6 text-[var(--color-text-primary)] font-medium">
+        <button
+          className="w-9 h-9 rounded-full hover:bg-[var(--color-neutral-soft)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors flex items-center justify-center"
+          title="Tháng trước"
+        >
+          ‹
+        </button>
+        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-[var(--color-border-subtle)] shadow-[var(--shadow-card)] text-[13px]">
+          <Calendar size={14} className="text-[var(--color-text-secondary)]" />
+          <span className="font-medium">Tháng này</span>
+        </div>
+        <button
+          className="w-9 h-9 rounded-full hover:bg-[var(--color-neutral-soft)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors flex items-center justify-center"
+          title="Tháng sau"
+        >
+          ›
+        </button>
+      </div>
+
       {/* Title & Visual Introduction */}
       <div className="border-b border-[var(--color-border-subtle)] pb-3">
-        <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
-          <PiggyBank className="text-[var(--color-primary)] animate-bounce" size={24} />
-          Trình Quản Lý Chi Tiêu & Dự Trù Tiết Kiệm Học Tập (VietLearn Finance Lab)
+        <h2 className="text-[20px] font-semibold text-[var(--color-text-primary)] flex items-center gap-2 font-display">
+          <PiggyBank className="text-[var(--color-primary)]" size={22} />
+          VietLearn Finance Lab — Spending Diary
         </h2>
-        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
-          Lập kế hoạch cân đối chi phí sinh hoạt, mua sắm sách giáo trình, ghi chú học phí và phân bổ heo đất tiết kiệm hướng tới mục tiêu cá nhân.
+        <p className="text-[13px] text-[var(--color-text-secondary)] mt-1">
+          Theo dõi chi tiêu, ghi chú học phí, phân bổ tiết kiệm hướng tới mục tiêu cá nhân.
         </p>
       </div>
 
@@ -1577,6 +1596,25 @@ export default function StudentBudgetTracker() {
 
         </div>
 
+      </div>
+
+      {/* ── Floating Action Pill — Stitch "Ghi chép GD" ──────────── */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center group pointer-events-none">
+        <button
+          onClick={() => {
+            const form = document.getElementById("budget-tracker-root")?.querySelector("input[name='new-tx-title']") as HTMLInputElement | null;
+            form?.focus();
+          }}
+          className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl border-4 border-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition-all hover:scale-110 active:scale-95 pointer-events-auto"
+          title="Ghi chép giao dịch mới"
+        >
+          <Plus size={26} />
+        </button>
+        <div className="mt-2 bg-white/95 backdrop-blur px-4 py-1.5 rounded-full border border-[var(--color-border-subtle)] shadow-[var(--shadow-card)] pointer-events-auto">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--color-primary)]">
+            Ghi chép GD
+          </span>
+        </div>
       </div>
 
     </div>

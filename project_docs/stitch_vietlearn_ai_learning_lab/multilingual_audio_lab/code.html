@@ -1,0 +1,357 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>VietLearn AI Lab - Multilingual Audio Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-tertiary-container": "#dbdaff", "tertiary-container": "#4c4ed9", "surface-tint": "#1353d8", "on-secondary-container": "#006f66", "surface-container-high": "#e6e8ea", "on-primary-fixed": "#00174d", "primary-fixed-dim": "#b5c4ff", secondary: "#006a61", "on-tertiary-fixed-variant": "#2f2ebe", "on-tertiary-fixed": "#07006c", outline: "#737686", "on-error-container": "#93000a", "primary-container": "#1a56db", "on-secondary": "#ffffff", background: "#f7f9fb", "on-primary": "#ffffff", "outline-variant": "#c3c5d7", "on-background": "#191c1e", error: "#ba1a1a", "on-secondary-fixed-variant": "#005049", "secondary-fixed-dim": "#6bd8cb", "inverse-on-surface": "#eff1f3", "surface-dim": "#d8dadc", "error-container": "#ffdad6", surface: "#f7f9fb", "on-surface": "#191c1e", "on-surface-variant": "#434654", "on-primary-container": "#d4dcff", tertiary: "#3231c1", "tertiary-fixed-dim": "#c0c1ff", "surface-variant": "#e0e3e5", "secondary-container": "#86f2e4", "secondary-fixed": "#89f5e7", "inverse-surface": "#2d3133", primary: "#003fb1", "surface-bright": "#f7f9fb", "on-primary-fixed-variant": "#003dab", "on-error": "#ffffff", "surface-container-highest": "#e0e3e5", "primary-fixed": "#dbe1ff", "on-tertiary": "#ffffff", "surface-container": "#eceef0", "surface-container-low": "#f2f4f6", "tertiary-fixed": "#e1e0ff", "surface-container-lowest": "#ffffff", "inverse-primary": "#b5c4ff", "on-secondary-fixed": "#00201d"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {md: "24px", xs: "4px", lg: "48px", xl: "80px", "container-max": "1280px", sm: "12px", base: "8px", gutter: "24px"}, fontFamily: {caption: ["Inter"], "headline-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "title-md": ["Inter"], "display-lg": ["Inter"], "body-lg": ["Inter"], "body-md": ["Inter"], "label-md": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {caption: ["12px", {lineHeight: "16px", fontWeight: "400"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}], "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}], "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}]}}}};</script>
+<style>
+        body {
+            background-color: #f7f9fb; /* surface */
+            color: #191c1e; /* on-surface */
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(0, 106, 97, 0.15); /* secondary glow */
+            border: 1px solid rgba(0, 106, 97, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0e3e5; /* surface-variant */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c3c5d7; /* outline-variant */
+        }
+
+        /* Waveform Animation Simulation */
+        .wave-bar {
+            animation: wave 1.2s ease-in-out infinite alternate;
+            transform-origin: bottom;
+        }
+        
+        @keyframes wave {
+            0% { transform: scaleY(0.2); }
+            100% { transform: scaleY(1); }
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(2) { animation-delay: 0.3s; }
+        .wave-bar:nth-child(3) { animation-delay: 0.0s; }
+        .wave-bar:nth-child(4) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(5) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(6) { animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { animation-delay: 0.1s; }
+        .wave-bar:nth-child(8) { animation-delay: 0.4s; }
+        .wave-bar:nth-child(9) { animation-delay: 0.2s; }
+        .wave-bar:nth-child(10) { animation-delay: 0.0s; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm h-16 flex justify-between items-center px-gutter max-w-container-max mx-auto hidden md:flex">
+<div class="flex items-center">
+<span class="font-headline-lg text-headline-lg font-bold text-primary mr-8">VietLearn AI Lab</span>
+</div>
+<!-- Search Bar (on_right) -->
+<div class="flex-1 max-w-md mx-4 hidden md:block">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-on-surface focus:ring-2 focus:ring-primary font-body-md text-body-md transition-shadow" placeholder="Search lessons, audio, tools..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col bg-surface-container-low shadow-sm pt-20 p-4 gap-base z-40">
+<div class="mb-6 px-4 flex items-center gap-3">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A small, professional avatar portrait of a student in a modern, brightly lit study environment. Soft, natural light illuminates the subject's face against a clean, minimal white background. Modern corporate aesthetic, high quality, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdL-qnAKV7P5Qfrg8XzaqjXfLTrjyZJD5UE7rRBNwXd-Hy50GiG0oZIxcdc5tRhHkNi4Ke35c6_dWRVmIGh_A4rAKp6fkXYSvPsQYbSa1VhEy-89ouHNQcxBiybnFHZUEMNLRH8aw2CAyqp-r491e9wba_EQP6lbtH2EVR3XShpEh3VvYI1kgAWW3uTO_Sutn_15iONlKdbJMUh9Prl7G2qiC6sXENkBi_u2NSHmhzF8j7HWyDUefc57j328984DoJc9rDSAOVaiAR">
+<div>
+<div class="font-label-md text-label-md font-bold text-on-surface">Learning Hub</div>
+<div class="font-caption text-caption text-on-surface-variant">Academic Level 4</div>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors mb-4 shadow-sm flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span> New Study Session
+        </button>
+<div class="flex-1 overflow-y-auto pr-2 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">folder_open</span> Library
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">smart_toy</span> AI Chatbot
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">account_tree</span> Mind Maps
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">sports_esports</span> RPG Games
+            </a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">graphic_eq</span> Audio Lab
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">menu_book</span> Knowledge
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span> Spending
+            </a>
+</div>
+<div class="mt-auto pt-4 border-t border-surface-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200 font-label-md text-label-md active:scale-95" href="#">
+<span class="material-symbols-outlined">help</span> Help
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-20 pb-24 md:pb-10 min-h-screen">
+<div class="max-w-container-max mx-auto px-4 md:px-gutter mt-md">
+<!-- Header Section -->
+<div class="mb-lg flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+<div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-2">Multilingual Audio Lab</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Advanced AI-driven Text-to-Speech synthesis and real-time translation focusing on regional Vietnamese dialects.</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">history</span> History
+                    </button>
+<button class="bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">settings_voice</span> Voice Presets
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md">
+<!-- Left Column: Input & Controls (Spans 8 cols on large screens) -->
+<div class="lg:col-span-8 space-y-md">
+<!-- Text Input Card -->
+<div class="glass-panel rounded-xl p-md ai-glow">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">edit_note</span> Source Text
+                            </h2>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-primary/5 text-primary rounded text-xs font-medium flex items-center gap-1 border border-primary/10">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Auto-detect
+                                </span>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete_sweep</span>
+</button>
+</div>
+</div>
+<textarea class="w-full h-48 bg-transparent border-0 focus:ring-0 resize-none font-body-lg text-body-lg text-on-surface placeholder-on-surface-variant/50 p-0" placeholder="Type or paste text here to synthesize speech or translate..."></textarea>
+<div class="flex justify-between items-center mt-4 pt-4 border-t border-surface-variant">
+<div class="font-caption text-caption text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">info</span> 0 / 5,000 characters
+                            </div>
+<div class="flex gap-3">
+<button class="bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">translate</span> Translate
+                                </button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">record_voice_over</span> Synthesize
+                                </button>
+</div>
+</div>
+</div>
+<!-- Audio Player & Waveform Card -->
+<div class="bg-surface border border-surface-variant rounded-xl p-md shadow-sm relative overflow-hidden">
+<!-- Subtle background decoration -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-secondary-container/20 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h2 class="font-title-md text-title-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">graphic_eq</span> Audio Output
+                            </h2>
+<!-- Waveform Visualization (CSS Simulated) -->
+<div class="h-24 bg-surface-container-low rounded-lg border border-surface-variant flex items-center justify-center gap-1 px-4 mb-6 overflow-hidden">
+<div class="w-2 h-8 bg-secondary/30 rounded-full wave-bar"></div>
+<div class="w-2 h-16 bg-secondary/40 rounded-full wave-bar"></div>
+<div class="w-2 h-12 bg-secondary/50 rounded-full wave-bar"></div>
+<div class="w-2 h-20 bg-secondary/60 rounded-full wave-bar"></div>
+<div class="w-2 h-10 bg-secondary/70 rounded-full wave-bar"></div>
+<div class="w-2 h-14 bg-secondary/80 rounded-full wave-bar"></div>
+<div class="w-2 h-24 bg-secondary rounded-full wave-bar"></div>
+<div class="w-2 h-18 bg-secondary/90 rounded-full wave-bar"></div>
+<div class="w-2 h-12 bg-secondary/70 rounded-full wave-bar"></div>
+<div class="w-2 h-8 bg-secondary/50 rounded-full wave-bar"></div>
+<!-- Static filler -->
+<div class="flex-1 h-[2px] bg-outline-variant/30 ml-2"></div>
+</div>
+<!-- Player Controls -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<button class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary/90 transition-transform active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Synthesis_001.wav</span>
+<span class="font-caption text-caption text-on-surface-variant">00:00 / 01:24</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-variant rounded-full">
+<span class="material-symbols-outlined">volume_up</span>
+</button>
+<div class="w-24 h-1 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-3/4 h-full bg-primary"></div>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-variant rounded-full ml-2">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Settings & Logs (Spans 4 cols on large screens) -->
+<div class="lg:col-span-4 space-y-md flex flex-col">
+<!-- Voice Settings -->
+<div class="bg-surface border border-surface-variant rounded-xl p-md shadow-sm">
+<h2 class="font-title-md text-title-md text-on-surface mb-4 border-b border-surface-variant pb-2">Voice Settings</h2>
+<div class="space-y-4">
+<!-- Language/Dialect Selection -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Target Dialect</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 pl-3 pr-10 text-on-surface focus:ring-2 focus:ring-primary focus:border-primary appearance-none font-body-md text-body-md">
+<option>Northern Vietnamese (Hanoi)</option>
+<option>Central Vietnamese (Hue)</option>
+<option>Southern Vietnamese (Saigon)</option>
+<option disabled="">──────────</option>
+<option>English (US)</option>
+<option>French</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Voice Profile Selection -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2">Voice Profile</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="border border-primary bg-primary/5 text-primary rounded-lg py-2 px-3 font-label-md text-label-md flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">face</span> Female 1
+                                    </button>
+<button class="border border-outline-variant bg-surface-container-lowest text-on-surface-variant rounded-lg py-2 px-3 font-label-md text-label-md hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">face_6</span> Male 1
+                                    </button>
+</div>
+</div>
+<!-- AI Style Options -->
+<div class="pt-4 border-t border-surface-variant">
+<label class="block font-label-md text-label-md text-on-surface mb-2 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Delivery Style
+                                </label>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-secondary-container/50 text-on-secondary-container border border-secondary/20 rounded-full font-caption text-caption cursor-pointer hover:bg-secondary-container transition-colors">Neutral</span>
+<span class="px-3 py-1.5 bg-surface-container-low text-on-surface-variant border border-outline-variant rounded-full font-caption text-caption cursor-pointer hover:bg-surface-variant transition-colors">Academic</span>
+<span class="px-3 py-1.5 bg-surface-container-low text-on-surface-variant border border-outline-variant rounded-full font-caption text-caption cursor-pointer hover:bg-surface-variant transition-colors">Conversational</span>
+<span class="px-3 py-1.5 bg-surface-container-low text-on-surface-variant border border-outline-variant rounded-full font-caption text-caption cursor-pointer hover:bg-surface-variant transition-colors">News Anchor</span>
+</div>
+</div>
+<!-- Sliders -->
+<div class="space-y-3 pt-4 border-t border-surface-variant">
+<div>
+<div class="flex justify-between mb-1">
+<label class="font-caption text-caption text-on-surface-variant">Speed</label>
+<span class="font-caption text-caption text-on-surface">1.0x</span>
+</div>
+<input class="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary" max="2.0" min="0.5" step="0.1" type="range" value="1.0">
+</div>
+<div>
+<div class="flex justify-between mb-1">
+<label class="font-caption text-caption text-on-surface-variant">Pitch</label>
+<span class="font-caption text-caption text-on-surface">0</span>
+</div>
+<input class="w-full h-1 bg-surface-variant rounded-lg appearance-none cursor-pointer accent-primary" max="10" min="-10" step="1" type="range" value="0">
+</div>
+</div>
+</div>
+</div>
+<!-- Translation Log -->
+<div class="flex-1 bg-surface border border-surface-variant rounded-xl p-md shadow-sm flex flex-col min-h-[300px]">
+<h2 class="font-title-md text-title-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">history</span> Translation Log
+                        </h2>
+<div class="flex-1 overflow-y-auto space-y-4 pr-2">
+<!-- Log Item 1 -->
+<div class="p-3 bg-surface-container-lowest border border-outline-variant rounded-lg">
+<div class="flex items-center gap-2 mb-2 font-caption text-caption text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">language</span> EN <span class="material-symbols-outlined text-[14px]">arrow_right_alt</span> VI (North)
+                                    <span class="ml-auto text-xs">10:42 AM</span>
+</div>
+<p class="font-body-sm text-body-md text-on-surface mb-2">The concept of artificial intelligence is rapidly evolving.</p>
+<p class="font-body-sm text-body-md text-primary font-medium border-t border-surface-variant pt-2">Khái niệm về trí tuệ nhân tạo đang phát triển nhanh chóng.</p>
+</div>
+<!-- Log Item 2 -->
+<div class="p-3 bg-surface-container-lowest border border-outline-variant rounded-lg">
+<div class="flex items-center gap-2 mb-2 font-caption text-caption text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]">language</span> VI (South) <span class="material-symbols-outlined text-[14px]">arrow_right_alt</span> EN
+                                    <span class="ml-auto text-xs">10:35 AM</span>
+</div>
+<p class="font-body-sm text-body-md text-on-surface mb-2">Hôm nay trời đẹp quá, mình đi học nha.</p>
+<p class="font-body-sm text-body-md text-primary font-medium border-t border-surface-variant pt-2">The weather is so beautiful today, let's go to school.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full lg:hidden z-50 bg-surface/90 backdrop-blur-lg shadow-lg flex justify-around items-center h-16 px-2 border-t border-surface-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-lg p-2 transition-colors tap-highlight-transparent font-caption text-caption" href="#">
+<span class="material-symbols-outlined mb-1">school</span>
+            Learn
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-lg p-2 transition-colors tap-highlight-transparent font-caption text-caption" href="#">
+<span class="material-symbols-outlined mb-1">forum</span>
+            Chat
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-lg p-2 transition-colors tap-highlight-transparent font-caption text-caption" href="#">
+<span class="material-symbols-outlined mb-1">videogame_asset</span>
+            Play
+        </a>
+<!-- Active State -->
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-3 py-1 tap-highlight-transparent font-caption text-caption font-medium" href="#">
+<span class="material-symbols-outlined mb-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">headphones</span>
+            Audio
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant rounded-lg p-2 transition-colors tap-highlight-transparent font-caption text-caption" href="#">
+<span class="material-symbols-outlined mb-1">query_stats</span>
+            Stats
+        </a>
+</nav>
+</body></html>

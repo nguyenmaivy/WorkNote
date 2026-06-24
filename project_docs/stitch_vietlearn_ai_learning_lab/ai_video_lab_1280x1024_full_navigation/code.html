@@ -1,0 +1,248 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>VietLearn AI Lab - AI Video Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"secondary-container": "#86f2e4", "inverse-primary": "#b5c4ff", "tertiary-container": "#4c4ed9", "surface-container-high": "#e6e8ea", "on-tertiary": "#ffffff", secondary: "#006a61", outline: "#737686", "secondary-fixed": "#89f5e7", "on-primary-container": "#d4dcff", "on-error-container": "#93000a", "on-background": "#191c1e", "error-container": "#ffdad6", background: "#f7f9fb", "on-secondary-fixed-variant": "#005049", "on-tertiary-fixed": "#07006c", "inverse-surface": "#2d3133", tertiary: "#3231c1", "surface-bright": "#f7f9fb", "outline-variant": "#c3c5d7", "surface-variant": "#e0e3e5", "surface-dim": "#d8dadc", "on-surface-variant": "#434654", "on-secondary-container": "#006f66", "surface-container-lowest": "#ffffff", "on-tertiary-container": "#dbdaff", "tertiary-fixed": "#e1e0ff", "surface-container-low": "#f2f4f6", "surface-container": "#eceef0", surface: "#f7f9fb", "primary-fixed-dim": "#b5c4ff", "primary-fixed": "#dbe1ff", "inverse-on-surface": "#eff1f3", "tertiary-fixed-dim": "#c0c1ff", "on-tertiary-fixed-variant": "#2f2ebe", "on-secondary-fixed": "#00201d", "secondary-fixed-dim": "#6bd8cb", "on-secondary": "#ffffff", "on-primary-fixed-variant": "#003dab", "surface-container-highest": "#e0e3e5", error: "#ba1a1a", "on-primary-fixed": "#00174d", "primary-container": "#1a56db", "surface-tint": "#1353d8", "on-primary": "#ffffff", primary: "#003fb1", "on-surface": "#191c1e", "on-error": "#ffffff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {xs: "4px", md: "24px", lg: "48px", "container-max": "1280px", xl: "80px", sm: "12px", base: "8px", gutter: "24px"}, fontFamily: {caption: ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "title-md": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "headline-lg-mobile": ["Inter"], "body-md": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {caption: ["12px", {lineHeight: "16px", fontWeight: "400"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}], "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}], "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}]}}}};</script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased overflow-hidden">
+<!-- TopAppBar (from SCREEN_49) -->
+<header class="bg-surface/80 backdrop-blur-md dark:bg-inverse-surface/80 text-primary dark:text-inverse-primary fixed top-0 w-full z-50 shadow-sm">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary cursor-pointer active:opacity-70 hover:text-primary transition-colors duration-200 lg:hidden">menu</span>
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-inverse-primary">VietLearn AI Lab</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low rounded-full border-none text-body-md focus:ring-2 focus:ring-primary w-64" placeholder="Search..." type="text">
+</div>
+<button class="p-2 hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-70 flex items-center justify-center">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-16 h-screen overflow-hidden">
+<!-- SideNavBar (from SCREEN_49) -->
+<nav class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-label-md text-label-md h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col shadow-sm border-r border-surface-container-high pt-16 z-40">
+<div class="p-4 flex flex-col h-full">
+<!-- User Profile -->
+<div class="flex items-center gap-sm mb-md p-2">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+<img alt="Student Avatar" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvw-tJsV2rnKDeyNXIOluB2VB8gW6CHYFEls4ZkGvq4AKMLt8QGzdX61BalxmrRSQyN2WV89tM2EEd31fjEzLvi5hk1nxVKTW_NTHsD5dpR5hRdil4WWX_B92mIueFP29ooKbEz4n9KgDiMrxXyBs0okp5PDN5E9nXYh7sgqH7FeU9k813n0ihv70_-ScN-BmgbKRfXv3cyKoQJM7I7giAHEc_ftOnoUzy9bppgoaLm52UaqmFqzl_PFx2DcBa0CHLyXKcY5RHW7Sb">
+</div>
+<div>
+<div class="font-title-md text-title-md text-on-surface">Learning Hub</div>
+<div class="font-caption text-caption text-on-surface-variant">Academic Level 4</div>
+</div>
+</div>
+<!-- CTA -->
+<button class="bg-primary text-on-primary font-label-md text-label-md py-2 px-4 rounded-full w-full mb-md hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Study Session
+            </button>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto flex flex-col gap-xs custom-scrollbar pr-1">
+<a class="hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95 bg-primary-container text-on-primary-container font-bold" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+                    Library
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+                    AI Chatbot
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                    Mind Maps
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+                    RPG Games
+                </a>
+<a class="rounded-lg flex items-center gap-sm px-4 py-3 active:scale-95 transition-transform text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">graphic_eq</span>
+                    Audio Lab
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+                    Knowledge
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                    Spending
+                </a>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto pt-md border-t border-surface-container-high flex flex-col gap-xs">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Help
+                </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 flex-1 flex flex-col h-full overflow-hidden bg-surface-bright">
+<!-- Lab Layout -->
+<div class="flex-1 overflow-y-auto p-md lg:p-lg flex flex-col md:flex-row gap-md max-w-[1280px] mx-auto w-full">
+<!-- Left Column: Video & Subtitles -->
+<div class="flex-1 flex flex-col gap-md min-w-0">
+<!-- Video Player Container -->
+<div class="bg-black rounded-xl overflow-hidden shadow-sm relative aspect-video flex-shrink-0 group">
+<img alt="Video Placeholder" class="w-full h-full object-cover opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDMUB7FyIn4h7dNKIPntKefeC0tO7l42h5dLPLYeOvx-lzFE_V31KOYj-cYJ_iAEseQt8WPmgfSdpApyFGZwyBRd3Vw7TNs6iehaMDHc7Bpc6mXqlnmWzmPtyCDjHFsn1hTQf1m2tfGZXgfQa_7DB6Nz5suW7R2Wcq8waj7MDAO7sxqP-6d0ICcTC4C2Q_Z9oU73KyJWNorASUsfLRBrlWIiqpyqenwWpFiNkyLFGQcLaxOr2QZBGecJfLM06TxzZruyll5ZqWyoK4">
+<!-- Player Controls Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-md">
+<!-- Progress -->
+<div class="w-full h-1 bg-surface-variant/30 rounded-full mb-4 cursor-pointer relative">
+<div class="absolute left-0 top-0 h-full w-1/3 bg-primary rounded-full relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-sm"></div>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex items-center justify-between text-white">
+<div class="flex items-center gap-md">
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span></button>
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined">volume_up</span></button>
+<span class="font-label-md text-label-md text-white/80">04:20 / 12:45</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined">closed_caption</span></button>
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined">settings</span></button>
+<button class="hover:text-primary-fixed transition-colors"><span class="material-symbols-outlined">fullscreen</span></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Dual Subtitles Panel -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between border-b border-outline-variant/50 pb-sm mb-sm">
+<h4 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+                            Real-time Translation
+                        </h4>
+<div class="flex items-center gap-sm">
+<span class="px-2 py-1 bg-surface-container-low rounded text-caption font-caption text-on-surface-variant">Auto-sync</span>
+</div>
+</div>
+<!-- Original -->
+<div class="p-sm bg-surface-container-lowest rounded-lg border-l-2 border-outline-variant">
+<span class="text-xs font-semibold text-outline mb-1 block uppercase tracking-wider">English (Original)</span>
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+                            "The fundamental concept of machine learning involves training an algorithm on a large dataset..."
+                        </p>
+</div>
+<!-- Translation -->
+<div class="p-sm bg-secondary-container/10 rounded-lg border-l-2 border-secondary">
+<span class="text-xs font-semibold text-secondary mb-1 block uppercase tracking-wider">Vietnamese (AI Translated)</span>
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed">
+                            "Khái niệm cơ bản của học máy liên quan đến việc đào tạo một thuật toán trên một tập dữ liệu lớn..."
+                        </p>
+</div>
+</div>
+</div>
+<!-- Right Column: AI Insights Sidebar -->
+<div class="w-full md:w-80 flex-shrink-0 flex flex-col gap-md">
+<!-- Insights Header -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-sm p-md flex flex-col h-[600px] md:h-full relative overflow-hidden">
+<!-- Subtle AI Glow Background -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-full blur-3xl -z-10"></div>
+<div class="flex items-center gap-sm mb-md">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-tertiary flex items-center justify-center text-white shadow-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Video Insights</h3>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-md">
+<!-- AI Summary -->
+<div class="bg-surface-container-lowest rounded-lg p-sm border border-outline-variant/50">
+<h4 class="font-label-md text-label-md text-primary mb-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">summarize</span>
+                                Live Summary
+                            </h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">
+                                The speaker is currently explaining the basics of supervised learning, comparing it to a teacher guiding a student through labeled examples.
+                            </p>
+</div>
+<!-- Key Terms -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-sm">Extracted Key Terms</h4>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 bg-primary/5 text-primary rounded-full font-caption text-caption border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    Machine Learning
+                                </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 bg-primary/5 text-primary rounded-full font-caption text-caption border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    Algorithm
+                                </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 bg-primary/5 text-primary rounded-full font-caption text-caption border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    Dataset
+                                </span>
+</div>
+</div>
+<!-- Time-stamped Notes -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-sm">Generated Chapters</h4>
+<div class="flex flex-col gap-xs">
+<button class="flex items-start gap-sm p-2 rounded-lg hover:bg-surface-container-low transition-colors text-left group">
+<span class="font-label-md text-label-md text-primary bg-primary-container/20 px-1.5 py-0.5 rounded">00:00</span>
+<span class="font-body-md text-body-md text-sm text-on-surface group-hover:text-primary transition-colors">Introduction to AI</span>
+</button>
+<button class="flex items-start gap-sm p-2 rounded-lg bg-surface-container-low border-l-2 border-primary text-left group">
+<span class="font-label-md text-label-md text-primary bg-primary-container/20 px-1.5 py-0.5 rounded">03:45</span>
+<span class="font-body-md text-body-md text-sm text-on-surface font-medium">Supervised Learning Basics</span>
+</button>
+<button class="flex items-start gap-sm p-2 rounded-lg hover:bg-surface-container-low transition-colors text-left group">
+<span class="font-label-md text-label-md text-outline bg-surface-variant px-1.5 py-0.5 rounded">08:12</span>
+<span class="font-body-md text-body-md text-sm text-on-surface-variant group-hover:text-primary transition-colors">Real-world Applications</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Generate Quiz CTA -->
+<div class="mt-md pt-sm border-t border-outline-variant/50">
+<button class="w-full py-2 bg-white border border-primary text-primary font-label-md text-label-md rounded-lg hover:bg-primary-container hover:border-transparent hover:text-on-primary-container transition-all flex items-center justify-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-[18px]">quiz</span>
+                            Generate Quiz from Video
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<style>
+    /* Custom Scrollbar for sidebar to keep it clean */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #c3c5d7;
+        border-radius: 10px;
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
+</body></html>

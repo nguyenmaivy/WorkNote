@@ -1,47 +1,88 @@
 /* @import rules must come first — before any CSS content including Tailwind's expansion */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=general-sans@200,300,400,500,600,700,1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "DM Sans", system-ui, sans-serif;
-  --font-display: "General Sans", system-ui, sans-serif;
+  /* ── Stitch DESIGN.md fonts ─────────────────────────────── */
+  --font-sans: "DM Sans", system-ui, sans-serif;        /* body, label */
+  --font-display: "Space Grotesk", system-ui, sans-serif; /* headlines */
   --font-mono: "JetBrains Mono", monospace;
 
-  --color-primary: #6366F1;
-  --color-primary-hover: #4F46E5;
-  --color-secondary: #20970B;
+  /* ── Stitch "Vibrant Modern" Palette (Electric Indigo + Vibrant Emerald) ──
+   * Old names preserved for backward compat with existing components. */
+  --color-primary: #4648d4;            /* Electric Indigo */
+  --color-primary-hover: #2f2ebe;      /* on-primary-fixed-variant */
+  --color-secondary: #006c49;          /* Vibrant Emerald */
 
-  --color-neutral: #9C9C9C;
-  --color-neutral-soft: #F3F4F6;
-  --color-neutral-medium: #E5E7EB;
+  --color-neutral: #767586;            /* outline */
+  --color-neutral-soft: #f3f3f3;       /* surface-container-low */
+  --color-neutral-medium: #e2e2e2;     /* surface-container-highest / surface-variant */
 
-  --color-bg: #FAFAFA;
-  --color-surface: #FFFFFF;
+  --color-bg: #f9f9f9;                 /* background / surface */
+  --color-surface: #ffffff;            /* surface-container-lowest */
 
-  --color-text-primary: #0A0A0A;
-  --color-text-secondary: #6B6B6B;
+  --color-text-primary: #1a1c1c;       /* on-surface */
+  --color-text-secondary: #464554;     /* on-surface-variant */
 
-  --color-border-subtle: #E8E8EC;
-  --color-border-default: #D1D5DB;
+  --color-border-subtle: #e2e2e2;      /* surface-variant */
+  --color-border-default: #c7c4d7;     /* outline-variant */
 
-  --color-success: #10B981;
-  --color-success-soft: #D1FAE5;
+  --color-success: #006c49;            /* secondary emerald */
+  --color-success-soft: #6cf8bb;       /* secondary-container */
 
-  --color-warning: #F59E0B;
-  --color-warning-soft: #FEF3C7;
+  --color-warning: #b8650f;
+  --color-warning-soft: #fef3c7;
 
-  --color-error: #EF4444;
-  --color-error-soft: #FEE2E2;
+  --color-error: #ba1a1a;
+  --color-error-soft: #ffdad6;
 
-  --radius-base: 6px;
-  --radius-card: 12px;
+  /* ── Full MD3 token set from DESIGN.md ── */
+  --color-primary-container: #6063ee;
+  --color-on-primary-container: #fffbff;
+  --color-primary-fixed: #e1e0ff;
+  --color-primary-fixed-dim: #c0c1ff;
+  --color-on-primary-fixed: #07006c;
+
+  --color-secondary-container: #6cf8bb;
+  --color-on-secondary-container: #00714d;
+  --color-secondary-fixed: #6ffbbe;
+
+  --color-tertiary: #4b41e1;
+  --color-tertiary-container: #645efb;
+  --color-on-tertiary-container: #fffbff;
+
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f3;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-dim: #dadada;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-variant: #e2e2e2;
+  --color-outline: #767586;
+  --color-outline-variant: #c7c4d7;
+
+  --color-inverse-surface: #2f3131;
+  --color-inverse-on-surface: #f0f1f1;
+  --color-inverse-primary: #c0c1ff;
+
+  /* Custom radius tokens (namespaced — won't clash with Tailwind defaults) */
+  --radius-card: 12px;          /* rounded-lg ish */
+  --radius-large: 16px;         /* large blocks */
   --radius-pill: 9999px;
 
-  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.08);
-  --shadow-primary-glow: 0 4px 12px rgba(99, 102, 241, 0.35);
-  --shadow-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  /* NOTE: Don't override --spacing-* — Tailwind v4 uses the spacing scale
+     for width/max-width/padding/margin/gap. Overriding --spacing-md would
+     break max-w-md, p-md, m-md, etc. Use arbitrary values like p-[24px]
+     or the default Tailwind scale (p-6 = 24px). */
+
+  /* Shadows — soft ambient per DESIGN.md "Elevation & Depth" */
+  --shadow-card: 0 1px 3px rgba(26, 28, 28, 0.04), 0 1px 2px rgba(26, 28, 28, 0.02);
+  --shadow-card-hover: 0 4px 16px rgba(26, 28, 28, 0.06);
+  --shadow-primary-glow: 0 4px 14px rgba(70, 72, 212, 0.28);
+  --shadow-focus-ring: 0 0 0 3px rgba(70, 72, 212, 0.15);
+  --shadow-emerald-glow: 0 0 0 2px rgba(0, 108, 73, 0.4);
 }
 
 /* ── Base ────────────────────────────────────────────────── */
@@ -49,35 +90,39 @@
   background-color: var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
 
-  /* Render chữ nhất quán giữa Chrome / Safari / Firefox / Edge */
-  -webkit-font-smoothing: antialiased;   /* WebKit/Blink (Chrome, Safari, Edge) */
-  -moz-osx-font-smoothing: grayscale;    /* Firefox trên macOS */
-  text-rendering: optimizeLegibility;    /* bật kerning + ligature đồng đều */
-  -webkit-text-size-adjust: 100%;        /* khoá auto-scale chữ trên mobile Safari */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
-/* Kế thừa smoothing cho toàn bộ cây DOM (một số trình duyệt cần reset rõ) */
 html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Display font for all headings — General Sans with tight tracking */
+/* DESIGN.md: Space Grotesk for headlines, weight 600+ */
 h1, h2, h3, h4, h5, h6 {
-  font-family: "General Sans", var(--font-display), system-ui, sans-serif;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
   color: var(--color-text-primary);
-  line-height: 1.1;
+  line-height: 1.15;
+  font-weight: 600;
 }
 
-/* Utility: apply display font to any element */
+h1 {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
 .font-display {
-  font-family: "General Sans", var(--font-display), system-ui, sans-serif;
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
 /* ── Scrollbar ───────────────────────────────────────────── */
@@ -103,17 +148,17 @@ button {
   animation: fade-in 0.25s ease-out both;
 }
 
-/* ── Glassmorphism (chỉ dùng cho lớp nổi, không dùng cho vùng đọc) ── */
+/* ── Glassmorphism (DESIGN.md Level 2 elevation) ─────────── */
 .glass-tint {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.06), rgba(168, 85, 247, 0.04));
-  backdrop-filter: blur(8px) saturate(130%);
-  -webkit-backdrop-filter: blur(8px) saturate(130%);
+  background: linear-gradient(135deg, rgba(70, 72, 212, 0.06), rgba(0, 108, 73, 0.04));
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
 
-/* ── Dropzone: trạng thái kéo file vào (drag-active) ── */
+/* ── Dropzone: trạng thái kéo file vào ── */
 @keyframes dropzone-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.0); }
-  50%      { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.10), 0 0 22px rgba(99, 102, 241, 0.18) inset; }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(70, 72, 212, 0.0); }
+  50%      { box-shadow: 0 0 0 6px rgba(70, 72, 212, 0.10), 0 0 22px rgba(70, 72, 212, 0.18) inset; }
 }
 .dropzone-active {
   animation: dropzone-pulse 1.3s ease-in-out infinite;
@@ -125,14 +170,12 @@ button {
 }
 .animate-bounce-soft { animation: bounce-soft 0.9s ease-in-out infinite; }
 
-/* ── Mascot trôi nhẹ khi thư viện trống ── */
 @keyframes mascot-float {
   0%, 100% { transform: translateY(0) rotate(-1.5deg); }
   50%      { transform: translateY(-7px) rotate(1.5deg); }
 }
 .animate-mascot-float { animation: mascot-float 3.6s ease-in-out infinite; }
 
-/* ── Thanh XP: hiệu ứng ánh sáng quét qua ── */
 @keyframes xp-shimmer {
   0%   { transform: translateX(-120%); }
   100% { transform: translateX(320%); }
@@ -146,7 +189,12 @@ button {
   animation: xp-shimmer 2.4s ease-in-out infinite;
 }
 
-/* ── Tôn trọng tùy chọn giảm chuyển động của hệ điều hành ── */
+/* ── AI Element accent (per DESIGN.md): soft emerald glow ── */
+.ai-accent {
+  outline: 2px solid rgba(0, 108, 73, 0.35);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dropzone-active,
   .animate-bounce-soft,

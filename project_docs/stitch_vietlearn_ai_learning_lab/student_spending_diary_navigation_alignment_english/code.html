@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi" style=""><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý chi tiêu - VietLearn AI Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Shared Tailwind Config -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-secondary": "#ffffff",
+                "surface-variant": "#e0e3e5",
+                "on-primary-container": "#d4dcff",
+                "error-container": "#ffdad6",
+                "tertiary-fixed": "#e1e0ff",
+                "error": "#ba1a1a",
+                "outline-variant": "#c3c5d7",
+                "surface-container-high": "#e6e8ea",
+                "on-error": "#ffffff",
+                "primary-fixed": "#dbe1ff",
+                "surface-container": "#eceef0",
+                "tertiary": "#3231c1",
+                "on-tertiary-fixed-variant": "#2f2ebe",
+                "surface-dim": "#d8dadc",
+                "background": "#f7f9fb",
+                "tertiary-container": "#4c4ed9",
+                "on-primary-fixed": "#00174d",
+                "on-tertiary-fixed": "#07006c",
+                "inverse-on-surface": "#eff1f3",
+                "secondary-fixed": "#89f5e7",
+                "surface-container-low": "#f2f4f6",
+                "on-tertiary": "#ffffff",
+                "outline": "#737686",
+                "surface-container-highest": "#e0e3e5",
+                "inverse-primary": "#b5c4ff",
+                "surface": "#f7f9fb",
+                "on-primary": "#ffffff",
+                "tertiary-fixed-dim": "#c0c1ff",
+                "secondary": "#006a61",
+                "on-secondary-fixed-variant": "#005049",
+                "primary": "#003fb1",
+                "on-background": "#191c1e",
+                "surface-bright": "#f7f9fb",
+                "primary-fixed-dim": "#b5c4ff",
+                "surface-container-lowest": "#ffffff",
+                "on-error-container": "#93000a",
+                "on-secondary-fixed": "#00201d",
+                "secondary-container": "#86f2e4",
+                "on-secondary-container": "#006f66",
+                "surface-tint": "#1353d8",
+                "inverse-surface": "#2d3133",
+                "on-tertiary-container": "#dbdaff",
+                "on-primary-fixed-variant": "#003dab",
+                "secondary-fixed-dim": "#6bd8cb",
+                "on-surface-variant": "#434654",
+                "primary-container": "#1a56db",
+                "on-surface": "#191c1e"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "md": "24px",
+                "xs": "4px",
+                "lg": "48px",
+                "xl": "80px",
+                "container-max": "1280px",
+                "sm": "12px",
+                "base": "8px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "headline": ["Inter"],
+                "display": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"],
+                "caption": ["Inter"],
+                "headline-lg": ["Inter"],
+                "title-md": ["Inter"],
+                "display-lg": ["Inter"],
+                "body-lg": ["Inter"],
+                "body-md": ["Inter"],
+                "label-md": ["Inter"]
+        },
+        "fontSize": {
+                "caption": ["12px", {lineHeight: "16px", fontWeight: "400"}],
+                "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}],
+                "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}],
+                "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}],
+                "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}],
+                "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}],
+                "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}]
+        }
+    },
+  }
+</script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      .donut-segment {
+        transition: stroke-dasharray 0.3s ease;
+      }
+      .bar-container {
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        gap: 2rem;
+      }
+      .bar {
+        flex: 1;
+        border-radius: 8px 8px 0 0;
+        position: relative;
+        transition: height 0.6s ease;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md dark:bg-inverse-surface/80 text-primary dark:text-inverse-primary fixed top-0 w-full z-50 shadow-sm border-b border-outline-variant/30">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto h-16">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary cursor-pointer active:opacity-70 hover:text-primary transition-colors duration-200 lg:hidden">menu</span>
+<span class="font-headline-lg text-2xl font-bold text-primary dark:text-inverse-primary">VietLearn AI Lab</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low rounded-full border-none text-body-md focus:ring-2 focus:ring-primary w-64" placeholder="Tìm kiếm..." type="text"/>
+</div>
+<button class="p-2 hover:bg-surface-variant/50 rounded-full transition-transform active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-variant/50 rounded-full transition-transform active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Sidebar & Main Content Wrapper -->
+<div class="flex pt-16 h-screen">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface text-primary dark:text-inverse-primary font-label-md text-label-md h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col shadow-sm border-r border-surface-container-high pt-16 z-40">
+<div class="p-4 flex flex-col gap-base h-full">
+<!-- Profile Header -->
+<div class="flex items-center gap-sm mb-md p-2">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold overflow-hidden">
+<img alt="Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvw-tJsV2rnKDeyNXIOluB2VB8gW6CHYFEls4ZkGvq4AKMLt8QGzdX61BalxmrRSQyN2WV89tM2EEd31fjEzLvi5hk1nxVKTW_NTHsD5dpR5hRdil4WWX_B92mIueFP29ooKbEz4n9KgDiMrxXyBs0okp5PDN5E9nXYh7sgqH7FeU9k813n0ihv70_-ScN-BmgbKRfXv3cyKoQJM7I7giAHEc_ftOnoUzy9bppgoaLm52UaqmFqzl_PFx2DcBa0CHLyXKcY5RHW7Sb"/>
+</div>
+<div>
+<div class="font-title-md text-on-surface">Learning Hub</div>
+<div class="text-xs text-on-surface-variant">Academic Level 4</div>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="bg-primary text-on-primary font-label-md py-2 px-4 rounded-full w-full mb-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Study Session
+                </button>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto flex flex-col gap-xs">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+                        Library
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+                        AI Chatbot
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                        Mind Maps
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+                        RPG Games
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">graphic_eq</span>
+                        Audio Lab
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+                        Knowledge
+                    </a>
+<!-- Active State: Spending -->
+<a class="bg-primary-container text-on-primary-container font-bold rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                        Spending
+                    </a>
+</div>
+<!-- Footer Links -->
+<div class="mt-auto pt-md border-t border-surface-container-high flex flex-col gap-xs">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+                        Settings
+                    </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-lg flex items-center gap-sm px-4 py-3 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">help</span>
+                        Help
+                    </a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 p-gutter overflow-y-auto bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto">
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Side: Spending Distribution -->
+<div class="col-span-12 lg:col-span-6 space-y-gutter">
+<div class="bg-white rounded-[2rem] p-8 shadow-sm border border-outline-variant/30">
+<!-- Date Selector -->
+<div class="flex items-center justify-center gap-8 mb-8 text-on-surface font-medium">
+<span class="material-symbols-outlined cursor-pointer text-outline hover:text-primary transition-colors">chevron_left</span>
+<div class="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/30">
+<span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
+<span class="text-sm">Tháng này</span>
+</div>
+<span class="material-symbols-outlined cursor-pointer text-outline hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 gap-4 mb-8">
+<div class="bg-surface border border-pink-100 rounded-2xl p-5 shadow-sm">
+<div class="flex items-center gap-1 text-on-surface-variant text-xs mb-2">
+<span class="material-symbols-outlined text-pink-500 text-sm">trending_down</span>
+                                Chi tiêu
+                            </div>
+<div class="text-xl font-bold text-on-surface">14.771.794đ</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-2xl p-5 shadow-sm">
+<div class="flex items-center gap-1 text-on-surface-variant text-xs mb-2">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                Thu nhập
+                            </div>
+<div class="text-xl font-bold text-on-surface">6.246.238đ</div>
+</div>
+</div>
+<!-- Trend Indicator -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-2xl mb-10 border border-outline-variant/20 hover:border-primary/30 transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">bar_chart</span>
+</div>
+<span class="text-sm font-medium">Tăng <span class="text-orange-500 font-bold">3.371.133đ</span> so với tháng trước</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+<!-- Donut Chart -->
+<div class="relative flex items-center justify-center py-6">
+<svg class="w-72 h-72 transform -rotate-90" viewbox="0 0 42 42">
+<circle class="donut-ring" cx="21" cy="21" fill="transparent" r="15.915" stroke="#f2f2f2" stroke-width="6"></circle>
+<circle class="donut-segment" cx="21" cy="21" fill="transparent" r="15.915" stroke="#ffb74d" stroke-dasharray="42 58" stroke-dashoffset="0" stroke-width="6"></circle>
+<circle class="donut-segment" cx="21" cy="21" fill="transparent" r="15.915" stroke="#64b5f6" stroke-dasharray="30 70" stroke-dashoffset="-42" stroke-width="6"></circle>
+<circle class="donut-segment" cx="21" cy="21" fill="transparent" r="15.915" stroke="#4db6ac" stroke-dasharray="18 82" stroke-dashoffset="-72" stroke-width="6"></circle>
+<circle class="donut-segment" cx="21" cy="21" fill="transparent" r="15.915" stroke="#ff8a65" stroke-dasharray="5 95" stroke-dashoffset="-90" stroke-width="6"></circle>
+<circle class="donut-segment" cx="21" cy="21" fill="transparent" r="15.915" stroke="#bdbdbd" stroke-dasharray="5 95" stroke-dashoffset="-95" stroke-width="6"></circle>
+</svg>
+<div class="absolute top-1/2 left-0 -translate-y-1/2 flex flex-col items-start gap-4">
+<div class="flex flex-col"><div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium"><span class="w-2 h-2 rounded-full bg-gray-400"></span> 5%</div><div class="text-xs font-bold">Còn lại</div></div>
+<div class="flex flex-col"><div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium"><span class="w-2 h-2 rounded-full bg-orange-300"></span> 5%</div><div class="text-xs font-bold">Cafe</div></div>
+<div class="flex flex-col"><div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium"><span class="w-2 h-2 rounded-full bg-teal-400"></span> 18%</div><div class="text-xs font-bold">Hóa đơn</div></div>
+</div>
+<div class="absolute top-[80%] left-12 flex flex-col items-start">
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium"><span class="w-2 h-2 rounded-full bg-blue-400"></span> 30%</div>
+<div class="text-xs font-bold">Di chuyển</div>
+</div>
+<div class="absolute top-1/2 right-0 -translate-y-1/2 flex flex-col items-end">
+<div class="flex items-center gap-1 text-[10px] text-on-surface-variant font-medium"><span class="w-2 h-2 rounded-full bg-orange-400"></span> 42%</div>
+<div class="text-xs font-bold">Ăn uống</div>
+</div>
+</div>
+<!-- Category Tabs -->
+<div class="flex border-b border-outline-variant mb-6 mt-8">
+<button class="flex-1 py-4 text-sm font-bold text-pink-500 border-b-2 border-pink-500">Danh mục con</button>
+<button class="flex-1 py-4 text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors">Danh mục cha</button>
+</div>
+<!-- Transaction List -->
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-white border border-pink-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-500">restaurant</span>
+</div>
+<span class="font-bold text-on-surface">Ăn uống</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-bold">6.243.616đ</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white border border-outline-variant rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-500">directions_car</span>
+</div>
+<span class="font-bold text-on-surface">Di chuyển</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-bold">4.396.000đ</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white border border-outline-variant rounded-2xl shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-teal-500">receipt_long</span>
+</div>
+<span class="font-bold text-on-surface">Hóa đơn</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-bold">2.613.967đ</span>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Monthly Comparison Report -->
+<div class="col-span-12 lg:col-span-6 space-y-gutter">
+<div class="bg-cyan-50/50 rounded-[2rem] p-10 min-h-full border border-cyan-100 flex flex-col">
+<div class="flex items-center gap-3 mb-12">
+<h3 class="text-xl font-bold text-on-surface">Báo cáo thu chi Tháng 2</h3>
+<div class="ml-auto flex gap-4">
+<button class="p-2 hover:bg-white/50 rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">volume_up</span>
+</button>
+<button class="p-2 hover:bg-white/50 rounded-full transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">headset_mic</span>
+</button>
+</div>
+</div>
+<div class="mb-14">
+<h2 class="text-3xl lg:text-4xl font-extrabold text-on-surface leading-tight">
+                            Tổng chi tiêu của Thuận giảm <span class="text-pink-500">8.120.376đ</span> so với tháng trước. Quá đỉnh!
+                        </h2>
+</div>
+<!-- Bar Chart Card -->
+<div class="bg-white rounded-3xl p-10 shadow-sm mb-14 flex flex-col items-center border border-outline-variant/30">
+<div class="w-full flex justify-around items-end mb-6 bar-container">
+<div class="flex flex-col items-center flex-1">
+<span class="text-xs font-bold mb-3 text-on-surface-variant">22.955.437đ</span>
+<div class="w-14 bg-blue-100 rounded-t-xl" style="height: 160px;"></div>
+<span class="mt-4 text-sm font-semibold text-on-surface-variant">Tháng 1</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<span class="text-xs font-bold mb-3 text-primary">14.835.061đ</span>
+<div class="w-14 bg-primary rounded-t-xl shadow-lg" style="height: 104px;"></div>
+<span class="mt-4 text-sm font-bold text-primary">Tháng 2</span>
+</div>
+</div>
+</div>
+<div class="text-center mt-auto">
+<p class="text-2xl font-bold text-on-surface px-6 leading-relaxed">Nhờ Thuận cắt chi tiêu đáng kể của <span class="text-pink-500 italic">Mua sắm &amp; Ăn uống 😎</span></p>
+</div>
+<!-- Decorative Coins -->
+<div class="relative h-24 mt-12 opacity-30">
+<div class="absolute bottom-0 left-10 w-12 h-12 bg-yellow-400 rounded-full blur-[2px] border-4 border-yellow-500 rotate-12"></div>
+<div class="absolute bottom-4 right-10 w-16 h-16 bg-yellow-400 rounded-full blur-[1px] border-4 border-yellow-500 -rotate-12"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Spacer -->
+<div class="h-32"></div>
+</div>
+</main>
+</div>
+<!-- Floating Action Button for Records -->
+<div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center group">
+<button class="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-xl border-4 border-white bg-primary hover:bg-primary-container transition-all hover:scale-110 active:scale-95">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<div class="mt-3 bg-white/90 backdrop-blur px-6 py-2 rounded-full border border-outline-variant shadow-md">
+<span class="text-xs font-bold uppercase tracking-widest text-primary">Ghi chép GD</span>
+</div>
+</div>
+<script>
+    // Micro-interactions and navigation logic
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            // In a real app this would navigate, for this demo we just show UI change
+            document.querySelectorAll('nav a').forEach(l => {
+                l.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold');
+                l.classList.add('text-on-surface-variant');
+                const icon = l.querySelector('.material-symbols-outlined');
+                if (icon) icon.style.fontVariationSettings = '"FILL" 0';
+            });
+            link.classList.remove('text-on-surface-variant');
+            link.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold');
+            const activeIcon = link.querySelector('.material-symbols-outlined');
+            if (activeIcon) activeIcon.style.fontVariationSettings = '"FILL" 1';
+        });
+    });
+</script>
+</body></html>

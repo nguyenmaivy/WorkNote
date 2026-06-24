@@ -1,0 +1,334 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Knowledge Hub | VietLearn AI Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-surface-variant": "#434654", "on-tertiary-container": "#dbdaff", primary: "#003fb1", "on-surface": "#191c1e", "on-error": "#ffffff", "on-primary-container": "#d4dcff", "secondary-fixed": "#89f5e7", "inverse-on-surface": "#eff1f3", tertiary: "#3231c1", "on-error-container": "#93000a", "secondary-container": "#86f2e4", surface: "#f7f9fb", "on-secondary-fixed": "#00201d", "surface-container-low": "#f2f4f6", "inverse-surface": "#2d3133", "secondary-fixed-dim": "#6bd8cb", "surface-container": "#eceef0", "on-background": "#191c1e", "error-container": "#ffdad6", "surface-variant": "#e0e3e5", "on-primary-fixed-variant": "#003dab", "surface-bright": "#f7f9fb", "primary-fixed": "#dbe1ff", "primary-container": "#1a56db", "primary-fixed-dim": "#b5c4ff", secondary: "#006a61", outline: "#737686", "on-tertiary-fixed": "#07006c", "on-tertiary": "#ffffff", "on-secondary-container": "#006f66", "outline-variant": "#c3c5d7", "tertiary-container": "#4c4ed9", "on-primary-fixed": "#00174d", background: "#f7f9fb", "surface-container-lowest": "#ffffff", "tertiary-fixed": "#e1e0ff", "surface-tint": "#1353d8", "on-tertiary-fixed-variant": "#2f2ebe", "on-secondary": "#ffffff", "inverse-primary": "#b5c4ff", "surface-dim": "#d8dadc", "surface-container-high": "#e6e8ea", "on-secondary-fixed-variant": "#005049", "tertiary-fixed-dim": "#c0c1ff", "on-primary": "#ffffff", error: "#ba1a1a", "surface-container-highest": "#e0e3e5"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {gutter: "24px", "container-max": "1280px", md: "24px", base: "8px", lg: "48px", xs: "4px", xl: "80px", sm: "12px"}, fontFamily: {"headline-lg": ["Inter"], "label-md": ["Inter"], "title-md": ["Inter"], "body-md": ["Inter"], "body-lg": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}], "label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}], "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}]}}}};</script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c5d7; border-radius: 10px; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface overflow-hidden h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface-container-lowest dark:bg-inverse-surface shadow-sm border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-8">
+<span class="text-title-md font-title-md font-bold text-primary dark:text-inverse-primary">VietLearn AI Lab</span>
+<div class="hidden md:flex relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search resources..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a user with a friendly expression, captured in high-key studio lighting. The background is a clean, minimalist gradient of soft grays. The overall aesthetic is modern, corporate, and polished, reflecting a high-quality academic environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3Md8PAIZCBwZvRQrhRZ7NUJzeRsy-xbpgNZ451tijUPigxwV-GfVMpYJNWQ-z_KLSPrVEn6UGv3yyOmp5r1ZO0mtdz30myK4dTIzGXqx5fhTylwPJBHZWh8LU6Ah5YWgRPAE8P3lodbchhOgl2PSu9l-rzvydNAjA8DUvOB97SsIauWG5fpJPWHf_wnHndu0swdjMEXNMU7RzBjd-WO2PPztcbj7aojsx0L_N33sz6khoDV9qlGRR8ZZCmVXJhIn62a9ix7xawoZK">
+</div>
+</div>
+</header>
+<!-- Sidebar Wrapper -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col p-4 z-40 bg-surface dark:bg-inverse-surface border-r border-outline-variant">
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-primary text-[18px] leading-tight">AI Lab</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Tech Hub</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Nav Items -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-md text-label-md">Library</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-md text-label-md">AI Chatbot</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md text-label-md">Mind Maps</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="font-label-md text-label-md">RPG Games</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">mic_external_on</span>
+<span class="font-label-md text-label-md">Audio Lab</span>
+</a>
+<!-- ACTIVE TAB -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-200 shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label-md text-label-md">Knowledge</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant transition-all duration-200 rounded-lg group" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Spending</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-gutter h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar">
+<div class="max-w-container-max mx-auto space-y-lg">
+<!-- Hero Section -->
+<section class="relative overflow-hidden rounded-xl p-xl flex flex-col items-center justify-center text-center">
+
+<div class="space-y-4 max-w-2xl">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Knowledge Hub</h1>
+<p class="font-body-lg text-on-surface-variant">Welcome back, Scientist. Explore our deep learning resources and start your next technical mastery path or document analysis.</p>
+<div class="mt-8 flex items-center bg-white shadow-xl rounded-full p-2 border border-outline-variant focus-within:border-primary transition-all">
+<span class="material-symbols-outlined px-4 text-primary">search</span>
+<input class="w-full py-3 pr-4 bg-transparent border-none focus:ring-0 text-on-surface font-body-md" placeholder="Search for documentation, courses, or analysis files..." type="text">
+<button class="bg-primary text-white px-8 py-3 rounded-full font-label-md hover:brightness-110 active:scale-95 transition-all">Explore</button>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Section 1: Learning Paths (Bento Style) -->
+<div class="lg:col-span-8 space-y-md">
+<div class="flex items-center justify-between">
+<h2 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">local_library</span>
+                            Learning Paths
+                        </h2>
+<button class="text-primary font-label-md hover:underline">View All Topics</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- AI Path -->
+<div class="glass-card p-md rounded-xl hover:shadow-lg transition-all group cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-[80px]">neurology</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">smart_toy</span>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">AI Suggested</span>
+</div>
+<h3 class="font-title-md text-title-md mb-1">Artificial Intelligence</h3>
+<p class="font-body-md text-on-surface-variant text-sm mb-6">Neural networks, LLMs, and Computer Vision fundamentals.</p>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Progress</span>
+<span>72%</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[72%]"></div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-primary text-white rounded-lg font-label-md active:scale-[0.98] transition-transform">Continue Path</button>
+</div>
+<!-- Web Dev Path -->
+<div class="glass-card p-md rounded-xl hover:shadow-lg transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">terminal</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded-full text-[10px] font-bold uppercase">Popular</span>
+</div>
+<h3 class="font-title-md text-title-md mb-1">Web Development</h3>
+<p class="font-body-md text-on-surface-variant text-sm mb-6">Modern frontend architectures and scalable backend design.</p>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Progress</span>
+<span>15%</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[15%]"></div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-surface-container-high text-on-surface font-label-md hover:bg-outline-variant transition-colors">Resume Lesson</button>
+</div>
+<!-- Cloud Computing -->
+<div class="glass-card p-md rounded-xl hover:shadow-lg transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">cloud</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md mb-1">Cloud Computing</h3>
+<p class="font-body-md text-on-surface-variant text-sm mb-6">AWS, Azure &amp; Google Cloud serverless architectures.</p>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Progress</span>
+<span>0%</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[0%]"></div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-surface-container-high text-on-surface font-label-md hover:bg-outline-variant transition-colors">Start Path</button>
+</div>
+<!-- Cybersecurity -->
+<div class="glass-card p-md rounded-xl hover:shadow-lg transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary/10 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined">security</span>
+</div>
+</div>
+<h3 class="font-title-md text-title-md mb-1">Cybersecurity</h3>
+<p class="font-body-md text-on-surface-variant text-sm mb-6">Zero-trust principles, encryption, and threat modeling.</p>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span>Progress</span>
+<span>45%</span>
+</div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-surface-container-high text-on-surface font-label-md hover:bg-outline-variant transition-colors">Resume</button>
+</div>
+</div>
+</div>
+<!-- Section 2: Analysis Lab Quick Access -->
+<div class="lg:col-span-4 space-y-md">
+<div class="flex items-center justify-between">
+<h2 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+                            Analysis Lab
+                        </h2>
+</div>
+<!-- New Analysis Dropzone -->
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-8 bg-surface-container-low flex flex-col items-center justify-center text-center space-y-4 hover:border-primary transition-all group cursor-pointer">
+<div class="w-16 h-16 bg-white rounded-full shadow-sm flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">upload_file</span>
+</div>
+<div>
+<p class="font-title-md text-on-surface">New Document Analysis</p>
+<p class="font-label-md text-on-surface-variant mt-1">Drop PDF, TXT or DOCX files here</p>
+</div>
+<button class="bg-primary/5 text-primary border border-primary/20 px-6 py-2 rounded-lg font-label-md hover:bg-primary/10 transition-colors">Browse Files</button>
+</div>
+<!-- Recent Lab Work -->
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-high/30">
+<h3 class="font-label-md font-bold uppercase tracking-widest text-on-surface-variant opacity-60">Recent Lab Work</h3>
+</div>
+<div class="divide-y divide-outline-variant">
+<div class="p-4 hover:bg-white transition-colors cursor-pointer flex gap-4">
+<div class="w-10 h-10 bg-error-container/20 text-error flex items-center justify-center rounded">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">Q3_Tech_Trends.pdf</p>
+<p class="text-[10px] text-on-surface-variant">Analyzed 2h ago • 85% Score</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant self-center">chevron_right</span>
+</div>
+<div class="p-4 hover:bg-white transition-colors cursor-pointer flex gap-4">
+<div class="w-10 h-10 bg-primary-container/20 text-primary flex items-center justify-center rounded">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">Market_Analysis_V2.docx</p>
+<p class="text-[10px] text-on-surface-variant">Analyzed 1d ago • 92% Score</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant self-center">chevron_right</span>
+</div>
+<div class="p-4 hover:bg-white transition-colors cursor-pointer flex gap-4">
+<div class="w-10 h-10 bg-secondary-container/20 text-secondary flex items-center justify-center rounded">
+<span class="material-symbols-outlined">article</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">AI_Ethics_Summary.txt</p>
+<p class="text-[10px] text-on-surface-variant">Analyzed 3d ago • 70% Score</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant self-center">chevron_right</span>
+</div>
+</div>
+<button class="w-full py-4 text-primary font-label-md hover:bg-primary/5 transition-colors">Go to Document Lab</button>
+</div>
+<!-- Smart Tip Card -->
+<div class="p-md rounded-xl bg-gradient-to-br from-primary to-tertiary-container text-white relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[100px]">auto_awesome</span>
+</div>
+<div class="relative z-10 space-y-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">spark</span>
+<span class="text-xs font-bold uppercase tracking-widest opacity-80">AI Smart Tip</span>
+</div>
+<p class="font-title-md text-sm leading-relaxed italic">"Based on your recent progress in Cloud Computing, we recommend exploring the 'Serverless Functions' module in the Web Dev path next."</p>
+<button class="bg-white/20 hover:bg-white/30 backdrop-blur-md px-4 py-2 rounded-lg text-xs font-bold transition-all">Apply Recommendation</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Knowledge Stats Footer -->
+<section class="grid grid-cols-2 md:grid-cols-4 gap-gutter pt-8 border-t border-outline-variant">
+<div class="space-y-1">
+<p class="text-on-surface-variant font-label-md">Total Modules</p>
+<p class="text-headline-lg font-headline-lg text-on-surface">124</p>
+</div>
+<div class="space-y-1">
+<p class="text-on-surface-variant font-label-md">Hours Learned</p>
+<p class="text-headline-lg font-headline-lg text-on-surface">42.5</p>
+</div>
+<div class="space-y-1">
+<p class="text-on-surface-variant font-label-md">Certificates</p>
+<p class="text-headline-lg font-headline-lg text-on-surface">3</p>
+</div>
+<div class="space-y-1">
+<p class="text-on-surface-variant font-label-md">Lab Score</p>
+<p class="text-headline-lg font-headline-lg text-primary">88%</p>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[placeholder="Search for documentation, courses, or analysis files..."]');
+        const searchContainer = searchInput.parentElement;
+        searchInput.addEventListener('focus', () => {
+            searchContainer.classList.add('ring-4', 'ring-primary/10');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchContainer.classList.remove('ring-4', 'ring-primary/10');
+        });
+    </script>
+</body></html>

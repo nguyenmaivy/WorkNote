@@ -422,111 +422,275 @@ export default function AudioSpeechLab() {
         </span>
       </div>
 
-      {/* RENDER DIALECT TAB CONTENT */}
+      {/* RENDER DIALECT TAB CONTENT — Stitch bento grid layout */}
       {activeLabTab === "dialect" && (
-        <Card className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-          
-          {/* Voice Recorder Block */}
-          <div className="flex flex-col gap-6 border-b-2 md:border-b-0 md:border-r-2 border-[var(--color-border-subtle)] pb-6 md:pb-0 md:pr-8">
-            <div>
-              <h3 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
-                <Mic className="text-rose-500 animate-pulse" size={24} />
-                Hệ Ghi Âm & Kiểm Tra Giọng Đọc
-              </h3>
-              <p className="text-[14px] font-bold text-[var(--color-text-secondary)] mt-1">Cấp quyền micro để ghi lại giọng vùng miền của bạn và nghe lại dòng chảy âm học.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* ── LEFT: Source Text + Audio Output (Stitch 8 cols) ── */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Source Text Card with glass + ai-glow */}
+            <div className="bg-white/85 backdrop-blur-md rounded-[16px] p-6 border border-[var(--color-secondary)]/30 shadow-[0_0_18px_rgba(0,108,73,0.10)]">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-[18px] font-semibold text-[var(--color-text-primary)] flex items-center gap-2 font-display">
+                  <Volume2 className="text-[var(--color-secondary)]" size={20} />
+                  Source Text — Phòng dịch giọng nói
+                </h3>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-1 bg-[var(--color-primary)]/5 text-[var(--color-primary)] rounded text-[11px] font-medium flex items-center gap-1 border border-[var(--color-primary)]/15">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]" />
+                    Vietnamese auto
+                  </span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(textToSpeak)}
+                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors p-1"
+                    title="Copy"
+                  >
+                    <Sparkles size={16} />
+                  </button>
+                  <button
+                    onClick={() => setTextToSpeak("")}
+                    className="text-[var(--color-text-secondary)] hover:text-rose-500 transition-colors p-1"
+                    title="Clear"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <textarea
+                value={textToSpeak}
+                onChange={(e) => setTextToSpeak(e.target.value)}
+                className="w-full text-[15px] bg-transparent border-0 focus:ring-0 focus:outline-none resize-none text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]/60 min-h-[140px] leading-relaxed"
+                placeholder="Nhập văn bản tiếng Việt bất kỳ để tổng hợp giọng nói…"
+              />
+
+              <div className="flex justify-between items-center mt-4 pt-4 border-t border-[var(--color-border-subtle)]">
+                <span className="text-[11px] text-[var(--color-text-secondary)] flex items-center gap-1">
+                  <Info size={12} /> {textToSpeak.length} / 5,000 characters
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setTextToSpeak("")}
+                    className="bg-[var(--color-surface-container-low)] border border-[var(--color-border-default)] text-[var(--color-text-primary)] text-[13px] font-medium px-3 py-2 rounded-lg hover:bg-[var(--color-surface-container)] transition-colors flex items-center gap-1.5"
+                  >
+                    <Trash2 size={14} /> Clear
+                  </button>
+                  <Button onClick={handleTTSPlay} disabled={isPlayingTts} icon={<Volume2 size={16} />}>
+                    {isPlayingTts ? "Synthesizing…" : "Synthesize"}
+                  </Button>
+                  {isPlayingTts && (
+                    <Button
+                      variant="danger"
+                      onClick={() => {
+                        if (activeAudioRef.current) activeAudioRef.current.pause();
+                        window.speechSynthesis.cancel();
+                        setIsPlayingTts(false);
+                        setTtsStatus("");
+                      }}
+                      title="Dừng phát"
+                      icon={<VolumeX size={16} />}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div className="bg-[var(--color-neutral-soft)] rounded-xl p-6 flex flex-col items-center justify-center border-2 border-[var(--color-border-subtle)] min-h-[180px]">
-              {isRecording ? (
-                <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-rose-500 flex items-center justify-center text-white cursor-pointer hover:bg-rose-600 transition animate-bounce" onClick={stopRecording}>
-                    <Square size={20} fill="white" />
-                  </div>
-                  <span className="text-red-500 font-mono font-bold text-sm animate-pulse">RECORDING: {formatTime(recordingSeconds)}</span>
-                  
-                  {/* Dynamic waveform simulation */}
-                  <div className="flex gap-1 h-8 items-end mt-1">
-                    {[...Array(12)].map((_, i) => {
-                      const delay = 0.1 * i;
-                      return (
-                        <div
-                          key={i}
-                          className="w-1 bg-rose-400 rounded-full animate-wave"
-                          style={{
-                            height: "100%",
-                            animationDelay: `${delay}s`,
-                            animationDuration: "0.6s"
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <button onClick={startRecording} className="w-16 h-16 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white cursor-pointer hover:bg-[var(--color-primary-hover)] transition shadow-md shadow-indigo-100">
-                    <Mic size={24} />
-                  </button>
-                  <span className="text-[var(--color-text-secondary)] font-semibold text-xs mt-1">Bấm để bắt đầu thu âm</span>
-                  <p className="text-[10px] text-[var(--color-neutral)] text-center max-w-[200px]">Hãy thử đọc cụm từ khó: "Răng rứa chi rứa chi chi á"</p>
-                </div>
-              )}
+            {/* Audio Output + Waveform Card */}
+            <div className="bg-white border border-[var(--color-border-subtle)] rounded-[16px] p-6 shadow-[var(--shadow-card)] relative overflow-hidden">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[var(--color-secondary-container)]/30 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative z-10">
+                <h3 className="text-[18px] font-semibold text-[var(--color-text-primary)] mb-5 flex items-center gap-2 font-display">
+                  <Activity className="text-[var(--color-primary)]" size={20} />
+                  Audio Output
+                </h3>
 
-              {/* Recorded audio play button */}
-              {recordedBlobUrl && (
-                <div className="mt-5 w-full bg-white border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-3 flex items-center justify-between gap-3 animate-fade-in">
-                  <span className="text-xs font-semibold text-[var(--color-text-primary)]">✓ Đã thu âm xong</span>
-                  <audio src={recordedBlobUrl} controls className="h-8 max-w-[180px]" />
+                {/* Simulated waveform */}
+                <div className="h-24 bg-[var(--color-surface-container-low)] rounded-lg border border-[var(--color-border-subtle)] flex items-center justify-center gap-1 px-4 mb-5 overflow-hidden">
+                  {[8, 16, 12, 20, 10, 14, 24, 18, 12, 8, 20, 14, 22, 10, 16].map((h, i) => (
+                    <div
+                      key={i}
+                      className="w-1.5 rounded-full"
+                      style={{
+                        height: `${h * 3}px`,
+                        background: "var(--color-secondary)",
+                        opacity: isPlayingTts ? 0.4 + (i % 5) * 0.12 : 0.25,
+                        animation: isPlayingTts ? `wave 1.2s ease-in-out infinite alternate ${i * 0.08}s` : "none",
+                        transformOrigin: "bottom",
+                      }}
+                    />
+                  ))}
+                  <div className="flex-1 h-[2px] bg-[var(--color-border-default)]/40 ml-2" />
                 </div>
-              )}
+
+                {/* Recorder + playback row */}
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-3">
+                    {isRecording ? (
+                      <button
+                        onClick={stopRecording}
+                        className="w-12 h-12 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                        title="Stop recording"
+                      >
+                        <Square size={18} fill="white" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={startRecording}
+                        className="w-12 h-12 rounded-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-white flex items-center justify-center shadow-md active:scale-95 transition-transform"
+                        title="Start recording"
+                      >
+                        <Mic size={20} />
+                      </button>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">
+                        {isRecording ? `Recording…` : recordedBlobUrl ? "recorded_001.webm" : "Tap mic to record"}
+                      </span>
+                      <span className="text-[11px] text-[var(--color-text-secondary)] font-mono">
+                        {isRecording ? formatTime(recordingSeconds) : recordedBlobUrl ? "ready · 00:0?" : "00:00 / 00:00"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {recordedBlobUrl && (
+                    <audio src={recordedBlobUrl} controls className="h-9 max-w-[260px]" />
+                  )}
+                </div>
+
+                {ttsStatus && (
+                  <p className="text-[12px] text-[var(--color-primary)] mt-4 font-medium bg-[var(--color-primary)]/8 border border-[var(--color-primary)]/15 rounded-lg py-2 px-3 animate-pulse">
+                    ⚡ {ttsStatus}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Phonological Insights */}
-            <div className="bg-indigo-100 rounded-xl p-4 text-[14px] text-[var(--color-primary-hover)] border-2 border-indigo-100">
-              <h4 className="font-black flex items-center gap-1.5 text-[var(--color-primary-hover)] mb-1.5">
-                <Sparkles size={16} /> Đặc trưng Phương Ngữ Tiếng Việt:
+            <div className="bg-[var(--color-primary)]/5 rounded-[16px] p-5 border border-[var(--color-primary)]/15">
+              <h4 className="text-[14px] font-semibold flex items-center gap-1.5 text-[var(--color-primary-hover)] mb-2 font-display">
+                <Sparkles size={16} /> Đặc trưng Phương Ngữ Tiếng Việt
               </h4>
-              <ul className="space-y-1.5 list-disc list-inside text-[var(--color-primary-hover)] font-bold leading-relaxed">
-                <li><strong className="text-[var(--color-primary-hover)] font-black">Bắc (Hà Nội):</strong> Nguyên âm đầy đủ chuẩn mực, 6 thanh điệu dứt khoát. Giữ âm sắc nín họng ở thanh ngã rất tinh chỉnh.</li>
-                <li><strong className="text-[var(--color-primary-hover)] font-black">Trung (Huế/Vinh):</strong> Tông phẳng trầm, độ cao hẹp. Có xu hướng chuyển "hỏi/ngã" sang dấu nặng hơn, dùng nhiều đại từ phương địa chi địa.</li>
-                <li><strong className="text-[var(--color-primary-hover)] font-black">Nam (Sài Gòn):</strong> Gộp thanh hỏi và ngã thành một. Thay đổi âm đầu r, v thành y và g (Cá rô → Cá gô, Đi về → Đi dề).</li>
+              <ul className="space-y-1.5 list-disc list-inside text-[13px] text-[var(--color-text-primary)] leading-relaxed">
+                <li><strong className="text-[var(--color-primary-hover)] font-semibold">Bắc (Hà Nội):</strong> 6 thanh điệu rõ ràng, âm sắc dứt khoát.</li>
+                <li><strong className="text-[var(--color-primary-hover)] font-semibold">Trung (Huế/Vinh):</strong> Tông phẳng trầm, ngã/hỏi nhập với nặng.</li>
+                <li><strong className="text-[var(--color-primary-hover)] font-semibold">Nam (Sài Gòn):</strong> Gộp hỏi/ngã; r → g, v → d.</li>
               </ul>
             </div>
           </div>
 
-          {/* Text To Speech Playground */}
-          <div className="flex flex-col gap-5 justify-between">
-            <div>
-              <h3 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
-                <Volume2 className="text-[var(--color-primary)]" size={24} />
-                Phòng Dịch Giọng Nói Tiếng Việt
+          {/* ── RIGHT: Voice Settings (Stitch 4 cols) ── */}
+          <div className="lg:col-span-4 space-y-6 flex flex-col">
+            <div className="bg-white border border-[var(--color-border-subtle)] rounded-[16px] p-5 shadow-[var(--shadow-card)]">
+              <h3 className="text-[16px] font-semibold text-[var(--color-text-primary)] mb-4 pb-3 border-b border-[var(--color-border-subtle)] font-display">
+                Voice Settings
               </h3>
-              <p className="text-[14px] font-bold text-[var(--color-text-secondary)] mt-1">Nhập văn bản tiếng Việt bất kỳ, chọn miền ngữ điệu phát âm để thử thách năng lực dịch giọng nói.</p>
+
+              {/* Target Dialect */}
+              <div className="mb-4">
+                <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-2">
+                  Target Dialect
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedRegion}
+                    onChange={(e) => setSelectedRegion(e.target.value as any)}
+                    className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-border-default)] rounded-lg py-2.5 pl-3 pr-10 text-[14px] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] appearance-none font-medium outline-none"
+                  >
+                    <option value="north">Northern Vietnamese (Hanoi)</option>
+                    <option value="central">Central Vietnamese (Hue)</option>
+                    <option value="south">Southern Vietnamese (Saigon)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Voice profile chips */}
+              <div className="mb-4">
+                <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-2">
+                  Voice Profile
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button className="border border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)] rounded-lg py-2 px-3 text-[13px] font-medium flex items-center justify-center gap-1.5">
+                    🎤 Female 1
+                  </button>
+                  <button className="border border-[var(--color-border-default)] bg-white text-[var(--color-text-secondary)] rounded-lg py-2 px-3 text-[13px] font-medium hover:bg-[var(--color-neutral-soft)] transition-colors flex items-center justify-center gap-1.5">
+                    🎙️ Male 1
+                  </button>
+                </div>
+              </div>
+
+              {/* Delivery style chips */}
+              <div className="mb-4 pt-4 border-t border-[var(--color-border-subtle)]">
+                <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-2 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[var(--color-secondary)]" /> Delivery Style
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {["Neutral", "Academic", "Conversational", "News"].map((s, i) => (
+                    <span
+                      key={s}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium cursor-pointer transition-colors ${
+                        i === 0
+                          ? "bg-[var(--color-secondary-container)]/60 text-[var(--color-on-secondary-container)] border border-[var(--color-secondary)]/25"
+                          : "bg-[var(--color-surface-container-low)] text-[var(--color-text-secondary)] border border-[var(--color-border-default)] hover:bg-[var(--color-neutral-soft)]"
+                      }`}
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Speed + Pitch sliders */}
+              <div className="space-y-3 pt-4 border-t border-[var(--color-border-subtle)]">
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <label className="text-[11px] text-[var(--color-text-secondary)] font-medium">Speed</label>
+                    <span className="text-[11px] text-[var(--color-text-primary)] font-mono">{ttsSpeed.toFixed(1)}x</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="1.5"
+                    step="0.1"
+                    value={ttsSpeed}
+                    onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-[var(--color-surface-variant)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)]"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <label className="text-[11px] text-[var(--color-text-secondary)] font-medium">Pitch</label>
+                    <span className="text-[11px] text-[var(--color-text-primary)] font-mono">{ttsPitch.toFixed(1)}x</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="1.5"
+                    step="0.1"
+                    value={ttsPitch}
+                    onChange={(e) => setTtsPitch(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-[var(--color-surface-variant)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)]"
+                  />
+                </div>
+              </div>
             </div>
 
-            <textarea
-              value={textToSpeak}
-              onChange={(e) => setTextToSpeak(e.target.value)}
-              className="w-full text-[14px] font-bold p-3.5 border-2 border-[var(--color-border-subtle)] focus:border-[var(--color-primary)] focus:outline-none rounded-xl bg-[var(--color-surface)] min-h-[100px] text-[var(--color-text-primary)] leading-normal"
-              placeholder="Nhập câu viết bằng tiếng lóng, không dấu hoặc có dấu để nghe thử phát âm..."
-            />
-
-            {/* Dialect region selective button */}
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)] tracking-wider">Chọn âm điệu vùng miền:</label>
+            {/* Region quick swap */}
+            <div className="bg-white border border-[var(--color-border-subtle)] rounded-[16px] p-5 shadow-[var(--shadow-card)]">
+              <h3 className="text-[14px] font-semibold text-[var(--color-text-primary)] mb-3 font-display">
+                Quick Dialect Switch
+              </h3>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: "north", label: "Hà Nội (Bắc)", icon: "🎤" },
-                  { id: "central", label: "Huế (Trung)", icon: "🎙️" },
-                  { id: "south", label: "Sài Gòn (Nam)", icon: "📣" }
+                  { id: "north", label: "Bắc", icon: "🎤" },
+                  { id: "central", label: "Trung", icon: "🎙️" },
+                  { id: "south", label: "Nam", icon: "📣" },
                 ].map((reg) => (
                   <button
                     key={reg.id}
                     onClick={() => setSelectedRegion(reg.id as any)}
-                    className={`py-2 px-2 text-xs rounded-lg font-medium transition-all flex flex-col items-center gap-1 border ${
+                    className={`py-2 px-2 text-[12px] rounded-lg font-medium transition-all flex flex-col items-center gap-1 border ${
                       selectedRegion === reg.id
-                        ? "bg-[var(--color-primary)] text-white border-indigo-600 shadow-sm"
-                        : "bg-white text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:bg-[var(--color-neutral-soft)]"
+                        ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-[var(--shadow-primary-glow)]"
+                        : "bg-white text-[var(--color-text-secondary)] border-[var(--color-border-default)] hover:bg-[var(--color-neutral-soft)]"
                     }`}
                   >
                     <span className="text-base">{reg.icon}</span>
@@ -534,6 +698,15 @@ export default function AudioSpeechLab() {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* hidden — legacy block placeholder so JSX siblings parse */}
+          <div className="hidden">
+            <div className="grid grid-cols-3 gap-2">
+              {[].map((reg: any) => (
+                <button key={reg.id}>{reg.label}</button>
+              ))}
             </div>
 
             {/* Pitch / speed configuration */}
@@ -598,13 +771,8 @@ export default function AudioSpeechLab() {
               )}
             </div>
 
-            {ttsStatus && (
-              <p className="text-[12px] text-[var(--color-primary)] text-center font-black bg-indigo-100 border-2 border-indigo-100 rounded-xl py-1.5 px-2 animate-pulse">
-                ⚡ {ttsStatus}
-              </p>
-            )}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* RENDER LIVE AUDIO TRANSLATE TAB CONTENT */}

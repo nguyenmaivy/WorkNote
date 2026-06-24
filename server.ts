@@ -15,6 +15,7 @@ import ttsRouter from "./server/routes/tts.js";
 import ttsReadRouter from "./server/routes/ttsRead.js";
 import translateRouter from "./server/routes/translate.js";
 import translateAudioRouter from "./server/routes/translateAudio.js";
+import subtitleTranslateRouter from "./server/routes/subtitleTranslate.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use("/api/tts", ttsRouter);
 app.use("/api/tts-read", ttsReadRouter);
 app.use("/api/translate", translateRouter);
 app.use("/api/translate-live-audio", translateAudioRouter);
+app.use("/api/subtitle-translate", subtitleTranslateRouter); // free, no-Gemini subtitle MT
 
 import http from "http";
 import { initializeWebSockets } from "./server/websockets/index.js";

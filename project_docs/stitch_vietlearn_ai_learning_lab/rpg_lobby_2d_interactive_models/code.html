@@ -1,0 +1,278 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>RPG Games - VietLearn AI Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {tertiary: "#3231c1", "on-secondary": "#ffffff", outline: "#737686", "surface-container-lowest": "#ffffff", "on-tertiary-fixed": "#07006c", "on-primary-fixed-variant": "#003dab", "on-error": "#ffffff", primary: "#003fb1", secondary: "#006a61", "on-tertiary": "#ffffff", "on-error-container": "#93000a", "primary-fixed-dim": "#b5c4ff", error: "#ba1a1a", "on-background": "#191c1e", "inverse-primary": "#b5c4ff", "on-primary-fixed": "#00174d", "secondary-container": "#86f2e4", "error-container": "#ffdad6", "on-secondary-container": "#006f66", "tertiary-fixed-dim": "#c0c1ff", "surface-bright": "#f7f9fb", "on-primary-container": "#d4dcff", surface: "#f7f9fb", "surface-container-low": "#f2f4f6", "surface-container-highest": "#e0e3e5", "on-tertiary-container": "#dbdaff", "on-secondary-fixed": "#00201d", "surface-dim": "#d8dadc", "primary-fixed": "#dbe1ff", "on-secondary-fixed-variant": "#005049", "surface-container": "#eceef0", "outline-variant": "#c3c5d7", "inverse-on-surface": "#eff1f3", "primary-container": "#1a56db", "on-tertiary-fixed-variant": "#2f2ebe", "on-surface-variant": "#434654", "surface-tint": "#1353d8", "tertiary-container": "#4c4ed9", "inverse-surface": "#2d3133", "secondary-fixed-dim": "#6bd8cb", "on-surface": "#191c1e", "surface-variant": "#e0e3e5", background: "#f7f9fb", "secondary-fixed": "#89f5e7", "surface-container-high": "#e6e8ea", "on-primary": "#ffffff", "tertiary-fixed": "#e1e0ff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {sm: "12px", lg: "48px", gutter: "24px", "container-max": "1280px", xs: "4px", xl: "80px", base: "8px", md: "24px"}, fontFamily: {"label-md": ["Inter"], "headline-lg": ["Inter"], caption: ["Inter"], "body-lg": ["Inter"], "display-lg": ["Inter"], "title-md": ["Inter"], "body-md": ["Inter"], "headline-lg-mobile": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"label-md": ["14px", {lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500"}], "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600"}], caption: ["12px", {lineHeight: "16px", fontWeight: "400"}], "body-lg": ["18px", {lineHeight: "30px", fontWeight: "400"}], "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}], "title-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "body-md": ["16px", {lineHeight: "24px", fontWeight: "400"}], "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "600"}]}}}};</script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        
+        .dark .glass-panel {
+            background: rgba(45, 49, 51, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(67, 70, 84, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-hidden antialiased">
+<!-- Top Navigation Bar (Mobile & Tablet Pivot) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm hidden md:flex lg:hidden transition-all duration-300">
+<div class="flex justify-between items-center px-gutter max-w-container-max mx-auto h-16 w-full">
+<div class="font-headline-lg font-bold text-primary">VietLearn AI Lab</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary cursor-pointer active:opacity-70">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer active:opacity-70">account_circle</span>
+</div>
+</div>
+</header>
+<div class="flex h-screen w-full">
+<!-- Left SideNavBar (Desktop) -->
+<nav class="h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col bg-surface-container-low shadow-sm z-40 p-4 gap-base">
+<div class="mb-lg">
+<div class="font-headline-lg font-bold text-primary mb-2">Learning Hub</div>
+<div class="flex items-center gap-sm p-sm bg-surface rounded-lg border border-outline-variant/30">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A small, high-quality, professional avatar image of an academic student character, 3D style, clear lighting, light background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2ZVA8t5aiM7eJ4G1GenzAv3FHFjST4nuJRnd0Oq2F8igbPV_uvL5X4jZyGOyj1oG5lVq3P-yulYuuJNw7AVZqhw0PWArSVjn9NfePZNM1P45sgSEAlQbRCpkj3suMQfHe1wrossx3Fk1skbOhKn9dSTRp-HcgGQdpfTS-mKH8waWsx_x2srVT8gTgDkQQL0QtBEAovOv19vvXNO6NHDOcE998OTqTFKUQhS1GsBOh4DTU_x1gg0MIpTRQHZ4QShFTiIqQjmpKVCul">
+<div>
+<div class="font-label-md text-on-surface font-semibold">User Avatar</div>
+<div class="font-caption text-on-surface-variant">Academic Level 4</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-label-md font-semibold hover:bg-surface-tint transition-colors shadow-sm mb-md flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Study Session
+            </button>
+<div class="flex-1 flex flex-col gap-xs overflow-y-auto chat-scroll">
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md">Library</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="font-label-md">AI Chatbot</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md">Mind Maps</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs bg-primary-container text-on-primary-container font-bold rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sports_esports</span>
+<span class="font-label-md">RPG Games</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">graphic_eq</span>
+<span class="font-label-md">Audio Lab</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-md">Knowledge</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md">Spending</span>
+</a>
+</div>
+<div class="mt-auto border-t border-outline-variant/30 pt-md flex flex-col gap-xs">
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-variant rounded-lg transition-all duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md">Help</span>
+</a>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 lg:ml-64 relative overflow-hidden bg-surface">
+<!-- Background Game Animation Placeholder -->
+<div class="absolute inset-0 z-0">
+
+</div>
+<!-- Top Area: Character Toggle & Status -->
+<div class="absolute top-md left-md z-20 flex gap-sm pointer-events-none">
+<button class="pointer-events-auto glass-panel p-sm rounded-xl flex items-center justify-center text-primary hover:bg-white/90 transition-colors shadow-sm" id="rosterToggleBtn">
+<span class="material-symbols-outlined">group</span>
+</button>
+<div class="glass-panel px-md py-sm rounded-xl flex items-center gap-sm pointer-events-auto">
+<span class="font-label-md font-bold text-on-surface">Lv. 4</span>
+<div class="w-24 h-2 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4 rounded-full"></div>
+</div>
+<span class="font-caption text-on-surface-variant ml-xs">750/1000 XP</span>
+</div>
+</div>
+<!-- Slide-out Character Roster -->
+<div class="absolute top-0 left-0 h-full w-80 glass-panel border-r border-outline-variant/20 z-30 transform -translate-x-full transition-transform duration-300 ease-in-out p-md flex flex-col pt-xl" id="characterRoster">
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-title-md text-on-surface">Class Selection</h2>
+<button class="p-xs hover:bg-surface-variant rounded-full text-on-surface-variant transition-colors" id="closeRosterBtn">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto chat-scroll flex flex-col gap-sm pr-xs">
+<!-- Class Item 1 (Active) -->
+<div class="p-sm rounded-lg border-2 border-secondary bg-secondary-container/20 cursor-pointer transition-all hover:bg-secondary-container/30">
+<div class="flex items-center gap-md">
+<img class="w-12 h-12 rounded bg-surface object-cover" data-alt="A pixel-art icon of an Elemental Mage character portrait. Modern fantasy style, vibrant colors, clear features, academic vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2RdUcdNmK5mgz3I4QjYDbT2fVoF8ON7PFhjw9Oya2-WhfqxEEFV78fsV6kKgTQYO4aVcKA7fmT7pFwkUvBiJezgG-4YzjzK-84Cg5qxPvFpAuinKMawzva95dhZyi_-vHx-PJUm1G11FFOQbn-JNGO3o1SU8PWGS-j9myDqRCCiuJ_-XbtyfWyYB5MCA8UdkzFfoo-3Igw3hkY03ogWjaBeF-8QXM8i5lReE9QkDDh0Nmg53J85PDZY7sAtkPlX3zBFYiHSSxrm39">
+<div>
+<h3 class="font-label-md font-bold text-on-surface">Elemental Mage</h3>
+<p class="font-caption text-on-surface-variant">AoE Damage</p>
+</div>
+</div>
+</div>
+<!-- Class Item 2 -->
+<div class="p-sm rounded-lg border border-outline-variant/30 bg-surface/50 cursor-pointer transition-all hover:border-primary/50 hover:bg-surface/80">
+<div class="flex items-center gap-md">
+<img class="w-12 h-12 rounded bg-surface object-cover" data-alt="A pixel-art icon of a Cyber Samurai character portrait. Sci-fi melee style, sleek armor, glowing accents, serious expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaQL0eQIuNAb0PYL6zuzbMrkzcsEFndBeoGGWFxX5jmDukjku-BLyD7lBDHKUvyHa7ldRyn_j-HOdw1_6qyv9GBndjSeb8nw1BbCYat9qvPeIN8aOG_AFHwg_98m82Tph4iTqrRz33_pZoxgNVDPmrlZ7WzbQ6xDa136U7FrUlTmPUGeYMZnk04K_A2LipfQI_cvrkEUtZRoeEzaSSfywFYfLvREaKv-f6zmg4_rxp5uvsS-Fzu8uZ5RxCqYdObfsWQVulgF5cuYQH">
+<div>
+<h3 class="font-label-md font-bold text-on-surface">Cyber Samurai</h3>
+<p class="font-caption text-on-surface-variant">Melee DPS</p>
+</div>
+</div>
+</div>
+<!-- Class Item 3 -->
+<div class="p-sm rounded-lg border border-outline-variant/30 bg-surface/50 cursor-pointer transition-all hover:border-primary/50 hover:bg-surface/80">
+<div class="flex items-center gap-md">
+<img class="w-12 h-12 rounded bg-surface object-cover" data-alt="A pixel-art icon of a Data Healer character portrait. Medical tech theme, soft lighting, friendly expression, glowing green aura." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmiNEC4ACRL85Er422YMgvLei5PSG4oshhR8AkfCv5Sqw8KBJFqU7sFBLdq5lbBq8MuNPHLeFFf56GDYKnUZudqaESDpQXPYv6yXo8Ibmr5f_zPvKDKNpaP7h2H6yXJgNajMjROh_aXgHa9zRiAPQc9O9tTEpJz9h2ivof7njaBh6gWjN4V7emIRq7sLBUglV-OHdFFNsSuR6CJoDWPE7iu7e5pleNYXLTydkAWqKsYegNUSjyHUS8F9nVstq7OOhdNbmrgTHgIAeO">
+<div>
+<h3 class="font-label-md font-bold text-on-surface">Data Healer</h3>
+<p class="font-caption text-on-surface-variant">Support &amp; Buffs</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Movement Guide Overlay (Bottom Center) -->
+<div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none">
+<div class="glass-panel px-md py-sm rounded-full flex items-center gap-md shadow-md pointer-events-auto">
+<div class="flex gap-xs">
+<div class="w-6 h-6 rounded bg-surface-variant border border-outline-variant flex items-center justify-center font-caption font-bold text-on-surface-variant">W</div>
+<div class="w-6 h-6 rounded bg-surface-variant border border-outline-variant flex items-center justify-center font-caption font-bold text-on-surface-variant">A</div>
+<div class="w-6 h-6 rounded bg-surface-variant border border-outline-variant flex items-center justify-center font-caption font-bold text-on-surface-variant">S</div>
+<div class="w-6 h-6 rounded bg-surface-variant border border-outline-variant flex items-center justify-center font-caption font-bold text-on-surface-variant">D</div>
+</div>
+<span class="w-px h-6 bg-outline-variant/50"></span>
+<span class="font-caption text-on-surface-variant font-medium uppercase tracking-wider">Move Character</span>
+</div>
+</div>
+<!-- Primary Action Button -->
+<div class="absolute bottom-md left-1/2 transform -translate-x-1/2 z-20">
+<button class="bg-primary text-on-primary px-xl py-sm rounded-lg font-title-md font-bold tracking-wide shadow-[0_4px_14px_0_rgba(26,86,219,0.39)] hover:shadow-[0_6px_20px_rgba(26,86,219,0.23)] hover:-translate-y-0.5 transition-all duration-200">
+                    READY
+                </button>
+</div>
+<!-- Floating Chat Window (Bottom Right) -->
+<div class="absolute bottom-md right-md z-20 w-80 glass-panel rounded-xl shadow-lg flex flex-col overflow-hidden max-h-96">
+<div class="bg-primary/5 border-b border-outline-variant/20 px-sm py-xs flex justify-between items-center cursor-pointer">
+<span class="font-label-md font-semibold text-primary flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                        Lobby Chat
+                    </span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">expand_more</span>
+</div>
+<div class="flex-1 overflow-y-auto p-sm flex flex-col gap-xs chat-scroll text-sm">
+<div class="flex gap-2">
+<span class="text-tertiary font-semibold shrink-0">System:</span>
+<span class="text-on-surface-variant italic font-caption">Welcome to the Academic Arena lobby.</span>
+</div>
+<div class="flex gap-2">
+<span class="text-secondary font-semibold shrink-0">Minh_AI:</span>
+<span class="text-on-surface font-body-md text-sm">Anyone want to team up for the Math dungeon?</span>
+</div>
+<div class="flex gap-2">
+<span class="text-primary font-semibold shrink-0">Lan_Scholar:</span>
+<span class="text-on-surface font-body-md text-sm">I'm down. Give me 2 mins to switch to Mage.</span>
+</div>
+<div class="flex gap-2">
+<span class="text-tertiary font-semibold shrink-0">System:</span>
+<span class="text-on-surface-variant italic font-caption">Boss raid starting in 5 minutes.</span>
+</div>
+</div>
+<div class="p-sm border-t border-outline-variant/20 bg-surface/50">
+<div class="relative flex items-center">
+<input class="w-full bg-white/50 border border-outline-variant/50 rounded-full py-1.5 pl-3 pr-10 font-caption text-on-surface focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all" placeholder="Type a message..." type="text">
+<button class="absolute right-2 p-1 text-primary hover:text-surface-tint rounded-full">
+<span class="material-symbols-outlined" style="font-size: 18px;">send</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full lg:hidden z-50 bg-surface/90 backdrop-blur-lg shadow-lg">
+<div class="flex justify-around items-center h-16 px-2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-variant rounded-xl tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-caption text-caption mt-1">Learn</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-variant rounded-xl tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-caption text-caption mt-1">Chat</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-3 py-1 w-16 active:bg-surface-variant tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">videogame_asset</span>
+<span class="font-caption text-caption mt-1 font-bold">Play</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-variant rounded-xl tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">headphones</span>
+<span class="font-caption text-caption mt-1">Audio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 active:bg-surface-variant rounded-xl tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-caption text-caption mt-1">Stats</span>
+</a>
+</div>
+</nav>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('rosterToggleBtn');
+            const closeBtn = document.getElementById('closeRosterBtn');
+            const roster = document.getElementById('characterRoster');
+            
+            toggleBtn.addEventListener('click', () => {
+                roster.classList.remove('-translate-x-full');
+            });
+            
+            closeBtn.addEventListener('click', () => {
+                roster.classList.add('-translate-x-full');
+            });
+
+            // Simulate keyboard highlight logic for WASD guide
+            const keys = document.querySelectorAll('.glass-panel .w-6');
+            document.addEventListener('keydown', (e) => {
+                keys.forEach(k => {
+                    if(k.textContent.toLowerCase() === e.key.toLowerCase()) {
+                        k.classList.add('bg-primary/20', 'text-primary', 'border-primary/50');
+                    }
+                });
+            });
+            document.addEventListener('keyup', (e) => {
+                keys.forEach(k => {
+                    if(k.textContent.toLowerCase() === e.key.toLowerCase()) {
+                        k.classList.remove('bg-primary/20', 'text-primary', 'border-primary/50');
+                    }
+                });
+            });
+        });
+    </script>
+</body></html>

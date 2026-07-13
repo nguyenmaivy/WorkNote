@@ -12,6 +12,9 @@ export interface MindMapNode {
   label: string;
   children?: MindMapNode[];
   collapsed?: boolean;
+  icon?: string;           // emoji hoặc icon identifier
+  notes?: string;          // ghi chú chi tiết cho node
+  color?: string;          // override color cho node
 }
 
 export interface UploadedFile {
@@ -26,6 +29,10 @@ export interface UploadedFile {
   mindmap?: MindMapNode;
   status: "idle" | "processing" | "success" | "error";
   errorMsg?: string;
+  sourceUrl?: string; // URL gốc nếu file được nạp từ link — để "Thử lại" chạy lại được
+  blob?: Blob;        // dữ liệu file gốc (để nghe lại & lưu vào IndexedDB)
+  objectUrl?: string; // URL tạm phát lại file gốc — KHÔNG lưu, tạo lại từ blob mỗi lần nạp
+  createdAt?: number; // mốc thời gian thêm file — dùng để sắp xếp khi nạp lại
 }
 
 export interface ChatMessage {
@@ -54,3 +61,55 @@ export interface TechTopic {
   visualCode?: string;
   diagramSteps?: { title: string; desc: string; icon: string }[];
 }
+
+// ─── API Response Types ───────────────────────────────────────────────────────
+
+export interface ApiStatusResponse {
+  success: boolean;
+  isDemo: boolean;
+}
+
+export interface ProcessFileResponse {
+  success: boolean;
+  isDemo?: boolean;
+  name?: string;
+  mimeType?: string;
+  size?: number;
+  summary: string;
+  extractedText: string;
+  quiz: QuizQuestion[];
+  mindmap: MindMapNode;
+}
+
+export interface ChatResponse {
+  success: boolean;
+  reply: string;
+}
+
+export interface TTSResponse {
+  success: boolean;
+  isDemo?: boolean;
+  region: string;
+  base64Audio?: string;
+  mimeType?: string;
+  message?: string;
+}
+
+export interface TranslateResponse {
+  success: boolean;
+  isDemo?: boolean;
+  translatedText: string;
+}
+
+export interface LiveAudioTranslateResponse {
+  success: boolean;
+  isDemo?: boolean;
+  transcription: string;
+  translation: string;
+}
+
+export type AccentRegion = "north" | "central" | "south";
+
+export type TabId = "upload" | "chat" | "mindmap" | "game" | "audiolab" | "knowledge" | "budget";
+
+export type TranslateSourceField = "summary" | "extractedText";

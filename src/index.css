@@ -1,1 +1,402 @@
+/* @import rules must come first — before any CSS content including Tailwind's expansion */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 @import "tailwindcss";
+
+@theme {
+  /* ── Stitch DESIGN.md fonts ─────────────────────────────── */
+  --font-sans: "DM Sans", system-ui, sans-serif;        /* body, label */
+  --font-display: "Space Grotesk", system-ui, sans-serif; /* headlines */
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* ── Stitch "Vibrant Modern" Palette (Electric Indigo + Vibrant Emerald) ──
+   * Old names preserved for backward compat with existing components. */
+  --color-primary: #4648d4;            /* Electric Indigo */
+  --color-primary-hover: #2f2ebe;      /* on-primary-fixed-variant */
+  --color-secondary: #006c49;          /* Vibrant Emerald */
+
+  --color-neutral: #767586;            /* outline */
+  --color-neutral-soft: #f3f3f3;       /* surface-container-low */
+  --color-neutral-medium: #e2e2e2;     /* surface-container-highest / surface-variant */
+
+  --color-bg: #f9f9f9;                 /* background / surface */
+  --color-surface: #ffffff;            /* surface-container-lowest */
+
+  --color-text-primary: #1a1c1c;       /* on-surface */
+  --color-text-secondary: #464554;     /* on-surface-variant */
+
+  --color-border-subtle: #e2e2e2;      /* surface-variant */
+  --color-border-default: #c7c4d7;     /* outline-variant */
+
+  --color-success: #006c49;            /* secondary emerald */
+  --color-success-soft: #6cf8bb;       /* secondary-container */
+
+  --color-warning: #b8650f;
+  --color-warning-soft: #fef3c7;
+
+  --color-error: #ba1a1a;
+  --color-error-soft: #ffdad6;
+
+  /* ── Full MD3 token set from DESIGN.md ── */
+  --color-primary-container: #6063ee;
+  --color-on-primary-container: #fffbff;
+  --color-primary-fixed: #e1e0ff;
+  --color-primary-fixed-dim: #c0c1ff;
+  --color-on-primary-fixed: #07006c;
+
+  --color-secondary-container: #6cf8bb;
+  --color-on-secondary-container: #00714d;
+  --color-secondary-fixed: #6ffbbe;
+
+  --color-tertiary: #4b41e1;
+  --color-tertiary-container: #645efb;
+  --color-on-tertiary-container: #fffbff;
+
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f3;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-dim: #dadada;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-variant: #e2e2e2;
+  --color-outline: #767586;
+  --color-outline-variant: #c7c4d7;
+
+  --color-inverse-surface: #2f3131;
+  --color-inverse-on-surface: #f0f1f1;
+  --color-inverse-primary: #c0c1ff;
+
+  /* Custom radius tokens (namespaced — won't clash with Tailwind defaults) */
+  --radius-card: 12px;          /* rounded-lg ish */
+  --radius-large: 16px;         /* large blocks */
+  --radius-pill: 9999px;
+
+  /* NOTE: Don't override --spacing-* — Tailwind v4 uses the spacing scale
+     for width/max-width/padding/margin/gap. Overriding --spacing-md would
+     break max-w-md, p-md, m-md, etc. Use arbitrary values like p-[24px]
+     or the default Tailwind scale (p-6 = 24px). */
+
+  /* Shadows — soft ambient per DESIGN.md "Elevation & Depth" */
+  --shadow-card: 0 1px 3px rgba(26, 28, 28, 0.04), 0 1px 2px rgba(26, 28, 28, 0.02);
+  --shadow-card-hover: 0 4px 16px rgba(26, 28, 28, 0.06);
+  --shadow-primary-glow: 0 4px 14px rgba(70, 72, 212, 0.28);
+  --shadow-focus-ring: 0 0 0 3px rgba(70, 72, 212, 0.15);
+  --shadow-emerald-glow: 0 0 0 2px rgba(0, 108, 73, 0.4);
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+:root {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* DESIGN.md: Space Grotesk for headlines, weight 600+ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+h1 {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Transitions ─────────────────────────────────────────── */
+button {
+  transition: all 0.2s ease;
+}
+
+/* ── Fade-in animation ───────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+
+/* ── Glassmorphism (DESIGN.md Level 2 elevation) ─────────── */
+.glass-tint {
+  background: linear-gradient(135deg, rgba(70, 72, 212, 0.06), rgba(0, 108, 73, 0.04));
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* ── Dropzone: trạng thái kéo file vào ── */
+@keyframes dropzone-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(70, 72, 212, 0.0); }
+  50%      { box-shadow: 0 0 0 6px rgba(70, 72, 212, 0.10), 0 0 22px rgba(70, 72, 212, 0.18) inset; }
+}
+.dropzone-active {
+  animation: dropzone-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.animate-bounce-soft { animation: bounce-soft 0.9s ease-in-out infinite; }
+
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50%      { transform: translateY(-7px) rotate(1.5deg); }
+}
+.animate-mascot-float { animation: mascot-float 3.6s ease-in-out infinite; }
+
+/* ── Slide-up (used by quiz cards & reveal panels) ──────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ── Treasure reward pop (chest open toast) ─────────────────── */
+@keyframes reward-pop {
+  0%   { opacity: 0; transform: translate(-50%, -14px) scale(0.85); }
+  55%  { opacity: 1; transform: translate(-50%, 4px) scale(1.04); }
+  70%  { transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+.animate-reward-pop { animation: reward-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ── Game lobby: slow float, glow pulse, sheen sweep, grid drift ── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.animate-float-slow { animation: float-slow 4.2s ease-in-out infinite; }
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+.animate-glow-pulse { animation: glow-pulse 2.6s ease-in-out infinite; }
+
+@keyframes lobby-sheen {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  60%, 100% { transform: translateX(260%) skewX(-18deg); }
+}
+.lobby-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 35%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: lobby-sheen 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 36px 36px; }
+}
+.lobby-grid-drift { animation: grid-drift 6s linear infinite; }
+
+/* ── Level-complete celebration: confetti rain + trophy pop ── */
+@keyframes confetti-fall {
+  0%   { transform: translateY(-24px) rotate(0deg); opacity: 0; }
+  12%  { opacity: 1; }
+  100% { transform: translateY(240px) rotate(560deg); opacity: 0; }
+}
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  animation: confetti-fall var(--dur, 2.6s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop-in { animation: pop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes trophy-bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-6px) rotate(3deg); }
+}
+.animate-trophy-bob { animation: trophy-bob 2.4s ease-in-out infinite; }
+
+/* ── Lobby chat "typing" indicator dots ── */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  animation: typing-bounce 1s ease-in-out infinite;
+}
+
+@keyframes xp-shimmer {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(320%); }
+}
+.xp-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: xp-shimmer 2.4s ease-in-out infinite;
+}
+
+/* ── AI Element accent (per DESIGN.md): soft emerald glow ── */
+.ai-accent {
+  outline: 2px solid rgba(0, 108, 73, 0.35);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MIND MAP — Animations & Utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Node enter animation */
+@keyframes mm-node-enter {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.mm-node-enter { animation: mm-node-enter 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Node selection pulse */
+@keyframes mm-select-ring {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(70, 72, 212, 0.5); }
+  50%      { box-shadow: 0 0 0 4px rgba(70, 72, 212, 0.25); }
+}
+.mm-selected { animation: mm-select-ring 1.6s ease-in-out infinite; }
+
+/* SVG path draw animation */
+@keyframes mm-path-draw {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+.mm-path-animate {
+  stroke-dasharray: 300;
+  animation: mm-path-draw 0.6s ease-out forwards;
+}
+
+/* Connector hover glow */
+.mm-path-glow {
+  filter: drop-shadow(0 0 3px currentColor);
+  transition: filter 0.2s;
+}
+
+/* Minimap viewport indicator */
+@keyframes mm-minimap-pulse {
+  0%, 100% { border-color: rgba(70, 72, 212, 0.5); }
+  50%      { border-color: rgba(70, 72, 212, 0.8); }
+}
+.mm-minimap-viewport {
+  animation: mm-minimap-pulse 2s ease-in-out infinite;
+}
+
+/* Canvas cursor states */
+.mm-canvas-default { cursor: default; }
+.mm-canvas-grab { cursor: grab; }
+.mm-canvas-grabbing { cursor: grabbing !important; }
+
+/* Dragged node ghost */
+.mm-node-dragging {
+  opacity: 0.6;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 8px 32px rgba(26, 28, 28, 0.18) !important;
+}
+
+/* Drop target highlight */
+@keyframes mm-drop-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4); }
+  50%      { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.7); }
+}
+.mm-drop-target {
+  animation: mm-drop-pulse 0.8s ease-in-out infinite;
+}
+
+/* Search match highlight */
+.mm-search-match {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.6) !important;
+}
+
+/* Context menu entrance */
+@keyframes mm-ctx-enter {
+  from { opacity: 0; transform: scale(0.92) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.mm-ctx-menu {
+  animation: mm-ctx-enter 0.15s ease-out both;
+}
+
+/* Layout transition */
+.mm-layout-transition {
+  transition: left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              top 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone-active,
+  .animate-bounce-soft,
+  .animate-mascot-float,
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-reward-pop,
+  .animate-float-slow,
+  .animate-glow-pulse,
+  .lobby-grid-drift,
+  .confetti-piece,
+  .animate-pop-in,
+  .animate-trophy-bob,
+  .typing-dot,
+  .xp-shimmer::after,
+  .lobby-sheen::after,
+  .mm-node-enter,
+  .mm-selected,
+  .mm-path-animate,
+  .mm-minimap-viewport,
+  .mm-drop-target,
+  .mm-ctx-menu,
+  .mm-layout-transition {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+

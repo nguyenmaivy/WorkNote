@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GEMINI_MODEL, SUPPORTED_LANGUAGES } from "../config.js";
-import { getAiClient, hasApiKey } from "../services/geminiService.js";
+import { getAiClient, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 
 const router = Router();
 
@@ -23,9 +23,10 @@ router.post("/", async (req, res): Promise<any> => {
     }
 
     const ai = getAiClient();
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: `Hãy dịch văn bản học tập sau đây sang ${targetLangName}.
+    const response = await withGeminiRetry(() =>
+      ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: `Hãy dịch văn bản học tập sau đây sang ${targetLangName}.
 YÊU CẦU QUAN TRỌNG:
 - Giữ nguyên hoàn toàn cấu trúc định dạng nguyên bản: markdown (tiêu đề #, chữ đậm **, danh sách -, số hiệu), HTML hoặc ký hiệu toán học.
 - Chỉ dịch nội dung chữ hiển thị, KHÔNG dịch các thẻ định dạng hoặc mã code.
@@ -35,12 +36,13 @@ Nội dung dịch:
 """
 ${text}
 """`,
-    });
+      })
+    );
 
     return res.json({ success: true, translatedText: response.text || "Bản dịch trống." });
   } catch (error: any) {
     console.error("Error in /api/translate:", error);
-    res.status(500).json({ error: error.message || "Translation failed" });
+    res.status(500).json({ error: friendlyGeminiError(error) });
   }
 });
 

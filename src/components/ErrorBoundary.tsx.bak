@@ -1,0 +1,95 @@
+import React from "react";
+
+interface ErrorBoundaryProps {
+  /** Tên module/tab đang được bảo vệ — hiển thị trong fallback UI */
+  label?: string;
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+/**
+ * ErrorBoundary — bao bọc từng tab/section.
+ * Khi một component con crash, chỉ hiện fallback UI tại vùng đó,
+ * KHÔNG crash toàn bộ ứng dụng.
+ *
+ * Sử dụng pattern createClass-like để tương thích với
+ * tsconfig: useDefineForClassFields: false
+ */
+
+function createErrorBoundary() {
+  // Use Object.create to set up the prototype chain correctly
+  // This avoids TS class field issues with useDefineForClassFields: false
+  const Cls = function (this: any, props: ErrorBoundaryProps) {
+    React.Component.call(this, props);
+    this.state = { hasError: false, error: null };
+  } as any;
+
+  Cls.prototype = Object.create(React.Component.prototype);
+  Cls.prototype.constructor = Cls;
+
+  Cls.getDerivedStateFromError = (error: Error): ErrorBoundaryState => {
+    return { hasError: true, error };
+  };
+
+  Cls.prototype.componentDidCatch = function (error: Error, info: React.ErrorInfo) {
+    console.error(
+      `[ErrorBoundary: ${this.props.label || "Unknown"}]`,
+      error,
+      info.componentStack
+    );
+  };
+
+  Cls.prototype.render = function () {
+    if (this.state.hasError) {
+      return React.createElement(
+        "div",
+        {
+          className:
+            "bg-rose-50 border border-rose-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center gap-4 min-h-[200px]",
+        },
+        React.createElement(
+          "div",
+          {
+            className:
+              "w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 text-xl",
+          },
+          "⚠️"
+        ),
+        React.createElement(
+          "div",
+          null,
+          React.createElement(
+            "h3",
+            { className: "text-sm font-bold text-rose-800" },
+            `Module "${this.props.label || "Component"}" gặp lỗi`
+          ),
+          React.createElement(
+            "p",
+            { className: "text-xs text-rose-600 mt-1 max-w-md" },
+            this.state.error?.message || "Đã xảy ra lỗi không xác định."
+          )
+        ),
+        React.createElement(
+          "button",
+          {
+            onClick: () => this.setState({ hasError: false, error: null }),
+            className:
+              "text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg transition",
+          },
+          "Thử tải lại module"
+        )
+      );
+    }
+
+    return this.props.children;
+  };
+
+  return Cls as unknown as React.ComponentClass<ErrorBoundaryProps, ErrorBoundaryState>;
+}
+
+const ErrorBoundary = createErrorBoundary();
+export default ErrorBoundary;

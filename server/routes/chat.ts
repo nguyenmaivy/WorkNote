@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GEMINI_MODEL } from "../config.js";
-import { getAiClient, hasApiKey } from "../services/geminiService.js";
+import { getAiClient, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 
 const router = Router();
 
@@ -50,16 +50,18 @@ router.post("/", async (req, res): Promise<any> => {
       parts: [{ text: m.content }],
     }));
 
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: contentsPayload,
-      config: { systemInstruction, temperature: 0.7 },
-    });
+    const response = await withGeminiRetry(() =>
+      ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: contentsPayload,
+        config: { systemInstruction, temperature: 0.7 },
+      })
+    );
 
     return res.json({ success: true, reply: response.text || "Xin lỗi, tôi chưa thể đưa ra câu trả lời." });
   } catch (error: any) {
     console.error("Error in /api/chat:", error);
-    res.status(500).json({ error: error.message || "Failed to conduct chat session" });
+    res.status(500).json({ error: friendlyGeminiError(error) });
   }
 });
 

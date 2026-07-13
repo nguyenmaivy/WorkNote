@@ -1,7 +1,7 @@
 import path from "path";
 
 // ─── Server ───────────────────────────────────────────────────────────────────
-export const PORT = 3000;
+export const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 // ─── AI Model Names ───────────────────────────────────────────────────────────
 export const GEMINI_MODEL = "gemini-3.5-flash";

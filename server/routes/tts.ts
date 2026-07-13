@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GEMINI_TTS_MODEL, TTS_VOICE_MAP } from "../config.js";
-import { getAiClient, hasApiKey } from "../services/geminiService.js";
+import { getAiClient, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 
 const router = Router();
 
@@ -26,24 +26,26 @@ router.post("/", async (req, res): Promise<any> => {
       region === "north" ? "Bắc" : region === "central" ? "Trung" : "Nam";
 
     const ai = getAiClient();
-    const response = await ai.models.generateContent({
-      model: GEMINI_TTS_MODEL,
-      contents: [
-        {
-          parts: [
-            {
-              text: `Đọc văn bản sau bằng giọng tương tự phong thái tiếng Việt miền ${regionLabel}, diễn cảm tự nhiên: ${text}`,
-            },
-          ],
+    const response = await withGeminiRetry(() =>
+      ai.models.generateContent({
+        model: GEMINI_TTS_MODEL,
+        contents: [
+          {
+            parts: [
+              {
+                text: `Đọc văn bản sau bằng giọng tương tự phong thái tiếng Việt miền ${regionLabel}, diễn cảm tự nhiên: ${text}`,
+              },
+            ],
+          },
+        ],
+        config: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: { prebuiltVoiceConfig: { voiceName } },
+          },
         },
-      ],
-      config: {
-        responseModalities: ["AUDIO"],
-        speechConfig: {
-          voiceConfig: { prebuiltVoiceConfig: { voiceName } },
-        },
-      },
-    });
+      })
+    );
 
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     if (!base64Audio) throw new Error("No audio returned from Gemini Speech API");
@@ -51,7 +53,7 @@ router.post("/", async (req, res): Promise<any> => {
     return res.json({ success: true, region, base64Audio, mimeType: "audio/pcm;rate=24000" });
   } catch (error: any) {
     console.error("Error in /api/tts:", error);
-    res.status(500).json({ error: error.message || "Speech synthesis failed" });
+    res.status(500).json({ error: friendlyGeminiError(error) });
   }
 });
 

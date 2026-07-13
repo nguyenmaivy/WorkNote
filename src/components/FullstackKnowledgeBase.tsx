@@ -1,23 +1,28 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { techTopics } from "../data/techTopics";
-import { 
-  BookOpen, 
-  Code, 
-  Layers, 
-  MessageSquare, 
-  ShieldAlert, 
-  Cpu, 
-  Heart, 
-  Share2, 
-  Zap, 
-  ArrowRight, 
-  ShieldCheck, 
+import {
+  BookOpen,
+  Code,
+  Layers,
+  MessageSquare,
+  ShieldAlert,
+  Cpu,
+  Heart,
+  Share2,
+  Zap,
+  ArrowRight,
+  ShieldCheck,
   CheckCircle2,
   Server,
   Globe,
   Database,
-  Smartphone
+  Smartphone,
+  Search,
+  Sparkles,
+  GraduationCap,
 } from "lucide-react";
+import { Card } from "./ui/Card";
+import { Button } from "./ui/Button";
 
 export default function FullstackKnowledgeBase() {
   const [knowledgeTab, setKnowledgeTab] = useState<"diagram" | "topics">("diagram");
@@ -86,8 +91,8 @@ const processLinkUrl = async (fileUrl) => {
       title: "2. API Server Engine (Express)",
       category: "MÁY CHỦ TRUNG CHUYỂN",
       icon: Server,
-      color: "border-indigo-400 bg-indigo-50/70 text-indigo-700",
-      accentColor: "bg-indigo-600",
+      color: "border-[var(--color-primary)] bg-indigo-50/70 text-[var(--color-primary-hover)]",
+      accentColor: "bg-[var(--color-primary)]",
       summary: "Cơ sở điều phối Node.js trung chuyển tệp tin công nhận, xử lý cô lập và API đệm.",
       tech: "NodeJS, Express Framework, User-Agent Spoofing, Multer Buffer Stream",
       files: "server.ts, package.json",
@@ -189,14 +194,52 @@ const persistFiles = (files) => {
 
   return (
     <div className="flex flex-col gap-6 w-full animate-fade-in" id="knowledgebase-section">
+      {/* ── Hero Search Section — Stitch Knowledge Hub ─────────── */}
+      <section className="relative overflow-hidden rounded-[16px] px-6 py-8 md:py-10 text-center bg-gradient-to-br from-[var(--color-primary)]/5 via-white to-[var(--color-secondary)]/5 border border-[var(--color-border-subtle)]">
+        <div
+          aria-hidden
+          className="absolute inset-0 z-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 0% 0%, var(--color-primary) 0%, transparent 35%), radial-gradient(circle at 100% 100%, var(--color-secondary) 0%, transparent 35%)",
+          }}
+        />
+        <div className="relative z-10 max-w-2xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--color-border-subtle)] shadow-[var(--shadow-card)] text-[12px] font-medium text-[var(--color-secondary)]">
+            <Sparkles size={13} /> AI-curated technical mastery paths
+          </div>
+          <h2 className="text-[28px] md:text-[34px] font-bold text-[var(--color-text-primary)] tracking-tight font-display leading-tight">
+            Knowledge Hub
+          </h2>
+          <p className="text-[14px] md:text-[16px] text-[var(--color-text-secondary)] leading-relaxed">
+            Welcome back, Scholar. Explore deep learning resources and start your next
+            technical mastery path or document analysis.
+          </p>
+          <div className="mt-6 flex items-center bg-white shadow-[0_8px_28px_rgba(26,28,28,0.08)] rounded-full p-1.5 border border-[var(--color-border-subtle)] focus-within:border-[var(--color-primary)] focus-within:shadow-[var(--shadow-primary-glow)] transition-all">
+            <Search size={18} className="mx-3 text-[var(--color-primary)] shrink-0" />
+            <input
+              className="w-full py-2.5 pr-3 bg-transparent border-none focus:ring-0 focus:outline-none text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]"
+              placeholder="Search documentation, courses, or analysis files…"
+              type="text"
+            />
+            <button
+              onClick={() => setKnowledgeTab("topics")}
+              className="bg-[var(--color-primary)] text-white px-5 py-2.5 rounded-full text-[13px] font-medium hover:bg-[var(--color-primary-hover)] active:scale-95 transition-all whitespace-nowrap"
+            >
+              Explore
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Tab Switcher at the top of Technical Area */}
-      <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200/40 max-w-md self-center md:self-start">
+      <div className="flex bg-[var(--color-neutral-soft)] p-1.5 rounded-[var(--radius-card)] border border-[var(--color-border-subtle)]/40 max-w-md self-center md:self-start">
         <button
           onClick={() => setKnowledgeTab("diagram")}
-          className={`flex-1 py-2 px-5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
+          className={`flex-1 py-2 px-5 rounded-[var(--radius-card)] text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
             knowledgeTab === "diagram"
-              ? "bg-white text-indigo-700 shadow-sm"
-              : "text-slate-500 hover:text-slate-800"
+              ? "bg-white text-[var(--color-primary-hover)] shadow-sm"
+              : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           }`}
         >
           <Layers size={13} />
@@ -204,10 +247,10 @@ const persistFiles = (files) => {
         </button>
         <button
           onClick={() => setKnowledgeTab("topics")}
-          className={`flex-1 py-2 px-5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
+          className={`flex-1 py-2 px-5 rounded-[var(--radius-card)] text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
             knowledgeTab === "topics"
-              ? "bg-white text-indigo-700 shadow-sm"
-              : "text-slate-500 hover:text-slate-800"
+              ? "bg-white text-[var(--color-primary-hover)] shadow-sm"
+              : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
           }`}
         >
           <BookOpen size={13} />
@@ -217,14 +260,14 @@ const persistFiles = (files) => {
 
       {knowledgeTab === "diagram" ? (
         /* ==================== SYSTEM ARCHITECTURE DIAGRAM (PLANT) ==================== */
-        <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm flex flex-col gap-6 animate-fade-in w-full">
+        <Card className="p-6 md:p-8 flex flex-col gap-6 animate-fade-in w-full">
           
-          <div className="border-b border-slate-100 pb-4">
-            <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
-              <Layers className="text-indigo-600 animate-pulse" size={18} />
+          <div className="border-b-2 border-[var(--color-border-subtle)] pb-4">
+            <h3 className="text-[18px] font-black text-[var(--color-text-primary)] flex items-center gap-2">
+              <Layers className="text-[var(--color-primary)] animate-pulse" size={24} />
               Sơ đồ Kiến Trúc Kiến Tạo Hệ Thống Fullstack - VietLearn AI Studio 
             </h3>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[14px] text-[var(--color-text-secondary)] font-bold mt-1">
               Bấm chọn trực tiếp vào từng phân hệ quy trình phía dưới để khám phá file mã nguồn chính, thông số hoạt động và cấu trúc truyền tin trực quan.
             </p>
           </div>
@@ -234,7 +277,7 @@ const persistFiles = (files) => {
             {/* Visual Blueprint Grid Layout */}
             <div className="lg:col-span-7 flex flex-col gap-4">
               
-              <div className="border border-indigo-50 bg-slate-50/50 rounded-2xl p-6 relative overflow-hidden flex flex-col gap-6 min-h-[420px] justify-center">
+              <div className="border border-indigo-100 bg-[var(--color-neutral-soft)]/50 rounded-[var(--radius-card)] p-6 relative overflow-hidden flex flex-col gap-6 min-h-[420px] justify-center">
                 
                 {/* Visual grid gridlines representing blueprint */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:20px_20px] opacity-25" />
@@ -252,10 +295,10 @@ const persistFiles = (files) => {
                   {/* NODE 1: Front-end CLIENT */}
                   <div 
                     onClick={() => setActiveNodeId("frontend")}
-                    className={`border-2 p-3.5 rounded-xl cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
+                    className={`border-2 p-3.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
                       activeNodeId === "frontend" 
-                        ? `${systemNodes[0].color} border-indigo-600 ring-2 ring-indigo-50` 
-                        : "border-slate-200 bg-white hover:border-blue-400 text-slate-700"
+                        ? `${systemNodes[0].color} border-indigo-600 ring-2 ring-brand-soft` 
+                        : "border-[var(--color-border-subtle)] bg-white hover:border-blue-400 text-[var(--color-text-primary)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -264,31 +307,31 @@ const persistFiles = (files) => {
                       </div>
                       <h4 className="text-[11px] font-bold">1. Frontend Client</h4>
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal block">Vite, React SPA Giao diện & Động cơ game</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] leading-normal block">Vite, React SPA Giao diện & Động cơ game</p>
                   </div>
 
                   {/* NODE 2: Express Server */}
                   <div 
                     onClick={() => setActiveNodeId("backend")}
-                    className={`border-2 p-3.5 rounded-xl cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
+                    className={`border-2 p-3.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
                       activeNodeId === "backend" 
-                        ? `${systemNodes[1].color} border-indigo-600 ring-2 ring-indigo-50` 
-                        : "border-slate-200 bg-white hover:border-indigo-400 text-slate-700"
+                        ? `${systemNodes[1].color} border-indigo-600 ring-2 ring-brand-soft` 
+                        : "border-[var(--color-border-subtle)] bg-white hover:border-[var(--color-primary)] text-[var(--color-text-primary)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <div className={`w-5 h-5 rounded flex items-center justify-center text-white ${activeNodeId === "backend" ? "bg-indigo-600" : "bg-indigo-500"}`}>
+                      <div className={`w-5 h-5 rounded flex items-center justify-center text-white ${activeNodeId === "backend" ? "bg-[var(--color-primary)]" : "bg-[var(--color-primary)]"}`}>
                         <Server size={11} />
                       </div>
                       <h4 className="text-[11px] font-bold">2. Express Server</h4>
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal block">API Server, Port 3000 Web proxy & Cô lập</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] leading-normal block">API Server, Port 3000 Web proxy & Cô lập</p>
                   </div>
                 </div>
 
                 {/* Connecting Ribbon */}
                 <div className="flex justify-between items-center px-4 relative z-10">
-                  <div className="bg-slate-200 border border-slate-300 font-mono text-[9px] font-bold px-2 py-0.5 rounded-full text-slate-600 mx-auto">
+                  <div className="bg-slate-200 border border-[var(--color-border-default)] font-mono text-[9px] font-bold px-2 py-0.5 rounded-full text-[var(--color-text-secondary)] mx-auto">
                     API FLOW & SECURED STREAM CHANNELS
                   </div>
                 </div>
@@ -298,10 +341,10 @@ const persistFiles = (files) => {
                   {/* NODE 5: RPG Game & SVG Tree */}
                   <div 
                     onClick={() => setActiveNodeId("game")}
-                    className={`border-2 p-3.5 rounded-xl cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
+                    className={`border-2 p-3.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
                       activeNodeId === "game" 
                         ? `${systemNodes[4].color} border-emerald-600 ring-2 ring-emerald-50` 
-                        : "border-slate-200 bg-white hover:border-emerald-400 text-slate-700"
+                        : "border-[var(--color-border-subtle)] bg-white hover:border-emerald-400 text-[var(--color-text-primary)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -310,16 +353,16 @@ const persistFiles = (files) => {
                       </div>
                       <h4 className="text-[11px] font-bold">5. 2D RPG & Mindmap</h4>
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal block">Canvas, SVG renders, Đấu quái trắc nghiệm</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] leading-normal block">Canvas, SVG renders, Đấu quái trắc nghiệm</p>
                   </div>
 
                   {/* NODE 3: Cognitive AI Gateway */}
                   <div 
                     onClick={() => setActiveNodeId("gemini_ai")}
-                    className={`border-2 p-3.5 rounded-xl cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
+                    className={`border-2 p-3.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
                       activeNodeId === "gemini_ai" 
                         ? `${systemNodes[2].color} border-purple-600 ring-2 ring-purple-50` 
-                        : "border-slate-200 bg-white hover:border-purple-400 text-slate-700"
+                        : "border-[var(--color-border-subtle)] bg-white hover:border-purple-400 text-[var(--color-text-primary)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -328,7 +371,7 @@ const persistFiles = (files) => {
                       </div>
                       <h4 className="text-[11px] font-bold">3. Cognitive Gemini AI</h4>
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal block">Gemini 3.5 Flash, Bóc cấu trúc JSON, OCR</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] leading-normal block">Gemini 3.5 Flash, Bóc cấu trúc JSON, OCR</p>
                   </div>
                 </div>
 
@@ -337,10 +380,10 @@ const persistFiles = (files) => {
                   {/* NODE 4: Audio Lab */}
                   <div 
                     onClick={() => setActiveNodeId("audio_lab")}
-                    className={`border-2 p-3.5 rounded-xl cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
+                    className={`border-2 p-3.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
                       activeNodeId === "audio_lab" 
                         ? `${systemNodes[3].color} border-teal-600 ring-2 ring-teal-50` 
-                        : "border-slate-200 bg-white hover:border-teal-400 text-slate-700"
+                        : "border-[var(--color-border-subtle)] bg-white hover:border-teal-400 text-[var(--color-text-primary)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -349,16 +392,16 @@ const persistFiles = (files) => {
                       </div>
                       <h4 className="text-[11px] font-bold">4. Audio Lab & TTS</h4>
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal block">HTML5 MediaRecorder, Phát âm đa ngữ</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] leading-normal block">HTML5 MediaRecorder, Phát âm đa ngữ</p>
                   </div>
 
                   {/* NODE 6: Cache & Sandbox */}
                   <div 
                     onClick={() => setActiveNodeId("cache_vault")}
-                    className={`border-2 p-3.5 rounded-xl cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
+                    className={`border-2 p-3.5 rounded-[var(--radius-card)] cursor-pointer transition-all flex flex-col gap-1.5 shadow-xs ${
                       activeNodeId === "cache_vault" 
                         ? `${systemNodes[5].color} border-amber-600 ring-2 ring-amber-50` 
-                        : "border-slate-200 bg-white hover:border-amber-400 text-slate-700"
+                        : "border-[var(--color-border-subtle)] bg-white hover:border-amber-400 text-[var(--color-text-primary)]"
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -367,17 +410,17 @@ const persistFiles = (files) => {
                       </div>
                       <h4 className="text-[11px] font-bold">6. Secure Cache Vault</h4>
                     </div>
-                    <p className="text-[10px] text-slate-500 leading-normal block">LocalStorage persistent, Tách độc tố macro</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] leading-normal block">LocalStorage persistent, Tách độc tố macro</p>
                   </div>
                 </div>
 
               </div>
 
               {/* Security info */}
-              <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-xl text-[11px] text-slate-500 leading-relaxed flex items-start gap-2">
+              <div className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] p-3.5 rounded-[var(--radius-card)] text-[11px] text-[var(--color-text-secondary)] leading-relaxed flex items-start gap-2">
                 <CheckCircle2 size={13} className="text-emerald-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <span className="font-bold text-slate-700">Môi trường đám mây độc bản:</span>
+                  <span className="font-bold text-[var(--color-text-primary)]">Môi trường đám mây độc bản:</span>
                   VietLearn AI Studio vận hành toàn cục trên cổng bảo mật HTTPS, sử dụng kiến trúc fullstack Node API phối hợp nạp tệp không trung gian.
                 </div>
               </div>
@@ -387,46 +430,46 @@ const persistFiles = (files) => {
             {/* Selected Node documentation and Code block */}
             <div className="lg:col-span-5 flex flex-col gap-4">
               
-              <div className="bg-slate-50 border border-slate-150 rounded-2xl p-4 flex flex-col gap-3">
-                <div className="flex items-center justify-between border-b border-slate-200/50 pb-2">
-                  <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-200/50 text-indigo-700 rounded text-[9px] font-bold uppercase tracking-wider">
+              <div className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)]/50 pb-2">
+                  <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-100/50 text-[var(--color-primary-hover)] rounded text-[9px] font-bold uppercase tracking-wider">
                     {activeNode.category}
                   </span>
-                  <span className="text-[10px] font-mono text-slate-400">{activeNode.id}</span>
+                  <span className="text-[10px] font-mono text-[var(--color-neutral)]">{activeNode.id}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-white ${activeNode.accentColor}`}>
                     {React.createElement(activeNode.icon, { size: 14 })}
                   </div>
-                  <h4 className="font-bold text-slate-800 text-xs">{activeNode.title}</h4>
+                  <h4 className="font-bold text-[var(--color-text-primary)] text-xs">{activeNode.title}</h4>
                 </div>
 
-                <p className="text-xs text-slate-600 font-medium leading-relaxed italic">
+                <p className="text-xs text-[var(--color-text-secondary)] font-medium leading-relaxed italic">
                   "{activeNode.summary}"
                 </p>
 
                 <div className="space-y-2 text-[10px]">
                   <div className="flex flex-col gap-0.5">
-                    <span className="font-bold text-slate-400 uppercase tracking-wide">CÔNG NGHỆ CHỦ ĐẠO:</span>
-                    <span className="text-slate-700 font-medium bg-white p-1.5 rounded border border-slate-200/60 leading-tight">{activeNode.tech}</span>
+                    <span className="font-bold text-[var(--color-neutral)] uppercase tracking-wide">CÔNG NGHỆ CHỦ ĐẠO:</span>
+                    <span className="text-[var(--color-text-primary)] font-medium bg-white p-1.5 rounded border border-[var(--color-border-subtle)]/60 leading-tight">{activeNode.tech}</span>
                   </div>
                   
                   <div className="flex flex-col gap-0.5">
-                    <span className="font-bold text-slate-400 uppercase tracking-wide">FILE PHỤ TRÁCH QUẢN LÝ:</span>
-                    <span className="text-slate-700 font-mono bg-white p-1.5 rounded border border-slate-200/60 break-all">{activeNode.files}</span>
+                    <span className="font-bold text-[var(--color-neutral)] uppercase tracking-wide">FILE PHỤ TRÁCH QUẢN LÝ:</span>
+                    <span className="text-[var(--color-text-primary)] font-mono bg-white p-1.5 rounded border border-[var(--color-border-subtle)]/60 break-all">{activeNode.files}</span>
                   </div>
 
                   <div className="flex flex-col gap-0.5">
-                    <span className="font-bold text-slate-400 uppercase tracking-wide">CƠ CHẾ VẬN HÀNH:</span>
-                    <p className="text-slate-600 leading-normal bg-white p-2 rounded border border-slate-200/60">{activeNode.details}</p>
+                    <span className="font-bold text-[var(--color-neutral)] uppercase tracking-wide">CƠ CHẾ VẬN HÀNH:</span>
+                    <p className="text-[var(--color-text-secondary)] leading-normal bg-white p-2 rounded border border-[var(--color-border-subtle)]/60">{activeNode.details}</p>
                   </div>
                 </div>
               </div>
 
               {/* Code payload representing real internal connection */}
-              <div className="bg-slate-900 rounded-2xl overflow-hidden font-mono text-[9.5px]">
-                <div className="bg-slate-800 text-slate-400 px-3.5 py-2 border-b border-slate-700 text-[9px] uppercase font-bold flex items-center justify-between">
+              <div className="bg-slate-900 rounded-[var(--radius-card)] overflow-hidden font-mono text-[9.5px]">
+                <div className="bg-slate-800 text-[var(--color-neutral)] px-3.5 py-2 border-b border-slate-700 text-[9px] uppercase font-bold flex items-center justify-between">
                   <span>MÃ NGUỒN PHÂN HỆ</span>
                   <span className="text-teal-400">TYPESCRIPT</span>
                 </div>
@@ -439,13 +482,13 @@ const persistFiles = (files) => {
 
           </div>
 
-        </div>
+        </Card>
       ) : (
         /* ==================== 8 KNOWLEDGE BASE TOPICS ==================== */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
           {/* Topics sidebar */}
           <div className="lg:col-span-4 flex flex-col gap-3">
-            <div className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-2xl p-5 shadow-sm">
+            <div className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white rounded-[var(--radius-card)] p-5 shadow-sm">
               <h3 className="font-semibold text-base flex items-center gap-2">
                 <BookOpen size={18} />
                 Học Viện Kỹ Thuật VietLearn
@@ -455,64 +498,64 @@ const persistFiles = (files) => {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex flex-col gap-1.5 font-sans">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2 block">DASHBOARD CHUYÊN ĐỀ</span>
+            <Card className="p-4 flex flex-col gap-2 font-sans">
+              <span className="text-[12px] font-black text-[var(--color-neutral)] uppercase tracking-wider px-3 mb-1 block">DASHBOARD CHUYÊN ĐỀ</span>
               {techTopics.map((topic) => (
                 <button
                   key={topic.id}
                   onClick={() => setSelectedTopicId(topic.id)}
-                  className={`text-left text-xs font-medium py-3 px-3.5 rounded-xl transition-all flex items-center justify-between group ${
+                  className={`text-left text-[14px] py-3 px-4 rounded-xl border-2 transition-all flex items-center justify-between group ${
                     selectedTopicId === topic.id
-                      ? "bg-indigo-50 text-indigo-700 font-semibold"
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-indigo-100 border-[var(--color-primary)] text-[var(--color-primary-hover)] font-black shadow-xs"
+                      : "bg-[var(--color-surface)] border-transparent text-[var(--color-text-primary)] font-bold hover:bg-[var(--color-neutral-soft)] hover:border-[var(--color-border-subtle)]"
                   }`}
                 >
                   <div className="truncate pr-2">
-                    <span className="text-[10px] font-mono text-indigo-400 block mb-0.5">{topic.category}</span>
+                    <span className="text-[10px] font-black text-[var(--color-primary)] block mb-0.5">{topic.category}</span>
                     {topic.title}
                   </div>
                   <ChevronIcon topicId={topic.id} />
                 </button>
               ))}
-            </div>
+            </Card>
           </div>
 
           {/* Main explanation content */}
           <div className="lg:col-span-8 flex flex-col gap-6 w-full">
-            <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm flex flex-col gap-6">
+            <Card className="p-6 md:p-8 flex flex-col gap-6">
               {/* Header */}
-              <div className="border-b border-slate-100 pb-5">
-                <span className="px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-semibold uppercase tracking-wider">
+              <div className="border-b-2 border-[var(--color-border-subtle)] pb-5">
+                <span className="px-3 py-1.5 bg-indigo-100 text-[var(--color-primary-hover)] rounded-full text-[12px] font-black uppercase tracking-wider border-2 border-indigo-100">
                   {activeTopic.category}
                 </span>
-                <h2 className="text-xl font-bold text-slate-800 mt-2">{activeTopic.title}</h2>
-                <div className="bg-amber-50/70 border border-amber-200/50 rounded-xl p-3.5 mt-3 text-xs text-amber-800 font-medium">
-                  🙋 <span className="italic font-sans">Thắc mắc người dùng:</span> "{activeTopic.question}"
+                <h2 className="text-2xl font-black text-[var(--color-text-primary)] mt-3">{activeTopic.title}</h2>
+                <div className="bg-amber-100 border-2 border-amber-300 rounded-xl p-4 mt-4 text-[14px] text-amber-900 font-bold">
+                  🙋 <span className="italic">Thắc mắc người dùng:</span> "{activeTopic.question}"
                 </div>
               </div>
 
               {/* Interactive Lab / Simulator for the specific question */}
               {activeTopic.id === "qr_scanning" && (
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 font-sans">🛠️ PHÒNG THỬ NGHIỆM ĐỊNH TUYẾN QR CODE</h4>
+                <div className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-5">
+                  <h4 className="text-xs font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-3 font-sans">🛠️ PHÒNG THỬ NGHIỆM ĐỊNH TUYẾN QR CODE</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-3 bg-white border border-slate-200/80 p-4 rounded-xl text-xs">
-                      <p className="font-semibold text-slate-700">1. Thiết lập mô phỏng:</p>
+                    <div className="flex flex-col gap-3 bg-white border border-[var(--color-border-subtle)]/80 p-4 rounded-[var(--radius-card)] text-xs">
+                      <p className="font-semibold text-[var(--color-text-primary)]">1. Thiết lập mô phỏng:</p>
                       
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-slate-500">Tình trạng app di động:</span>
+                        <span className="text-[var(--color-text-secondary)]">Tình trạng app di động:</span>
                         <button
                           onClick={() => setAppInstalled(!appInstalled)}
                           className={`px-2.5 py-1 text-[10px] uppercase font-bold rounded-full transition-all ${
-                            appInstalled ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600"
+                            appInstalled ? "bg-green-100 text-green-700" : "bg-slate-200 text-[var(--color-text-secondary)]"
                           }`}
                         >
                           {appInstalled ? "Đã cài đặt App" : "Chưa cài đặt App"}
                         </button>
                       </div>
 
-                      <p className="text-slate-500 text-[11px] leading-relaxed">
-                        Một mã QR duy nhất chứa link HTTPS: <code className="bg-slate-50 px-1 text-rose-500">https://vietlearn.vn/room</code>
+                      <p className="text-[var(--color-text-secondary)] text-[11px] leading-relaxed">
+                        Một mã QR duy nhất chứa link HTTPS: <code className="bg-[var(--color-neutral-soft)] px-1 text-rose-500">https://vietlearn.vn/room</code>
                       </p>
 
                       <button
@@ -520,15 +563,15 @@ const persistFiles = (files) => {
                           setQrScanned(true);
                           setTimeout(() => setQrScanned(false), 3500);
                         }}
-                        className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm flex items-center justify-center gap-1.5"
+                        className="w-full mt-2 bg-[var(--color-primary)] hover:bg-brand-medium text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm flex items-center justify-center gap-1.5"
                       >
                         <Zap size={14} /> Quét mã QR mô phỏng
                       </button>
                     </div>
 
-                    <div className="bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-[11px] leading-relaxed flex flex-col justify-between">
+                    <div className="bg-slate-900 text-slate-100 p-4 rounded-[var(--radius-card)] font-mono text-[11px] leading-relaxed flex flex-col justify-between">
                       <div>
-                        <span className="text-indigo-400 font-semibold block mb-2">// LOG HOẠT ĐỘNG THIẾT BỊ</span>
+                        <span className="text-[var(--color-primary)] font-semibold block mb-2">// LOG HOẠT ĐỘNG THIẾT BỊ</span>
                         {qrScanned ? (
                           <div className="space-y-1.5 text-green-400 animate-pulse">
                             <p>✓ Micro-lens scanned QR Code.</p>
@@ -541,10 +584,10 @@ const persistFiles = (files) => {
                             )}
                           </div>
                         ) : (
-                          <p className="text-slate-400 italic">Vui lòng nhấp nút "Quét mã QR" ở bên trái để theo dõi luồng định tuyến thông minh...</p>
+                          <p className="text-[var(--color-neutral)] italic">Vui lòng nhấp nút "Quét mã QR" ở bên trái để theo dõi luồng định tuyến thông minh...</p>
                         )}
                       </div>
-                      <div className="border-t border-slate-800 pt-2 mt-2 text-[10px] text-slate-500">
+                      <div className="border-t border-slate-800 pt-2 mt-2 text-[10px] text-[var(--color-text-secondary)]">
                         Ứng dụng: Universal Deep Linking / Apple App Site Association
                       </div>
                     </div>
@@ -553,12 +596,12 @@ const persistFiles = (files) => {
               )}
 
               {activeTopic.id === "expo_tunneling" && (
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 animate-pulse">🛠️ PHÒNG THỬ NGHIỆM ĐƯỜNG HẦM EXPO GO TUNNEL</h4>
+                <div className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-5">
+                  <h4 className="text-xs font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-3 animate-pulse">🛠️ PHÒNG THỬ NGHIỆM ĐƯỜNG HẦM EXPO GO TUNNEL</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-3 bg-white border border-slate-200/80 p-4 rounded-xl text-xs">
-                      <p className="font-semibold text-slate-700">Mô phỏng Expo Tunnel:</p>
-                      <p className="text-slate-500 text-[11px] leading-relaxed">
+                    <div className="flex flex-col gap-3 bg-white border border-[var(--color-border-subtle)]/80 p-4 rounded-[var(--radius-card)] text-xs">
+                      <p className="font-semibold text-[var(--color-text-primary)]">Mô phỏng Expo Tunnel:</p>
+                      <p className="text-[var(--color-text-secondary)] text-[11px] leading-relaxed">
                         Khắc phục việc kiểm thử thiết bị khác mạng (máy tính WiFi văn phòng, điện thoại dùng 4G) thông qua một cổng trung chuyển từ xa.
                       </p>
                       
@@ -572,20 +615,20 @@ const persistFiles = (files) => {
                       ) : (
                         <button
                           onClick={startTunnelSimulator}
-                          className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm flex items-center justify-center gap-1"
+                          className="w-full mt-2 bg-[var(--color-primary)] hover:bg-brand-medium text-white font-semibold py-2 rounded-lg transition text-xs shadow-sm flex items-center justify-center gap-1"
                         >
                           Khởi chạy Expo Tunnel (--tunnel)
                         </button>
                       )}
                     </div>
 
-                    <div className="bg-slate-900 border border-slate-800 text-slate-300 p-4 rounded-xl font-mono text-[11px] leading-relaxed min-h-[140px] flex flex-col justify-between">
+                    <div className="bg-slate-900 border border-slate-800 text-[var(--color-neutral)] p-4 rounded-[var(--radius-card)] font-mono text-[11px] leading-relaxed min-h-[140px] flex flex-col justify-between">
                       <div className="space-y-1">
                         <span className="text-amber-400 block mb-1">CỬA SỔ TERM: ~ $ npx expo start --tunnel</span>
                         {tunnelActive ? (
                           tunnelLog.map((log, idx) => <p key={idx} className="text-yellow-100">{log}</p>)
                         ) : (
-                          <p className="text-slate-500 italic">Nhấn khởi chạy để đo đạc và tạo đường dẫn ảo ngrok công cộng...</p>
+                          <p className="text-[var(--color-text-secondary)] italic">Nhấn khởi chạy để đo đạc và tạo đường dẫn ảo ngrok công cộng...</p>
                         )}
                       </div>
                       {tunnelActive && (
@@ -599,9 +642,9 @@ const persistFiles = (files) => {
               )}
 
               {activeTopic.id === "vietnamese_nlp" && (
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">🛠️ MA TRẬN PHÂN TÍCH NGỮ ÂM VÀ HẢI VÙNG</h4>
-                  <p className="text-[11px] text-slate-500 mb-3 font-sans">Xem cách các phương ngữ di sản phát âm độc đáo đối với cụm từ, gây khó khăn cho Speech-to-Text chuẩn:</p>
+                <div className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-5">
+                  <h4 className="text-xs font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-2">🛠️ MA TRẬN PHÂN TÍCH NGỮ ÂM VÀ HẢI VÙNG</h4>
+                  <p className="text-[11px] text-[var(--color-text-secondary)] mb-3 font-sans">Xem cách các phương ngữ di sản phát âm độc đáo đối với cụm từ, gây khó khăn cho Speech-to-Text chuẩn:</p>
                   
                   <div className="grid grid-cols-3 gap-2 mb-3">
                     {["Sữa bò", "Răng rứa", "Cá rô"].map((w) => (
@@ -610,8 +653,8 @@ const persistFiles = (files) => {
                         onClick={() => setSelectedDialectWord(w)}
                         className={`py-1.5 px-3 text-xs font-medium rounded-lg transition-all border ${
                           selectedDialectWord === w
-                            ? "bg-indigo-600 text-white border-indigo-600"
-                            : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                            ? "bg-[var(--color-primary)] text-white border-indigo-600"
+                            : "bg-white text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:bg-[var(--color-neutral-soft)]"
                         }`}
                       >
                         "{w}"
@@ -620,84 +663,84 @@ const persistFiles = (files) => {
                   </div>
 
                   {selectedDialectWord === "Sữa bò" && (
-                    <div className="bg-white border border-slate-200/60 p-3.5 rounded-xl space-y-2 text-xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                        <span className="font-bold text-slate-800">Miền Bắc (Hà Nội):</span>
-                        <span className="font-mono text-indigo-600">/sɯ̃ə\u0311\u0305 \u0253\u0254\u02d0\u02d1/</span>
+                    <div className="bg-white border border-[var(--color-border-subtle)]/60 p-3.5 rounded-[var(--radius-card)] space-y-2 text-xs">
+                      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-1.5">
+                        <span className="font-bold text-[var(--color-text-primary)]">Miền Bắc (Hà Nội):</span>
+                        <span className="font-mono text-[var(--color-primary)]">/sɯ̃ə\u0311\u0305 \u0253\u0254\u02d0\u02d1/</span>
                       </div>
-                      <p className="text-slate-500 leading-relaxed text-[11px]">Phát âm sắc sảo, dứt khoát. Nghe rõ âm ngã lượn sóng đặc trưng, phân biệt rõ "sữa" với "sửa".</p>
+                      <p className="text-[var(--color-text-secondary)] leading-relaxed text-[11px]">Phát âm sắc sảo, dứt khoát. Nghe rõ âm ngã lượn sóng đặc trưng, phân biệt rõ "sữa" với "sửa".</p>
                       
-                      <div className="flex items-center justify-between border-b border-slate-100 pt-1.5 pb-1.5">
-                        <span className="font-bold text-slate-800">Miền Trung (Huế):</span>
-                        <span className="font-mono text-indigo-600">/sɯə\u0311 \u0253\u0254\u02d0\u02d1/</span>
+                      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pt-1.5 pb-1.5">
+                        <span className="font-bold text-[var(--color-text-primary)]">Miền Trung (Huế):</span>
+                        <span className="font-mono text-[var(--color-primary)]">/sɯə\u0311 \u0253\u0254\u02d0\u02d1/</span>
                       </div>
-                      <p className="text-slate-500 leading-relaxed text-[11px]">Trọng âm trầm, giọng nén mạnh. Thanh Ngã có chiều hướng đồng nhất nhẹ thành thanh Hỏi kết hợp nén họng sâu.</p>
+                      <p className="text-[var(--color-text-secondary)] leading-relaxed text-[11px]">Trọng âm trầm, giọng nén mạnh. Thanh Ngã có chiều hướng đồng nhất nhẹ thành thanh Hỏi kết hợp nén họng sâu.</p>
 
-                      <div className="flex items-center justify-between border-b border-slate-100 pt-1.5 pb-1.5">
-                        <span className="font-bold text-slate-800">Miền Nam (Sài Gòn):</span>
-                        <span className="font-mono text-indigo-600">/sɯə\u0311\u031a \u0253\u0254\u02d0\u02d1/</span>
+                      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pt-1.5 pb-1.5">
+                        <span className="font-bold text-[var(--color-text-primary)]">Miền Nam (Sài Gòn):</span>
+                        <span className="font-mono text-[var(--color-primary)]">/sɯə\u0311\u031a \u0253\u0254\u02d0\u02d1/</span>
                       </div>
-                      <p className="text-slate-500 leading-relaxed text-[11px]">Phát âm êm mượt. Đồng nhất hoàn toàn thanh Hỏi và Thanh Ngã. "Sữa bò" nghe như "Sửa bò".</p>
+                      <p className="text-[var(--color-text-secondary)] leading-relaxed text-[11px]">Phát âm êm mượt. Đồng nhất hoàn toàn thanh Hỏi và Thanh Ngã. "Sữa bò" nghe như "Sửa bò".</p>
                     </div>
                   )}
 
                   {selectedDialectWord === "Răng rứa" && (
-                    <div className="bg-white border border-slate-200/60 p-3.5 rounded-xl space-y-2 text-xs font-sans">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                        <span className="font-bold text-slate-800">Ý nghĩa:</span>
+                    <div className="bg-white border border-[var(--color-border-subtle)]/60 p-3.5 rounded-[var(--radius-card)] space-y-2 text-xs font-sans">
+                      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-1.5">
+                        <span className="font-bold text-[var(--color-text-primary)]">Ý nghĩa:</span>
                         <span className="font-mono text-emerald-600">"Sao thế?" / "Sao vậy?"</span>
                       </div>
-                      <p className="text-slate-500 leading-relaxed text-[11px]">Từ vựng bản địa miền Trung cốt lõi. Người miền Bắc/Nam hiếm khi tự động thốt ra.</p>
+                      <p className="text-[var(--color-text-secondary)] leading-relaxed text-[11px]">Từ vựng bản địa miền Trung cốt lõi. Người miền Bắc/Nam hiếm khi tự động thốt ra.</p>
 
                       <div className="flex items-center justify-between pt-1 pb-1">
-                        <span className="font-bold text-slate-800">Thử thách STT:</span>
+                        <span className="font-bold text-[var(--color-text-primary)]">Thử thách STT:</span>
                         <span className="text-amber-600 font-semibold">[DỄ LỖI]</span>
                       </div>
-                      <p className="text-slate-500 leading-relaxed text-[11px]">Với các mô hình ASR thô sơ không có NLP vùng miền, họ sẽ phiên dịch nhầm cụm "răng rứa" thành "Răng" (kẽ răng, bộ răng) và "rứa" (con rùa) làm hư hỏng ngữ nghĩa.</p>
+                      <p className="text-[var(--color-text-secondary)] leading-relaxed text-[11px]">Với các mô hình ASR thô sơ không có NLP vùng miền, họ sẽ phiên dịch nhầm cụm "răng rứa" thành "Răng" (kẽ răng, bộ răng) và "rứa" (con rùa) làm hư hỏng ngữ nghĩa.</p>
                     </div>
                   )}
 
                   {selectedDialectWord === "Cá rô" && (
-                    <div className="bg-white border border-slate-200/60 p-3.5 rounded-xl space-y-2 text-xs">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                        <span className="font-bold text-slate-800">Phát âm Miền Bắc:</span>
-                        <span className="text-slate-700">"Cá giô / Cá rô"</span>
+                    <div className="bg-white border border-[var(--color-border-subtle)]/60 p-3.5 rounded-[var(--radius-card)] space-y-2 text-xs">
+                      <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-1.5">
+                        <span className="font-bold text-[var(--color-text-primary)]">Phát âm Miền Bắc:</span>
+                        <span className="text-[var(--color-text-primary)]">"Cá giô / Cá rô"</span>
                       </div>
                       <div className="flex items-center justify-between pt-1.5">
-                        <span className="font-bold text-slate-800">Phát âm Miền Nam:</span>
-                        <span className="text-slate-700">"Cá gô"</span>
+                        <span className="font-bold text-[var(--color-text-primary)]">Phát âm Miền Nam:</span>
+                        <span className="text-[var(--color-text-primary)]">"Cá gô"</span>
                       </div>
-                      <p className="text-slate-500 leading-relaxed text-[11px] mt-1">Trong tiếng Nam Bộ, phụ âm "r" thường biến âm thành thanh mềm "g" hoặc "d". AI phải tự động hiểu "Cá gô" chính là con cá rô đồng.</p>
+                      <p className="text-[var(--color-text-secondary)] leading-relaxed text-[11px] mt-1">Trong tiếng Nam Bộ, phụ âm "r" thường biến âm thành thanh mềm "g" hoặc "d". AI phải tự động hiểu "Cá gô" chính là con cá rô đồng.</p>
                     </div>
                   )}
                 </div>
               )}
 
               {/* Core Markdown-style content */}
-              <div className="text-xs text-slate-600 leading-relaxed space-y-4">
-                <div className="prose prose-indigo max-w-none text-slate-600 whitespace-pre-wrap font-sans">
+              <div className="text-xs text-[var(--color-text-secondary)] leading-relaxed space-y-4">
+                <div className="prose prose-indigo max-w-none text-[var(--color-text-secondary)] whitespace-pre-wrap font-sans">
                   {activeTopic.explanation}
                 </div>
               </div>
 
               {/* Modular Block Diagrams */}
               {activeTopic.diagramSteps && (
-                <div className="bg-slate-50 border border-slate-100 rounded-3xl p-5 md:p-6 mt-2 animate-fade-in">
-                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5 font-sans">
-                    <Layers size={14} className="text-indigo-600" />
+                <div className="bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] p-5 md:p-6 mt-2 animate-fade-in">
+                  <h4 className="text-xs font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-4 flex items-center gap-1.5 font-sans">
+                    <Layers size={14} className="text-[var(--color-primary)]" />
                     Dòng Chảy Sơ Đồ Quy Trình (Data Flow)
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {activeTopic.diagramSteps.map((step, idx) => (
-                      <div key={idx} className="bg-white border border-slate-200/60 p-4 rounded-xl flex flex-col gap-2 relative">
+                      <div key={idx} className="bg-white border border-[var(--color-border-subtle)]/60 p-4 rounded-[var(--radius-card)] flex flex-col gap-2 relative">
                         <div className="absolute top-3.5 right-3.5 text-[15px] font-black text-slate-200 font-mono">
                           0{idx + 1}
                         </div>
-                        <div className="w-8 h-8 bg-indigo-50 text-indigo-600 rounded-lg flex items-center justify-center font-bold text-sm">
+                        <div className="w-8 h-8 bg-indigo-50 text-[var(--color-primary)] rounded-lg flex items-center justify-center font-bold text-sm">
                           {idx === 0 ? "✎" : idx === 1 ? "⚙" : "✔"}
                         </div>
-                        <h5 className="font-bold text-slate-800 text-[11px] mt-1">{step.title}</h5>
-                        <p className="text-slate-500 text-[10px] leading-relaxed">{step.desc}</p>
+                        <h5 className="font-bold text-[var(--color-text-primary)] text-[11px] mt-1">{step.title}</h5>
+                        <p className="text-[var(--color-text-secondary)] text-[10px] leading-relaxed">{step.desc}</p>
                       </div>
                     ))}
                   </div>
@@ -706,29 +749,57 @@ const persistFiles = (files) => {
 
               {/* Visual Code Block */}
               {activeTopic.visualCode && (
-                <div className="bg-slate-900 rounded-2xl overflow-hidden mt-2 font-mono text-[10.5px]">
-                  <div className="bg-slate-800 text-slate-400 px-4 py-2.5 flex items-center justify-between text-[10px] border-b border-slate-700">
+                <div className="bg-slate-900 rounded-[var(--radius-card)] overflow-hidden mt-2 font-mono text-[10.5px]">
+                  <div className="bg-slate-800 text-[var(--color-neutral)] px-4 py-2.5 flex items-center justify-between text-[10px] border-b border-slate-700">
                     <span className="font-mono flex items-center gap-1.5">
                       <Code size={13} className="text-teal-400" /> CODE MINH HỌA HỆ THỐNG
                     </span>
-                    <span className="text-slate-500 text-[9px] uppercase font-bold">TYPESCRIPT / CODE</span>
+                    <span className="text-[var(--color-text-secondary)] text-[9px] uppercase font-bold">TYPESCRIPT / CODE</span>
                   </div>
                   <pre className="p-4 text-emerald-300 overflow-x-auto select-all leading-normal whitespace-pre text-left">
                     <code>{activeTopic.visualCode}</code>
                   </pre>
                 </div>
               )}
-            </div>
+            </Card>
           </div>
         </div>
       )}
+
+      {/* ── Knowledge Stats Footer — Stitch style ──────────────── */}
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-[var(--color-border-subtle)]">
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Total Modules</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-text-primary)] leading-tight">
+            {techTopics.length * 16}
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Hours Learned</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-text-primary)] leading-tight">
+            42.5
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Certificates</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-text-primary)] leading-tight">
+            3
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[13px] text-[var(--color-text-secondary)] font-medium">Lab Score</p>
+          <p className="text-[28px] font-bold font-display text-[var(--color-primary)] leading-tight">
+            88%
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
 
 function ChevronIcon({ topicId }: { topicId: string }) {
   return (
-    <div className="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 group-hover:border-indigo-100 transition">
+    <div className="w-5 h-5 rounded-full bg-white border border-[var(--color-border-subtle)] flex items-center justify-center text-[var(--color-neutral)] group-hover:bg-indigo-50 group-hover:text-[var(--color-primary)] group-hover:border-indigo-100 transition">
       <ArrowRight size={10} />
     </div>
   );

@@ -15,11 +15,13 @@ import AudioSpeechLab from "./components/AudioSpeechLab";
 import FullstackKnowledgeBase from "./components/FullstackKnowledgeBase";
 import StudentBudgetTracker from "./components/StudentBudgetTracker";
 import AiVideoLab, { isVideoFile } from "./components/AiVideoLab";
+import UserProfileSettings, { getUserProfile, type UserProfile } from "./components/UserProfileSettings";
 
 import { Button } from "./components/ui/Button";
 import { Card } from "./components/ui/Card";
 import { CopyButton } from "./components/ui/CopyButton";
 import { ReadAloudText } from "./components/ui/ReadAloudText";
+import { Markdown } from "./components/ui/Markdown";
 
 import {
   CloudLightning,
@@ -40,6 +42,8 @@ import {
 export default function App() {
   const [currentTab, setCurrentTab] = useState<TabId>("upload");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => getUserProfile());
 
   // Custom hooks — tách toàn bộ logic phức tạp (KHÔNG đổi)
   const { hasApiKey } = useApiStatus();
@@ -103,8 +107,16 @@ export default function App() {
             <button className="p-2 rounded-full hover:bg-[var(--color-surface-container-low)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
               <Bell size={20} />
             </button>
-            <button className="p-2 rounded-full hover:bg-[var(--color-surface-container-low)] text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-              <CircleUserRound size={22} />
+            <button
+              onClick={() => setShowSettings(true)}
+              className="p-1 rounded-full hover:bg-[var(--color-surface-container-low)] transition-colors overflow-hidden"
+              title={userProfile.displayName || "Thông tin cá nhân"}
+            >
+              {userProfile.avatarBase64 ? (
+                <img src={userProfile.avatarBase64} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
+              ) : (
+                <CircleUserRound size={22} className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]" />
+              )}
             </button>
           </div>
         </div>
@@ -128,17 +140,21 @@ export default function App() {
               </button>
             </div>
 
-            {/* Hub header — avatar + Learning Hub title (Stitch style) */}
+            {/* Hub header — avatar + user name (Stitch style) */}
             <div className="flex items-center gap-3 mb-6 p-2">
               <div className="w-10 h-10 rounded-full bg-[var(--color-primary-fixed)] flex items-center justify-center text-[var(--color-primary)] shrink-0 overflow-hidden">
-                <CircleUserRound size={28} strokeWidth={1.5} />
+                {userProfile.avatarBase64 ? (
+                  <img src={userProfile.avatarBase64} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <CircleUserRound size={28} strokeWidth={1.5} />
+                )}
               </div>
               <div className="min-w-0">
                 <div className="text-[16px] font-semibold text-[var(--color-text-primary)] leading-tight truncate font-display">
-                  Learning Hub
+                  {userProfile.displayName || "Learning Hub"}
                 </div>
                 <div className="text-[12px] text-[var(--color-text-secondary)] mt-0.5">
-                  Academic Level {Math.min(files.length, 9) + 1}
+                  {userProfile.school || `Academic Level ${Math.min(files.length, 9) + 1}`}
                 </div>
               </div>
             </div>
@@ -189,13 +205,16 @@ export default function App() {
 
             {/* Footer links */}
             <div className="mt-auto pt-3 border-t border-[var(--color-border-subtle)] flex flex-col gap-1">
-              <a
-                className="text-[var(--color-text-secondary)] hover:bg-[var(--color-neutral-soft)] rounded-[8px] flex items-center gap-3 px-3 py-2.5 text-[14px] transition-colors"
-                href="#"
+              <button
+                onClick={() => {
+                  setShowSettings(true);
+                  setSidebarOpen(false);
+                }}
+                className="text-[var(--color-text-secondary)] hover:bg-[var(--color-neutral-soft)] rounded-[8px] flex items-center gap-3 px-3 py-2.5 text-[14px] transition-colors text-left w-full"
               >
                 <Settings size={18} />
                 Settings
-              </a>
+              </button>
               <a
                 className="text-[var(--color-text-secondary)] hover:bg-[var(--color-neutral-soft)] rounded-[8px] flex items-center gap-3 px-3 py-2.5 text-[14px] transition-colors"
                 href="#"
@@ -459,9 +478,21 @@ export default function App() {
                           <Copy size={14} /> Copy
                         </button>
                       </div>
-                      <div className="prose max-w-none text-[var(--color-text-primary)] font-sans leading-relaxed whitespace-pre-wrap">
-                        {translation.translatedText}
-                      </div>
+                      {/* Interpreter: read the translation aloud (Edge neural / browser voice, speed) */}
+                      <ReadAloudText
+                        text={translation.translatedText}
+                        lang={
+                          (
+                            {
+                              vi: "vi-VN", en: "en-US", ja: "ja-JP", ko: "ko-KR", zh: "zh-CN", fr: "fr-FR",
+                              de: "de-DE", es: "es-ES", ru: "ru-RU", it: "it-IT", pt: "pt-BR", th: "th-TH",
+                              id: "id-ID", ar: "ar-SA", hi: "hi-IN",
+                            } as Record<string, string>
+                          )[translation.translateTargetLang] || "vi-VN"
+                        }
+                        forceLang
+                        textClassName="prose max-w-none text-[var(--color-text-primary)] font-sans leading-relaxed whitespace-pre-wrap select-text"
+                      />
                     </Card>
                   )}
 
@@ -481,9 +512,10 @@ export default function App() {
                       </span>
                       <CopyButton text={activeFile.summary} />
                     </div>
-                    <div className="prose max-w-none text-[var(--color-text-secondary)] whitespace-pre-wrap select-text">
-                      {activeFile.summary}
-                    </div>
+                    <Markdown
+                      text={activeFile.summary}
+                      className="text-[15px] text-[var(--color-text-secondary)] select-text"
+                    />
                   </Card>
 
                   <Card className="p-5 border border-[var(--color-border-subtle)] rounded-[8px]">
@@ -514,6 +546,13 @@ export default function App() {
           </footer>
         </main>
       </div>
+
+      {/* User Profile Settings Modal */}
+      <UserProfileSettings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        onProfileUpdate={(p) => setUserProfile(p)}
+      />
     </div>
   );
 }

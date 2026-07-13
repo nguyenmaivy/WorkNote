@@ -12,6 +12,15 @@ const VOICE_BY_LANG: Record<string, string> = {
   ko: "ko-KR-SunHiNeural",
   zh: "zh-CN-XiaoxiaoNeural",
   fr: "fr-FR-DeniseNeural",
+  de: "de-DE-KatjaNeural",
+  es: "es-ES-ElviraNeural",
+  ru: "ru-RU-SvetlanaNeural",
+  it: "it-IT-ElsaNeural",
+  pt: "pt-BR-FranciscaNeural",
+  th: "th-TH-PremwadeeNeural",
+  id: "id-ID-GadisNeural",
+  ar: "ar-SA-ZariyahNeural",
+  hi: "hi-IN-SwaraNeural",
 };
 
 // Danh sách giọng cho phép chọn (chống lạm dụng tham số voice tùy ý).

@@ -9,6 +9,8 @@ interface ReadAloudTextProps {
   lang?: string;
   /** Class cho khung chứa văn bản */
   textClassName?: string;
+  /** Bỏ qua auto-detect, ép dùng đúng `lang` (khi đã biết chắc ngôn ngữ, vd bản dịch) */
+  forceLang?: boolean;
 }
 
 type Engine = "ai" | "browser";
@@ -67,6 +69,7 @@ export function ReadAloudText({
   text = "",
   lang = "vi-VN",
   textClassName = "",
+  forceLang = false,
 }: ReadAloudTextProps) {
   const browserSupported =
     typeof window !== "undefined" && "speechSynthesis" in window;
@@ -91,7 +94,7 @@ export function ReadAloudText({
   const resumeRef = useRef<ResumePoint | null>(null);
   const aiCacheRef = useRef<Map<string, { audioBase64: string; marks: Mark[]; truncated: boolean }>>(new Map());
 
-  const effectiveLang = useMemo(() => detectLang(text, lang), [text, lang]);
+  const effectiveLang = useMemo(() => (forceLang ? lang : detectLang(text, lang)), [text, lang, forceLang]);
   const langKey = effectiveLang.slice(0, 2);
   const voiceOptions = VOICE_OPTIONS[langKey] || [];
 

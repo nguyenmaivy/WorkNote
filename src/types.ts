@@ -12,6 +12,9 @@ export interface MindMapNode {
   label: string;
   children?: MindMapNode[];
   collapsed?: boolean;
+  icon?: string;           // emoji hoặc icon identifier
+  notes?: string;          // ghi chú chi tiết cho node
+  color?: string;          // override color cho node
 }
 
 export interface UploadedFile {

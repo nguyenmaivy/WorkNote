@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   Mic, 
   Square, 
@@ -13,36 +13,100 @@ import {
   Activity,
   Download,
   Trash2,
-  Info
+  Info,
+  Monitor,
+  ArrowRightLeft
 } from "lucide-react";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
 
+// ─── Shared multi-language list ────────────────────────────────────────────────
+const ALL_LANGUAGES = [
+  { code: "auto", label: "🌐 Tự động (Auto)", flag: "🌐" },
+  { code: "vi", label: "🇻🇳 Tiếng Việt", flag: "🇻🇳" },
+  { code: "en", label: "🇺🇸 Tiếng Anh", flag: "🇺🇸" },
+  { code: "ja", label: "🇯🇵 Tiếng Nhật", flag: "🇯🇵" },
+  { code: "zh", label: "🇨🇳 Tiếng Trung", flag: "🇨🇳" },
+  { code: "ko", label: "🇰🇷 Tiếng Hàn", flag: "🇰🇷" },
+  { code: "fr", label: "🇫🇷 Tiếng Pháp", flag: "🇫🇷" },
+  { code: "de", label: "🇩🇪 Tiếng Đức", flag: "🇩🇪" },
+  { code: "es", label: "🇪🇸 Tiếng Tây Ban Nha", flag: "🇪🇸" },
+  { code: "ru", label: "🇷🇺 Tiếng Nga", flag: "🇷🇺" },
+  { code: "it", label: "🇮🇹 Tiếng Ý", flag: "🇮🇹" },
+  { code: "pt", label: "🇧🇷 Tiếng Bồ Đào Nha", flag: "🇧🇷" },
+  { code: "th", label: "🇹🇭 Tiếng Thái", flag: "🇹🇭" },
+  { code: "id", label: "🇮🇩 Tiếng Indonesia", flag: "🇮🇩" },
+  { code: "ar", label: "🇸🇦 Tiếng Ả Rập", flag: "🇸🇦" },
+  { code: "hi", label: "🇮🇳 Tiếng Hindi", flag: "🇮🇳" },
+];
+
+// Languages excluding "auto" for target selections
+const TARGET_LANGUAGES = ALL_LANGUAGES.filter(l => l.code !== "auto");
+
+// TTS lang mapping
+const TTS_LANG_MAP: Record<string, string> = {
+  vi: "vi-VN", en: "en-US", ja: "ja-JP", zh: "zh-CN", ko: "ko-KR",
+  fr: "fr-FR", de: "de-DE", es: "es-ES", ru: "ru-RU", it: "it-IT",
+  pt: "pt-BR", th: "th-TH", id: "id-ID", ar: "ar-SA", hi: "hi-IN",
+};
+
 export default function AudioSpeechLab() {
   const [activeLabTab, setActiveLabTab] = useState<"dialect" | "live-translate">("dialect");
   
-  // Dialect & TTS States
+  // ─── Source Text & TTS States ────────────────────────────────────────────
   const [textToSpeak, setTextToSpeak] = useState<string>(
     "Chào mừng các bạn đã ghé thăm phòng thí nghiệm âm thanh VietLearn. Hãy kiểm thử giọng nói của bạn!"
   );
   const [selectedRegion, setSelectedRegion] = useState<"north" | "central" | "south">("north");
   const [ttsSpeed, setTtsSpeed] = useState<number>(1);
   const [ttsPitch, setTtsPitch] = useState<number>(1);
+
+  // Source text translation states
+  const [srcSourceLang, setSrcSourceLang] = useState<string>("vi");
+  const [srcTargetLang, setSrcTargetLang] = useState<string>("en");
+  const [translatedSourceText, setTranslatedSourceText] = useState<string>("");
+  const [isTranslatingText, setIsTranslatingText] = useState<boolean>(false);
   
   // Recording states
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordedBlobUrl, setRecordedBlobUrl] = useState<string | null>(null);
   const [recordingSeconds, setRecordingSeconds] = useState<number>(0);
+  const [recordInputSource, setRecordInputSource] = useState<"mic" | "system">("mic");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recordStreamRef = useRef<MediaStream | null>(null);
+
+  // Audio output translation states
+  const [audioOutputSourceLang, setAudioOutputSourceLang] = useState<string>("vi");
+  const [audioOutputTargetLang, setAudioOutputTargetLang] = useState<string>("en");
+  const [isTranslatingAudio, setIsTranslatingAudio] = useState<boolean>(false);
+  const [audioTranslationResult, setAudioTranslationResult] = useState<{original: string; translated: string} | null>(null);
+  const [recordedText, setRecordedText] = useState<string>("");
+  const recognitionRef = useRef<any>(null);
+
+  // Free Google Translate API Trick
+  const freeGoogleTranslate = async (text: string, sourceLang: string, targetLang: string) => {
+    try {
+      const sl = sourceLang === "auto" ? "auto" : sourceLang.split("-")[0];
+      const tl = targetLang.split("-")[0];
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+      
+      const res = await fetch(url);
+      const data = await res.json();
+      return data[0].map((item: any) => item[0]).join("");
+    } catch (e) {
+      console.error("Free Translate Error:", e);
+      return null;
+    }
+  };
 
   // Playback states
   const [isPlayingTts, setIsPlayingTts] = useState<boolean>(false);
   const [ttsStatus, setTtsStatus] = useState<string>("");
   const activeAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  // --- New Live Audio Translator States ---
+  // --- Live Audio Translator States ---
   const [isLiveTranslating, setIsLiveTranslating] = useState<boolean>(false);
   const [liveInputSource, setLiveInputSource] = useState<"mic" | "display">("mic");
   const [liveSourceLang, setLiveSourceLang] = useState<string>("en");
@@ -57,21 +121,14 @@ export default function AudioSpeechLab() {
   }[]>([]);
 
   const subtitlesEndRef = useRef<HTMLDivElement | null>(null);
-  const liveStreamRef = useRef<MediaStream | null>(null);
-  const liveLoopActiveRef = useRef<boolean>(false);
-  const wsRef = useRef<WebSocket | null>(null);
+  const liveRecognitionRef = useRef<any>(null);
 
   // Clean elements on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      // Ensure we release any active video/audio stream locks on unmount
-      liveLoopActiveRef.current = false;
-      if (liveStreamRef.current) {
-        liveStreamRef.current.getTracks().forEach((track) => track.stop());
-      }
-      if (wsRef.current) {
-        wsRef.current.close();
+      if (recordStreamRef.current) {
+        recordStreamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
   }, []);
@@ -83,14 +140,51 @@ export default function AudioSpeechLab() {
     }
   }, [liveTranscript]);
 
-  // 1. Live Recording via browser Microphone
+  // ─── 1. Recording (Mic Only) ──────────────────────────────────
   const startRecording = async () => {
     try {
       setRecordedBlobUrl(null);
+      setAudioTranslationResult(null);
+      setRecordedText("");
       audioChunksRef.current = [];
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recordStreamRef.current = stream;
+
+      // Start Web Speech API Recognition
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        // Map language correctly (e.g. "vi" -> "vi-VN")
+        recognition.lang = TTS_LANG_MAP[audioOutputSourceLang] || audioOutputSourceLang || "vi-VN";
+        
+        recognition.onresult = (event: any) => {
+          let finalTranscript = "";
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            }
+          }
+          if (finalTranscript) {
+            setRecordedText(prev => (prev + " " + finalTranscript).trim());
+          }
+        };
+        
+        recognition.onerror = (e: any) => console.log("Speech recognition error:", e);
+        recognition.start();
+        recognitionRef.current = recognition;
+      }
+      
+      let mime = "audio/webm";
+      try {
+        if (!MediaRecorder.isTypeSupported("audio/webm")) {
+          mime = "audio/mp4";
+        }
+      } catch {}
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: mime });
       mediaRecorderRef.current = mediaRecorder;
 
       mediaRecorder.ondataavailable = (event) => {
@@ -100,12 +194,13 @@ export default function AudioSpeechLab() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mime });
         const url = URL.createObjectURL(audioBlob);
         setRecordedBlobUrl(url);
         
         // Stop all track media streams to release browser lock
         stream.getTracks().forEach((track) => track.stop());
+        recordStreamRef.current = null;
       };
 
       mediaRecorder.start();
@@ -117,12 +212,15 @@ export default function AudioSpeechLab() {
       }, 1000);
 
     } catch (error: any) {
-      console.error("Microphone access denied:", error);
+      console.error("Recording access denied:", error);
       alert("Không tìm thấy micro hoặc micro bị từ chối kết nối. Hãy kiểm tra cài đặt trình duyệt!");
     }
   };
 
   const stopRecording = () => {
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch(e){}
+    }
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
@@ -140,9 +238,58 @@ export default function AudioSpeechLab() {
     return `${mins.toString().padStart(2, "0")}:${remaining.toString().padStart(2, "0")}`;
   };
 
-  // 2. Playback TTS (Calls server-side API or uses HTML5 SpeechSynthesis client fallback)
-  const handleTTSPlay = async () => {
-    if (!textToSpeak.trim()) return;
+  // ─── 2. Translate recorded audio ──────────────────────────────────────────
+  const handleTranslateRecordedAudio = async () => {
+    if (!recordedBlobUrl || isTranslatingAudio) return;
+    
+    setIsTranslatingAudio(true);
+    setAudioTranslationResult(null);
+    
+    try {
+      if (!recordedText.trim()) {
+        setAudioTranslationResult({
+          original: "(Không nghe rõ văn bản)",
+          translated: "Hãy thử nói to hơn hoặc trình duyệt của bạn không hỗ trợ nhận dạng.",
+        });
+        setIsTranslatingAudio(false);
+        return;
+      }
+
+      // Sử dụng Google Translate API miễn phí
+      const translated = await freeGoogleTranslate(recordedText, audioOutputSourceLang, audioOutputTargetLang);
+      
+      if (translated) {
+        setAudioTranslationResult({
+          original: recordedText,
+          translated: translated,
+        });
+        
+        // Auto TTS the translation
+        const utterance = new SpeechSynthesisUtterance(translated);
+        utterance.lang = TTS_LANG_MAP[audioOutputTargetLang] || "en-US";
+        utterance.rate = ttsSpeed;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setAudioTranslationResult({
+          original: recordedText,
+          translated: "(Dịch thất bại)",
+        });
+      }
+    } catch (e: any) {
+      console.error("Audio translation error:", e);
+      setAudioTranslationResult({
+        original: "(Lỗi)",
+        translated: "Không thể dịch âm thanh.",
+      });
+    } finally {
+      setIsTranslatingAudio(false);
+    }
+  };
+
+  // ─── 3. TTS Playback ─────────────────────────────────────────────────────
+  const handleTTSPlay = async (text?: string, lang?: string) => {
+    const textContent = text || textToSpeak;
+    if (!textContent.trim()) return;
 
     if (activeAudioRef.current) {
       activeAudioRef.current.pause();
@@ -155,7 +302,7 @@ export default function AudioSpeechLab() {
       const response = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: textToSpeak, region: selectedRegion })
+        body: JSON.stringify({ text: textContent, region: selectedRegion })
       });
 
       const data = await response.json();
@@ -174,11 +321,12 @@ export default function AudioSpeechLab() {
         await audio.play();
         setTtsStatus(`Playing Gemini Voice (Giọng ${selectedRegion === "north" ? "Bắc" : selectedRegion === "central" ? "Trung" : "Nam"})`);
       } else {
-        // Fallback to beautiful HTML5 browser SpeechSynthesis if key is not configured
+        // Fallback to browser SpeechSynthesis
         setTtsStatus("Chạy thử bằng tiếng máy tính local (Demo)...");
-        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        const utterance = new SpeechSynthesisUtterance(textContent);
         
-        utterance.lang = "vi-VN";
+        const ttsLang = lang || TTS_LANG_MAP[srcTargetLang] || "vi-VN";
+        utterance.lang = ttsLang;
         utterance.rate = ttsSpeed;
         utterance.pitch = ttsPitch;
         
@@ -191,8 +339,9 @@ export default function AudioSpeechLab() {
       }
     } catch (e: any) {
       console.warn("TTS fetch failed, falling back to Web Speech API:", e);
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.lang = "vi-VN";
+      const utterance = new SpeechSynthesisUtterance(textContent);
+      const ttsLang = lang || TTS_LANG_MAP[srcTargetLang] || "vi-VN";
+      utterance.lang = ttsLang;
       utterance.rate = ttsSpeed;
       utterance.pitch = ttsPitch;
       utterance.onend = () => {
@@ -203,165 +352,129 @@ export default function AudioSpeechLab() {
     }
   };
 
-  // --- 3. Live Audio & Video translation flow engines (WebSocket Version) ---
+  // ─── 4. Source Text Translation ───────────────────────────────────────────
+  const handleTranslateSourceText = async () => {
+    if (!textToSpeak.trim() || isTranslatingText) return;
+    
+    setIsTranslatingText(true);
+    setTranslatedSourceText("");
+    
+    try {
+      const translated = await freeGoogleTranslate(textToSpeak, srcSourceLang, srcTargetLang);
+      
+      if (translated) {
+        setTranslatedSourceText(translated);
+      } else {
+        setTranslatedSourceText("(Dịch thất bại)");
+      }
+    } catch (e: any) {
+      // Fallback demo for offline
+      setTranslatedSourceText(`[Demo] Bản dịch sang ${srcTargetLang}: "${textToSpeak.substring(0, 100)}..."`);
+    } finally {
+      setIsTranslatingText(false);
+    }
+  };
+
+  // Play TTS for translated text
+  const handlePlayTranslatedTTS = () => {
+    if (!translatedSourceText.trim()) return;
+    const utterance = new SpeechSynthesisUtterance(translatedSourceText);
+    utterance.lang = TTS_LANG_MAP[srcTargetLang] || "en-US";
+    utterance.rate = ttsSpeed;
+    utterance.pitch = ttsPitch;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // ─── 5. Live Audio & Video translation (Zero Token) ────────
   const startLiveTranslation = async () => {
     setIsLiveTranslating(true);
-    liveLoopActiveRef.current = true;
     setLiveTranscript([]);
-    setLiveStatus("Bắt đầu khởi tao dịch... Đang kết nối WebSocket.");
-    
-    // Khởi tạo WebSocket Connection
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/api/ws/translate`;
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
+    setLiveStatus("Đang lắng nghe... Hãy nói vào mic hoặc phát video có tiếng qua loa.");
 
-    ws.onopen = () => {
-      setLiveStatus("Đã kết nối WebSocket. Đang kết nối thiết bị âm thanh...");
-      ws.send(JSON.stringify({
-        type: "config",
-        sourceLang: liveSourceLang,
-        targetLang: liveTargetLang
-      }));
-      runAudioSlice();
-    };
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setLiveStatus("⚠️ Trình duyệt của bạn không hỗ trợ Web Speech API. Hãy dùng Chrome/Edge.");
+      setIsLiveTranslating(false);
+      return;
+    }
 
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.error) {
-          setLiveStatus(`⚠️ Lỗi từ server: ${data.error}`);
-          return;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = TTS_LANG_MAP[liveSourceLang] || liveSourceLang || "vi-VN";
+
+      recognition.onresult = async (event: any) => {
+        let finalTranscript = "";
+        let interimTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
         }
-        if (data.success && (data.transcription || data.translation)) {
+
+        if (interimTranscript) {
+          setLiveStatus(`🎙️ Đang nghe: "${interimTranscript}"...`);
+        }
+
+        if (finalTranscript) {
+          setLiveStatus("⚡ Đang dịch câu vừa nghe...");
+          
+          // Dịch câu vừa chốt (final)
+          const translated = await freeGoogleTranslate(finalTranscript, liveSourceLang, liveTargetLang);
+          
           const timestamp = new Date().toLocaleTimeString("vi-VN", {
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit"
           });
+
           setLiveTranscript((prev) => [
             ...prev,
             {
               id: Math.random().toString(),
               time: timestamp,
-              original: data.transcription,
-              translated: data.translation,
-              isDemo: !!data.isDemo
+              original: finalTranscript,
+              translated: translated || "(Dịch thất bại)",
+              isDemo: false
             }
           ]);
           setLiveStatus("🎙️ Vẫn đang tiếp tục lắng nghe...");
-        } else {
-          setLiveStatus("🎙️ Thấy yên lặng. Đang chờ âm thanh tiếp theo...");
         }
-      } catch (err) {
-        console.error("Lỗi parse dữ liệu WS:", err);
-      }
-    };
+      };
 
-    ws.onerror = (err) => {
-      console.error("WS Error:", err);
-      setLiveStatus("⚠️ Mất kết nối WebSocket.");
-      stopLiveTranslation();
-    };
+      recognition.onerror = (err: any) => {
+        console.error("Live Recognition Error:", err);
+        setLiveStatus(`⚠️ Lỗi bắt âm: ${err.error || err.message}. Đang thử lại...`);
+      };
 
-    ws.onclose = () => {
-      console.log("WS Closed");
-    };
+      recognition.onend = () => {
+        // Tự động khởi động lại nếu đang trong phiên live (tránh việc mic bị ngắt khi không có tiếng)
+        if (isLiveTranslating) {
+          try { recognition.start(); } catch(e){}
+        }
+      };
+
+      recognition.start();
+      liveRecognitionRef.current = recognition;
+
+    } catch (e: any) {
+      setLiveStatus("⚠️ Không thể khởi động nhận diện. Lỗi: " + e.message);
+      setIsLiveTranslating(false);
+    }
   };
 
   const stopLiveTranslation = () => {
     setIsLiveTranslating(false);
-    liveLoopActiveRef.current = false;
     setLiveStatus("Đã dừng phiên dịch trực tiếp.");
     
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
-
-    if (liveStreamRef.current) {
-      liveStreamRef.current.getTracks().forEach((track) => track.stop());
-      liveStreamRef.current = null;
-    }
-  };
-
-  const runAudioSlice = async () => {
-    if (!liveLoopActiveRef.current) return;
-
-    try {
-      let stream = liveStreamRef.current;
-      if (!stream || !stream.active) {
-        if (liveInputSource === "mic") {
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        } else {
-          stream = await navigator.mediaDevices.getDisplayMedia({
-            video: { displaySurface: "browser" },
-            audio: true
-          });
-          const audioTracks = stream.getAudioTracks();
-          if (audioTracks.length === 0) {
-            stream.getTracks().forEach((t) => t.stop());
-            setLiveStatus("Thất bại: Hãy tích chọn ô 'Chia sẻ âm thanh' (Share audio) ở góc hộp chia sẻ màn hình.");
-            stopLiveTranslation();
-            return;
-          }
-        }
-        liveStreamRef.current = stream;
-      }
-
-      let mime = "audio/webm";
-      try {
-        if (!MediaRecorder.isTypeSupported("audio/webm")) {
-          mime = "audio/mp4";
-        }
-      } catch {}
-
-      const recorder = new MediaRecorder(stream, { mimeType: mime });
-      const chunks: Blob[] = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) {
-          chunks.push(e.data);
-        }
-      };
-
-      recorder.onstop = async () => {
-        if (chunks.length > 0 && wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-          const audioBlob = new Blob(chunks, { type: mime });
-          
-          // Chuyển blob thành base64
-          const reader = new FileReader();
-          reader.readAsDataURL(audioBlob);
-          reader.onloadend = () => {
-            const base64Str = (reader.result as string).split(",")[1];
-            setLiveStatus("⚡ Đang phân tích biểu ngữ & gửi qua WS...");
-            wsRef.current?.send(JSON.stringify({
-              type: "audio",
-              mimeType: mime,
-              base64Audio: base64Str
-            }));
-          };
-        }
-        // Restart recording sequential slices
-        if (liveLoopActiveRef.current) {
-          setTimeout(runAudioSlice, 50);
-        }
-      };
-
-      recorder.start();
-      setLiveStatus("🎙️ Đang lắng nghe âm thanh (chu kỳ 3 giây)...");
-
-      // Giảm độ trễ: Stop recorder sau 3 giây thay vì 6 giây
-      setTimeout(() => {
-        if (recorder.state === "recording") {
-          recorder.stop();
-        }
-      }, 3000);
-
-    } catch (error: any) {
-      console.error("Live translation error:", error);
-      setLiveStatus(`Không nhận được thiết bị âm thanh: ${error.message}.`);
-      stopLiveTranslation();
+    if (liveRecognitionRef.current) {
+      liveRecognitionRef.current.onend = null; // Tránh tự khởi động lại
+      try { liveRecognitionRef.current.stop(); } catch(e){}
+      liveRecognitionRef.current = null;
     }
   };
 
@@ -402,7 +515,7 @@ export default function AudioSpeechLab() {
                 : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             }`}
           >
-            🎙️ Phân Tích Phương Ngữ & TTS
+            🎙️ Dịch Giọng Nói & TTS Đa Ngôn Ngữ
           </button>
           
           <button
@@ -418,16 +531,16 @@ export default function AudioSpeechLab() {
         </div>
 
         <span className="text-[12px] bg-indigo-100 text-[var(--color-primary-hover)] font-black px-3 py-1.5 rounded-full uppercase tracking-wider border-2 border-indigo-100">
-          {activeLabTab === "dialect" ? "Acoustic Audio Lab" : "Live Captioner"}
+          {activeLabTab === "dialect" ? "Multilingual Audio Lab" : "Live Captioner"}
         </span>
       </div>
 
-      {/* RENDER DIALECT TAB CONTENT — Stitch bento grid layout */}
+      {/* ═══ DIALECT TAB ═══ */}
       {activeLabTab === "dialect" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* ── LEFT: Source Text + Audio Output (Stitch 8 cols) ── */}
+          {/* ── LEFT: Source Text + Audio Output (8 cols) ── */}
           <div className="lg:col-span-8 space-y-6">
-            {/* Source Text Card with glass + ai-glow */}
+            {/* Source Text Card — Multi-language Translation */}
             <div className="bg-white/85 backdrop-blur-md rounded-[16px] p-6 border border-[var(--color-secondary)]/30 shadow-[0_0_18px_rgba(0,108,73,0.10)]">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-[18px] font-semibold text-[var(--color-text-primary)] flex items-center gap-2 font-display">
@@ -435,10 +548,6 @@ export default function AudioSpeechLab() {
                   Source Text — Phòng dịch giọng nói
                 </h3>
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 bg-[var(--color-primary)]/5 text-[var(--color-primary)] rounded text-[11px] font-medium flex items-center gap-1 border border-[var(--color-primary)]/15">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]" />
-                    Vietnamese auto
-                  </span>
                   <button
                     onClick={() => navigator.clipboard.writeText(textToSpeak)}
                     className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors p-1"
@@ -460,22 +569,70 @@ export default function AudioSpeechLab() {
                 value={textToSpeak}
                 onChange={(e) => setTextToSpeak(e.target.value)}
                 className="w-full text-[15px] bg-transparent border-0 focus:ring-0 focus:outline-none resize-none text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)]/60 min-h-[140px] leading-relaxed"
-                placeholder="Nhập văn bản tiếng Việt bất kỳ để tổng hợp giọng nói…"
+                placeholder="Nhập văn bản bất kỳ để dịch hoặc phát giọng nói…"
               />
+
+              {/* Language selection row */}
+              <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[var(--color-border-subtle)]">
+                <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-lg px-2.5 py-1.5">
+                  <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Từ:</span>
+                  <select
+                    value={srcSourceLang}
+                    onChange={(e) => setSrcSourceLang(e.target.value)}
+                    className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
+                  >
+                    {ALL_LANGUAGES.map(l => (
+                      <option key={l.code} value={l.code}>{l.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const temp = srcSourceLang === "auto" ? "vi" : srcSourceLang;
+                    setSrcSourceLang(srcTargetLang);
+                    setSrcTargetLang(temp);
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-[var(--color-neutral-soft)] text-[var(--color-primary)] transition-colors"
+                  title="Hoán đổi ngôn ngữ"
+                >
+                  <ArrowRightLeft size={16} />
+                </button>
+
+                <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-lg px-2.5 py-1.5">
+                  <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Sang:</span>
+                  <select
+                    value={srcTargetLang}
+                    onChange={(e) => setSrcTargetLang(e.target.value)}
+                    className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
+                  >
+                    {TARGET_LANGUAGES.map(l => (
+                      <option key={l.code} value={l.code}>{l.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
               <div className="flex justify-between items-center mt-4 pt-4 border-t border-[var(--color-border-subtle)]">
                 <span className="text-[11px] text-[var(--color-text-secondary)] flex items-center gap-1">
                   <Info size={12} /> {textToSpeak.length} / 5,000 characters
                 </span>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <button
-                    onClick={() => setTextToSpeak("")}
+                    onClick={() => { setTextToSpeak(""); setTranslatedSourceText(""); }}
                     className="bg-[var(--color-surface-container-low)] border border-[var(--color-border-default)] text-[var(--color-text-primary)] text-[13px] font-medium px-3 py-2 rounded-lg hover:bg-[var(--color-surface-container)] transition-colors flex items-center gap-1.5"
                   >
                     <Trash2 size={14} /> Clear
                   </button>
-                  <Button onClick={handleTTSPlay} disabled={isPlayingTts} icon={<Volume2 size={16} />}>
-                    {isPlayingTts ? "Synthesizing…" : "Synthesize"}
+                  <Button
+                    onClick={handleTranslateSourceText}
+                    disabled={isTranslatingText}
+                    icon={<Languages size={16} />}
+                  >
+                    {isTranslatingText ? "Đang dịch…" : "Dịch Văn Bản"}
+                  </Button>
+                  <Button onClick={() => handleTTSPlay()} disabled={isPlayingTts} icon={<Volume2 size={16} />}>
+                    {isPlayingTts ? "Đang phát…" : "Phát TTS"}
                   </Button>
                   {isPlayingTts && (
                     <Button
@@ -492,6 +649,37 @@ export default function AudioSpeechLab() {
                   )}
                 </div>
               </div>
+
+              {/* Translation Result */}
+              {translatedSourceText && (
+                <div className="mt-4 p-4 bg-[var(--color-secondary-container)]/15 rounded-[12px] border border-[var(--color-secondary)]/20 animate-fade-in">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-bold text-[var(--color-secondary)] uppercase tracking-wider flex items-center gap-1.5">
+                      <Languages size={14} />
+                      Bản dịch → {TARGET_LANGUAGES.find(l => l.code === srcTargetLang)?.label || srcTargetLang}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => navigator.clipboard.writeText(translatedSourceText)}
+                        className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors p-1"
+                        title="Copy bản dịch"
+                      >
+                        <Sparkles size={14} />
+                      </button>
+                      <button
+                        onClick={handlePlayTranslatedTTS}
+                        className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors p-1"
+                        title="Phát TTS bản dịch"
+                      >
+                        <Volume2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-[14px] text-[var(--color-text-primary)] leading-relaxed whitespace-pre-wrap">
+                    {translatedSourceText}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Audio Output + Waveform Card */}
@@ -503,6 +691,7 @@ export default function AudioSpeechLab() {
                   Audio Output
                 </h3>
 
+
                 {/* Simulated waveform */}
                 <div className="h-24 bg-[var(--color-surface-container-low)] rounded-lg border border-[var(--color-border-subtle)] flex items-center justify-center gap-1 px-4 mb-5 overflow-hidden">
                   {[8, 16, 12, 20, 10, 14, 24, 18, 12, 8, 20, 14, 22, 10, 16].map((h, i) => (
@@ -512,8 +701,8 @@ export default function AudioSpeechLab() {
                       style={{
                         height: `${h * 3}px`,
                         background: "var(--color-secondary)",
-                        opacity: isPlayingTts ? 0.4 + (i % 5) * 0.12 : 0.25,
-                        animation: isPlayingTts ? `wave 1.2s ease-in-out infinite alternate ${i * 0.08}s` : "none",
+                        opacity: isPlayingTts || isRecording ? 0.4 + (i % 5) * 0.12 : 0.25,
+                        animation: isPlayingTts || isRecording ? `wave 1.2s ease-in-out infinite alternate ${i * 0.08}s` : "none",
                         transformOrigin: "bottom",
                       }}
                     />
@@ -543,10 +732,10 @@ export default function AudioSpeechLab() {
                     )}
                     <div className="flex flex-col">
                       <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">
-                        {isRecording ? `Recording…` : recordedBlobUrl ? "recorded_001.webm" : "Tap mic to record"}
+                        {isRecording ? "Đang ghi âm…" : recordedBlobUrl ? "recorded_001.webm" : "Nhấn để ghi âm"}
                       </span>
                       <span className="text-[11px] text-[var(--color-text-secondary)] font-mono">
-                        {isRecording ? formatTime(recordingSeconds) : recordedBlobUrl ? "ready · 00:0?" : "00:00 / 00:00"}
+                        {isRecording ? formatTime(recordingSeconds) : recordedBlobUrl ? "ready" : "00:00 / 00:00"}
                       </span>
                     </div>
                   </div>
@@ -555,6 +744,73 @@ export default function AudioSpeechLab() {
                     <audio src={recordedBlobUrl} controls className="h-9 max-w-[260px]" />
                   )}
                 </div>
+
+                {/* Audio translation controls */}
+                {recordedBlobUrl && (
+                  <div className="mt-4 pt-4 border-t border-[var(--color-border-subtle)]">
+                    <h4 className="text-[13px] font-bold text-[var(--color-text-primary)] mb-3 flex items-center gap-1.5">
+                      <Languages size={14} className="text-[var(--color-primary)]" />
+                      Dịch âm thanh đã ghi
+                    </h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-lg px-2.5 py-1.5">
+                        <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Từ:</span>
+                        <select
+                          value={audioOutputSourceLang}
+                          onChange={(e) => setAudioOutputSourceLang(e.target.value)}
+                          className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
+                        >
+                          {ALL_LANGUAGES.map(l => (
+                            <option key={l.code} value={l.code}>{l.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <span className="text-[var(--color-text-secondary)]">→</span>
+                      <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-lg px-2.5 py-1.5">
+                        <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Sang:</span>
+                        <select
+                          value={audioOutputTargetLang}
+                          onChange={(e) => setAudioOutputTargetLang(e.target.value)}
+                          className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
+                        >
+                          {TARGET_LANGUAGES.map(l => (
+                            <option key={l.code} value={l.code}>{l.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <Button
+                        onClick={handleTranslateRecordedAudio}
+                        disabled={isTranslatingAudio}
+                        size="sm"
+                        icon={isTranslatingAudio ? <RefreshCw size={14} className="animate-spin" /> : <Languages size={14} />}
+                      >
+                        {isTranslatingAudio ? "Đang dịch…" : "Dịch & Phát TTS"}
+                      </Button>
+                    </div>
+
+                    {/* Translation result */}
+                    {audioTranslationResult && (
+                      <div className="mt-4 p-4 bg-[var(--color-secondary-container)]/15 rounded-[12px] border border-[var(--color-secondary)]/20 animate-fade-in">
+                        <div className="mb-3">
+                          <span className="text-[11px] font-bold text-[var(--color-text-secondary)] uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                            NGÔN NGỮ GỐC:
+                          </span>
+                          <p className="text-[14px] text-[var(--color-text-primary)] leading-relaxed italic">
+                            "{audioTranslationResult.original}"
+                          </p>
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-bold text-[var(--color-secondary)] uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
+                            BẢN DỊCH:
+                          </span>
+                          <p className="text-[14px] text-[var(--color-text-primary)] leading-relaxed font-semibold">
+                            ➟ {audioTranslationResult.translated}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {ttsStatus && (
                   <p className="text-[12px] text-[var(--color-primary)] mt-4 font-medium bg-[var(--color-primary)]/8 border border-[var(--color-primary)]/15 rounded-lg py-2 px-3 animate-pulse">
@@ -577,7 +833,7 @@ export default function AudioSpeechLab() {
             </div>
           </div>
 
-          {/* ── RIGHT: Voice Settings (Stitch 4 cols) ── */}
+          {/* ── RIGHT: Voice Settings (4 cols) ── */}
           <div className="lg:col-span-4 space-y-6 flex flex-col">
             <div className="bg-white border border-[var(--color-border-subtle)] rounded-[16px] p-5 shadow-[var(--shadow-card)]">
               <h3 className="text-[16px] font-semibold text-[var(--color-text-primary)] mb-4 pb-3 border-b border-[var(--color-border-subtle)] font-display">
@@ -587,7 +843,7 @@ export default function AudioSpeechLab() {
               {/* Target Dialect */}
               <div className="mb-4">
                 <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-2">
-                  Target Dialect
+                  Target Dialect (TTS)
                 </label>
                 <div className="relative">
                   <select
@@ -700,82 +956,10 @@ export default function AudioSpeechLab() {
               </div>
             </div>
           </div>
-
-          {/* hidden — legacy block placeholder so JSX siblings parse */}
-          <div className="hidden">
-            <div className="grid grid-cols-3 gap-2">
-              {[].map((reg: any) => (
-                <button key={reg.id}>{reg.label}</button>
-              ))}
-            </div>
-
-            {/* Pitch / speed configuration */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-[11px] font-medium text-[var(--color-text-secondary)]">
-                  <span>Tốc độ đọc:</span>
-                  <span>{ttsSpeed}x</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="1.5"
-                  step="0.1"
-                  value={ttsSpeed}
-                  onChange={(e) => setTtsSpeed(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-[var(--color-neutral-soft)] rounded-lg appearance-none cursor-pointer accent-brand"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between text-[11px] font-medium text-[var(--color-text-secondary)]">
-                  <span>Độ Cao (Pitch):</span>
-                  <span>{ttsPitch}x</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="1.5"
-                  step="0.1"
-                  value={ttsPitch}
-                  onChange={(e) => setTtsPitch(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-[var(--color-neutral-soft)] rounded-lg appearance-none cursor-pointer accent-brand"
-                />
-              </div>
-            </div>
-
-            {/* Action controls */}
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={handleTTSPlay}
-                disabled={isPlayingTts}
-                className="flex-1"
-                icon={<Volume2 size={18} />}
-              >
-                Gửi Phát Âm Giọng Nói
-              </Button>
-              
-              {isPlayingTts && (
-                <Button
-                  variant="danger"
-                  onClick={() => {
-                    if (activeAudioRef.current) activeAudioRef.current.pause();
-                    window.speechSynthesis.cancel();
-                    setIsPlayingTts(false);
-                    setTtsStatus("");
-                  }}
-                  title="Dừng phát"
-                >
-                  <VolumeX size={18} />
-                </Button>
-              )}
-            </div>
-
-          </div>
         </div>
       )}
 
-      {/* RENDER LIVE AUDIO TRANSLATE TAB CONTENT */}
+      {/* ═══ LIVE TRANSLATE TAB ═══ */}
       {activeLabTab === "live-translate" && (
         <Card className="p-6 flex flex-col gap-6">
           
@@ -784,7 +968,7 @@ export default function AudioSpeechLab() {
             <div>
               <h3 className="text-[24px] font-bold text-[var(--color-text-primary)] flex items-center gap-2">
                 <Languages className="text-[var(--color-primary)]" size={24} />
-                Trung Tâm Thuyết Phụ Đề & Dịch Thuật Video Trực Tiếp
+                Trung Tâm Dịch Thuật Video & Audio Trực Tiếp
               </h3>
               <p className="text-[14px] font-bold text-[var(--color-text-secondary)] mt-1">
                 Tự động bắt âm thanh từ Video bạn phát hoặc Microphone để bóc tách lời thoại và hiển thị dịch song ngữ trực quan thời gian thực.
@@ -794,33 +978,15 @@ export default function AudioSpeechLab() {
             {/* Config Panel inline */}
             <div className="flex flex-wrap items-center gap-2.5">
               
-              {/* Select Source Input */}
+              {/* Select Source Input - Removed to simplify, use default mic */}
               <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] px-2.5 py-1">
                 <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Nguồn:</span>
-                <button
-                  type="button"
-                  onClick={() => !isLiveTranslating && setLiveInputSource("mic")}
-                  disabled={isLiveTranslating}
-                  className={`px-2 py-1 text-[10px] font-extrabold rounded-lg transition-all ${
-                    liveInputSource === "mic" ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-                  } disabled:opacity-50`}
-                >
-                  🎤 Mic
-                </button>
-                <button
-                  type="button"
-                  onClick={() => !isLiveTranslating && setLiveInputSource("display")}
-                  disabled={isLiveTranslating}
-                  className={`px-2 py-1 text-[10px] font-extrabold rounded-lg transition-all flex items-center gap-1 ${
-                    liveInputSource === "display" ? "bg-[var(--color-primary)] text-white" : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
-                  } disabled:opacity-50`}
-                  title="Chia sẻ tab trình duyệt hoặc màn hình hệ thống kèm tiếng để dịch trực tiếp"
-                >
-                  <Tv size={10} /> Hệ Thống/Tab
-                </button>
+                <span className="px-2 py-1 text-[10px] font-extrabold rounded-lg bg-[var(--color-primary)] text-white">
+                  🎤 Mic (Web Speech)
+                </span>
               </div>
 
-              {/* Source Lang Selection */}
+              {/* Source Lang Selection — Full 15 languages */}
               <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] px-2.5 py-1">
                 <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Gốc:</span>
                 <select
@@ -829,15 +995,13 @@ export default function AudioSpeechLab() {
                   disabled={isLiveTranslating}
                   className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
                 >
-                  <option value="auto">🌐 Tự Nhiên (Auto)</option>
-                  <option value="en">🇺🇸 Tiếng Anh (English)</option>
-                  <option value="ja">🇯🇵 Tiếng Nhật (Japanese)</option>
-                  <option value="zh">🇨🇳 Tiếng Trung (Chinese)</option>
-                  <option value="vi">🇻🇳 Tiếng Việt (Vietnamese)</option>
+                  {ALL_LANGUAGES.map(l => (
+                    <option key={l.code} value={l.code}>{l.label}</option>
+                  ))}
                 </select>
               </div>
 
-              {/* Target Lang Selection */}
+              {/* Target Lang Selection — Full 15 languages */}
               <div className="flex items-center gap-1.5 bg-[var(--color-neutral-soft)] border border-[var(--color-border-subtle)] rounded-[var(--radius-card)] px-2.5 py-1">
                 <span className="text-[10px] uppercase font-black text-[var(--color-neutral)]">Đích:</span>
                 <select
@@ -846,8 +1010,9 @@ export default function AudioSpeechLab() {
                   disabled={isLiveTranslating}
                   className="bg-transparent border-0 outline-none text-xs text-[var(--color-text-primary)] font-bold"
                 >
-                  <option value="vi">🇻🇳 Tiếng Việt</option>
-                  <option value="en">🇺🇸 Tiếng Anh</option>
+                  {TARGET_LANGUAGES.map(l => (
+                    <option key={l.code} value={l.code}>{l.label}</option>
+                  ))}
                 </select>
               </div>
 
@@ -879,7 +1044,7 @@ export default function AudioSpeechLab() {
                       Live Translating
                     </span>
                     <p className="text-[10px] text-[var(--color-neutral)] max-w-[200px]" style={{ wordBreak: "break-word" }}>
-                      Mô hình Gemini 3.5 đang tự động bắt tiếng, chuyển văn bản gốc và hiển thị bản dịch song ngữ ở bảng bên phải.
+                      Mô hình Gemini đang tự động bắt tiếng, chuyển văn bản gốc và hiển thị bản dịch song ngữ ở bảng bên phải.
                     </p>
                   </div>
                 ) : (
@@ -892,7 +1057,7 @@ export default function AudioSpeechLab() {
                     </button>
                     <span className="text-xs font-black text-[var(--color-text-primary)]">Bắt đầu dịch âm thanh gốc</span>
                     <p className="text-[10px] text-[var(--color-neutral)] max-w-[180px]">
-                      Hệ thống sẽ chạy chu kỳ bắt âm chuẩn hóa 3 giây một lần liên tục để dịch thuật qua WebSocket.
+                      Hệ thống sẽ nghe liên tục qua Microphone và dịch theo thời gian thực (Live).
                     </p>
                   </div>
                 )}
@@ -903,12 +1068,12 @@ export default function AudioSpeechLab() {
               <div className="bg-amber-50/50 rounded-[var(--radius-card)] p-4 text-amber-900 border border-amber-100/40 flex gap-2.5 items-start">
                 <Info size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
                 <div className="text-[11px] leading-relaxed">
-                  <h4 className="font-bold text-amber-800">Hướng dẫn bắt tiếng máy tính:</h4>
-                  <ol className="list-decimal list-inside text-amber-950 mt-1 space-y-1">
-                    <li>Nếu chọn nguồn <strong className="text-amber-800">Hệ thông/Tab</strong>, khi trình duyệt mở hộp thoại chia sẻ màn hình, hãy chọn mục <strong>Tab trình duyệt</strong>.</li>
-                    <li>Tìm tab đang chạy YouTube hoặc bài viết video, rồi tích chọn ô <strong>"Chia sẻ âm thanh"</strong> ở góc cùng để bắt được tiếng video!</li>
-                    <li>Hoặc đơn giản chọn nguồn <strong>Mic</strong> để điện thoại/máy tính bắt tiếng loa phát ra bên ngoài.</li>
-                  </ol>
+                  <h4 className="font-bold text-amber-800">Hướng dẫn Dịch Live Miễn phí:</h4>
+                  <ul className="list-disc list-inside text-amber-950 mt-1 space-y-1">
+                    <li>Hệ thống sử dụng Mic để tự động bắt tiếng theo thời gian thực <strong className="text-amber-700">(Tốn 0 Token)</strong>.</li>
+                    <li>Để dịch video trên YouTube, hãy <strong>mở loa ngoài</strong> để Mic có thể thu được tiếng video.</li>
+                    <li>Hoặc trên Windows, bạn có thể bật <strong>Stereo Mix</strong> và chọn làm Mic mặc định để thu âm thanh hệ thống cực mượt!</li>
+                  </ul>
                 </div>
               </div>
 

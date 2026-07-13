@@ -478,7 +478,8 @@ Video giải thích **neural network** bằng ví dụ nhận diện chữ số 
     setUrlError(null);
     setIsFetchingUrl(true);
 
-    const isYoutube = /youtube\.com|youtu\.be/i.test(fileUrl);
+    const url = fileUrl.trim();
+    const isYoutube = /youtube\.com|youtu\.be/i.test(url);
     const tempId = `link_${Date.now()}`;
     onAddFile({
       id: tempId,
@@ -486,11 +487,13 @@ Video giải thích **neural network** bằng ví dụ nhận diện chữ số 
       size: 0,
       mimeType: isYoutube ? "video/mp4" : "application/pdf",
       status: "processing",
-      sourceUrl: fileUrl.trim(),
+      sourceUrl: url,
     });
+    // Link is now a card in the list → clear the input right away (whatever the outcome).
+    setFileUrl("");
 
     try {
-      await runLinkPipeline(fileUrl.trim(), tempId);
+      await runLinkPipeline(url, tempId);
     } finally {
       setIsFetchingUrl(false);
     }

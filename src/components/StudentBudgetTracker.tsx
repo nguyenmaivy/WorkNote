@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -31,7 +31,8 @@ import {
   Award,
   BookOpen,
   Info,
-  DollarSign
+  DollarSign,
+  StickyNote
 } from "lucide-react";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
@@ -336,12 +337,46 @@ export default function StudentBudgetTracker() {
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(num);
   };
 
+  // ─── Smart Amount Parser ───────────────────────────────────────────────
+  // Supports: 20 → 20,000 | 1k → 1,000 | 10k → 10,000 | 1tr/1triệu → 1,000,000
+  // Numbers >= 1000 are kept as-is (direct VND input)
+  const parseSmartAmount = (input: string): number => {
+    if (!input || !input.trim()) return 0;
+    const cleaned = input.trim().toLowerCase().replace(/,/g, "").replace(/\s+/g, "");
+    
+    // Check for "triệu" or "tr" suffix
+    const trMatch = cleaned.match(/^([\d.]+)\s*(triệu|trieu|tr)$/i);
+    if (trMatch) {
+      return Math.round(parseFloat(trMatch[1]) * 1_000_000);
+    }
+    
+    // Check for "k" suffix
+    const kMatch = cleaned.match(/^([\d.]+)k$/i);
+    if (kMatch) {
+      return Math.round(parseFloat(kMatch[1]) * 1_000);
+    }
+    
+    // Pure number
+    const num = parseFloat(cleaned);
+    if (isNaN(num)) return 0;
+    
+    // If number is less than 1000, multiply by 1000 (smart shorthand)
+    if (num > 0 && num < 1000) {
+      return Math.round(num * 1_000);
+    }
+    
+    return Math.round(num);
+  };
+
+  const parsedAmount = parseSmartAmount(formAmount);
+  const amountPreview = parsedAmount > 0 ? formatVND(parsedAmount) : "";
+
   // --- Action Handlers ---
   const handleAddTransaction = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle.trim()) return;
-    const numAmount = parseFloat(formAmount);
-    if (isNaN(numAmount) || numAmount <= 0) return;
+    const numAmount = parseSmartAmount(formAmount);
+    if (numAmount <= 0) return;
 
     const newTx: Transaction = {
       id: "tx_" + Date.now(),
@@ -1148,6 +1183,7 @@ export default function StudentBudgetTracker() {
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Tên khoản giao dịch</label>
                   <input
+                    id="new-tx-title"
                     type="text"
                     required
                     placeholder={formType === "expense" ? "Ví dụ: Sách song ngữ IELTS, Tiền ăn trưa..." : "Ví dụ: Dạy kèm IELTS, Học bổng HK1..."}
@@ -1160,14 +1196,13 @@ export default function StudentBudgetTracker() {
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)] flex items-center justify-between">
                     <span>Số tiền (VND)</span>
-                    <span className="text-[9px] text-[var(--color-neutral)]">Gợi ý nhanh mệnh giá 🔽</span>
+                    <span className="text-[9px] text-[var(--color-neutral)]">Nhập nhanh: 20 = 20k, 1k, 1tr 🔽</span>
                   </label>
                   <div className="relative">
                     <input
-                      type="number"
+                      type="text"
                       required
-                      min="1"
-                      placeholder="Nhập số tiền..."
+                      placeholder="VD: 20 → 20k | 1k | 1tr | 250000"
                       value={formAmount}
                       onChange={(e) => setFormAmount(e.target.value)}
                       className="p-2 pl-7 w-full border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
@@ -1175,16 +1210,29 @@ export default function StudentBudgetTracker() {
                     <div className="absolute left-2.5 top-2.5 text-[var(--color-neutral)] text-xs font-medium">₫</div>
                   </div>
 
-                  {/* Pricing Preset Buttons (Denominations) */}
+                  {/* Smart amount preview */}
+                  {formAmount && (
+                    <div className={`text-[10px] font-bold mt-0.5 flex items-center gap-1 ${
+                      parsedAmount > 0 ? "text-emerald-600" : "text-rose-500"
+                    }`}>
+                      {parsedAmount > 0 ? (
+                        <><span>✓</span> = {amountPreview}</>
+                      ) : (
+                        <><span>✗</span> Số không hợp lệ</>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Pricing Preset Buttons (Denominations) — now using shorthand */}
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {[10000, 20000, 50000, 100000, 200000, 500000].map((val) => (
+                    {["10", "20", "50", "100", "200", "500", "1tr", "2tr"].map((val) => (
                       <button
                         key={val}
                         type="button"
-                        onClick={() => setFormAmount(val.toString())}
+                        onClick={() => setFormAmount(val)}
                         className="py-1 px-1.5 border border-[var(--color-border-subtle)] rounded-md text-[9px] bg-[var(--color-neutral-soft)] text-[var(--color-text-secondary)] hover:bg-indigo-50 hover:text-[var(--color-primary)] hover:border-indigo-100 transition font-bold"
                       >
-                        {val >= 1000 ? `${val / 1000}k` : val}
+                        {val.includes("tr") ? val : val + "k"}
                       </button>
                     ))}
                   </div>
@@ -1248,14 +1296,21 @@ export default function StudentBudgetTracker() {
 
               {/* Notes */}
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)]">Ghi chú nhanh (Tùy chọn)</label>
-                <input
-                  type="text"
-                  placeholder="Thêm mô tả về nhà sách, địa điểm hoặc hình thức chuyển khoản..."
-                  value={formNotes}
-                  onChange={(e) => setFormNotes(e.target.value)}
-                  className="p-2 border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
-                />
+                <label className="text-[10px] uppercase font-bold text-[var(--color-neutral)] flex items-center gap-1">
+                  <StickyNote size={11} className="text-[var(--color-primary)]" />
+                  Ghi chú nhanh (Tùy chọn)
+                </label>
+                <div className="relative">
+                  <input
+                    id="new-tx-notes"
+                    type="text"
+                    placeholder="Thêm mô tả về nhà sách, địa điểm hoặc hình thức chuyển khoản..."
+                    value={formNotes}
+                    onChange={(e) => setFormNotes(e.target.value)}
+                    className="p-2 pl-7 w-full border border-[var(--color-border-subtle)] rounded-lg text-xs outline-none focus:border-[var(--color-primary)]"
+                  />
+                  <div className="absolute left-2.5 top-2.5 text-[var(--color-neutral)]"><StickyNote size={12} /></div>
+                </div>
               </div>
 
               {/* Submit Button */}
@@ -1602,8 +1657,17 @@ export default function StudentBudgetTracker() {
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center group pointer-events-none">
         <button
           onClick={() => {
-            const form = document.getElementById("budget-tracker-root")?.querySelector("input[name='new-tx-title']") as HTMLInputElement | null;
-            form?.focus();
+            const formContainer = document.getElementById("budget-tracker-root");
+            const noteInput = document.getElementById("new-tx-notes") as HTMLInputElement | null;
+            
+            if (formContainer) {
+              const y = formContainer.getBoundingClientRect().top + window.scrollY - 80;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+            
+            setTimeout(() => {
+              noteInput?.focus();
+            }, 200);
           }}
           className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-xl border-4 border-white bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition-all hover:scale-110 active:scale-95 pointer-events-auto"
           title="Ghi chép giao dịch mới"

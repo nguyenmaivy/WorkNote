@@ -92,6 +92,15 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: "ko", label: "Korean" },
   { code: "zh", label: "Chinese" },
   { code: "fr", label: "French" },
+  { code: "de", label: "German" },
+  { code: "es", label: "Spanish" },
+  { code: "ru", label: "Russian" },
+  { code: "it", label: "Italian" },
+  { code: "pt", label: "Portuguese" },
+  { code: "th", label: "Thai" },
+  { code: "id", label: "Indonesian" },
+  { code: "ar", label: "Arabic" },
+  { code: "hi", label: "Hindi" },
 ];
 
 /**

@@ -176,6 +176,96 @@ button {
 }
 .animate-mascot-float { animation: mascot-float 3.6s ease-in-out infinite; }
 
+/* ── Slide-up (used by quiz cards & reveal panels) ──────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slide-up 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ── Treasure reward pop (chest open toast) ─────────────────── */
+@keyframes reward-pop {
+  0%   { opacity: 0; transform: translate(-50%, -14px) scale(0.85); }
+  55%  { opacity: 1; transform: translate(-50%, 4px) scale(1.04); }
+  70%  { transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+.animate-reward-pop { animation: reward-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ── Game lobby: slow float, glow pulse, sheen sweep, grid drift ── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.animate-float-slow { animation: float-slow 4.2s ease-in-out infinite; }
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+.animate-glow-pulse { animation: glow-pulse 2.6s ease-in-out infinite; }
+
+@keyframes lobby-sheen {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  60%, 100% { transform: translateX(260%) skewX(-18deg); }
+}
+.lobby-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 35%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: lobby-sheen 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 36px 36px; }
+}
+.lobby-grid-drift { animation: grid-drift 6s linear infinite; }
+
+/* ── Level-complete celebration: confetti rain + trophy pop ── */
+@keyframes confetti-fall {
+  0%   { transform: translateY(-24px) rotate(0deg); opacity: 0; }
+  12%  { opacity: 1; }
+  100% { transform: translateY(240px) rotate(560deg); opacity: 0; }
+}
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  animation: confetti-fall var(--dur, 2.6s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop-in { animation: pop-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes trophy-bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-6px) rotate(3deg); }
+}
+.animate-trophy-bob { animation: trophy-bob 2.4s ease-in-out infinite; }
+
+/* ── Lobby chat "typing" indicator dots ── */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  animation: typing-bounce 1s ease-in-out infinite;
+}
+
 @keyframes xp-shimmer {
   0%   { transform: translateX(-120%); }
   100% { transform: translateX(320%); }
@@ -195,12 +285,118 @@ button {
   outline-offset: 2px;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   MIND MAP — Animations & Utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Node enter animation */
+@keyframes mm-node-enter {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.mm-node-enter { animation: mm-node-enter 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Node selection pulse */
+@keyframes mm-select-ring {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(70, 72, 212, 0.5); }
+  50%      { box-shadow: 0 0 0 4px rgba(70, 72, 212, 0.25); }
+}
+.mm-selected { animation: mm-select-ring 1.6s ease-in-out infinite; }
+
+/* SVG path draw animation */
+@keyframes mm-path-draw {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+.mm-path-animate {
+  stroke-dasharray: 300;
+  animation: mm-path-draw 0.6s ease-out forwards;
+}
+
+/* Connector hover glow */
+.mm-path-glow {
+  filter: drop-shadow(0 0 3px currentColor);
+  transition: filter 0.2s;
+}
+
+/* Minimap viewport indicator */
+@keyframes mm-minimap-pulse {
+  0%, 100% { border-color: rgba(70, 72, 212, 0.5); }
+  50%      { border-color: rgba(70, 72, 212, 0.8); }
+}
+.mm-minimap-viewport {
+  animation: mm-minimap-pulse 2s ease-in-out infinite;
+}
+
+/* Canvas cursor states */
+.mm-canvas-default { cursor: default; }
+.mm-canvas-grab { cursor: grab; }
+.mm-canvas-grabbing { cursor: grabbing !important; }
+
+/* Dragged node ghost */
+.mm-node-dragging {
+  opacity: 0.6;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 8px 32px rgba(26, 28, 28, 0.18) !important;
+}
+
+/* Drop target highlight */
+@keyframes mm-drop-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4); }
+  50%      { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.7); }
+}
+.mm-drop-target {
+  animation: mm-drop-pulse 0.8s ease-in-out infinite;
+}
+
+/* Search match highlight */
+.mm-search-match {
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.6) !important;
+}
+
+/* Context menu entrance */
+@keyframes mm-ctx-enter {
+  from { opacity: 0; transform: scale(0.92) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.mm-ctx-menu {
+  animation: mm-ctx-enter 0.15s ease-out both;
+}
+
+/* Layout transition */
+.mm-layout-transition {
+  transition: left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              top 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.3s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dropzone-active,
   .animate-bounce-soft,
   .animate-mascot-float,
   .animate-fade-in,
-  .xp-shimmer::after {
+  .animate-slide-up,
+  .animate-reward-pop,
+  .animate-float-slow,
+  .animate-glow-pulse,
+  .lobby-grid-drift,
+  .confetti-piece,
+  .animate-pop-in,
+  .animate-trophy-bob,
+  .typing-dot,
+  .xp-shimmer::after,
+  .lobby-sheen::after,
+  .mm-node-enter,
+  .mm-selected,
+  .mm-path-animate,
+  .mm-minimap-viewport,
+  .mm-drop-target,
+  .mm-ctx-menu,
+  .mm-layout-transition {
     animation: none !important;
+    transition: none !important;
   }
 }
+

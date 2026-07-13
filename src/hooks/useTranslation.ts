@@ -35,8 +35,15 @@ export function useTranslation(activeFile: UploadedFile | null) {
     setTranslationError(null);
 
     try {
-      const data = await apiClient.translate(textToTranslate, translateTargetLang);
-      setTranslatedText(data.translatedText);
+      // Dịch miễn phí (không tốn token/quota Gemini), giữ cấu trúc dòng của tài liệu.
+      const data = await apiClient.freeTranslate(textToTranslate, translateTargetLang, {
+        maxChars: 20000,
+        granularity: "line",
+      });
+      const result =
+        data.translatedText ?? (data.segments || []).map((s) => s.dst).join(" ");
+      if (!result) throw new Error("Không nhận được kết quả dịch.");
+      setTranslatedText(result);
     } catch (err: any) {
       console.error(err);
       setTranslationError(err.message || "Không thể thực hiện dịch đa ngôn ngữ.");

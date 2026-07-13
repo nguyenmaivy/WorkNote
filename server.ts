@@ -16,6 +16,8 @@ import ttsReadRouter from "./server/routes/ttsRead.js";
 import translateRouter from "./server/routes/translate.js";
 import translateAudioRouter from "./server/routes/translateAudio.js";
 import subtitleTranslateRouter from "./server/routes/subtitleTranslate.js";
+import youtubeTranscriptRouter from "./server/routes/youtubeTranscript.js";
+import transcribeRouter from "./server/routes/transcribe.js";
 
 dotenv.config();
 
@@ -35,6 +37,7 @@ app.use("/api/", apiLimiter);
 app.use("/api/process-file", heavyAiLimiter);
 app.use("/api/process-link", heavyAiLimiter);
 app.use("/api/translate-live-audio", heavyAiLimiter);
+app.use("/api/transcribe", heavyAiLimiter);
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use("/api/process-file", processFileRouter);
@@ -45,6 +48,8 @@ app.use("/api/tts-read", ttsReadRouter);
 app.use("/api/translate", translateRouter);
 app.use("/api/translate-live-audio", translateAudioRouter);
 app.use("/api/subtitle-translate", subtitleTranslateRouter); // free, no-Gemini subtitle MT
+app.use("/api/youtube-transcript", youtubeTranscriptRouter); // real timed captions (no Gemini)
+app.use("/api/transcribe", transcribeRouter); // Gemini timestamped transcription (uploaded media)
 
 import http from "http";
 import { initializeWebSockets } from "./server/websockets/index.js";

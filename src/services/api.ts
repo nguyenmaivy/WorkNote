@@ -109,12 +109,27 @@ export const apiClient = {
   },
 
   /**
-   * Dịch văn bản sang ngôn ngữ đích.
+   * Dịch văn bản sang ngôn ngữ đích (Gemini — chất lượng cao, tốn token/quota).
    */
   async translate(text: string, targetLang: string): Promise<TranslateResponse> {
     return request<TranslateResponse>("/api/translate", {
       method: "POST",
       body: JSON.stringify({ text, targetLang }),
+    });
+  },
+
+  /**
+   * Dịch MIỄN PHÍ (Google translate gtx) — không tốn token/quota Gemini.
+   * granularity "line" giữ cấu trúc tài liệu; "sentence" trả cặp câu cho phụ đề.
+   */
+  async freeTranslate(
+    text: string,
+    targetLang: string,
+    opts?: { maxChars?: number; granularity?: "sentence" | "line" }
+  ): Promise<{ success: boolean; translatedText?: string; segments?: { src: string; dst: string }[] }> {
+    return request("/api/subtitle-translate", {
+      method: "POST",
+      body: JSON.stringify({ text, targetLang, ...opts }),
     });
   },
 

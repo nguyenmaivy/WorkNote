@@ -168,3 +168,15 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
     *   Chuyển đổi sang `lint-staged.config.js` sử dụng cú pháp function `() => 'tsc --noEmit'`. Cú pháp này hướng dẫn `lint-staged` chạy kiểm tra toàn diện TypeScript theo đúng chuẩn `tsconfig.json` mà không truyền tham số file lẻ.
     *   Kiểm tra `npx lint-staged`: Tiến trình chạy mượt mà, exit code 0, toàn bộ 24 file `.ts/.tsx` đều vượt qua lint.
     *   Tạo commit thành công (`commit 77e093f4`): Toàn bộ 57 files được đóng gói sạch sẽ, Husky pre-commit hook thông qua hoàn toàn, không có bất kỳ file nhạy cảm hay rác nào của `.venv`, `tmp-spec-kitty`, hay `node_modules` bị lọt vào Git. Sẵn sàng đẩy lên remote (`git push origin main`).
+
+---
+
+## 14. Giải thích hiện tượng Nhánh Local và Remote (`dev` chưa xuất hiện trên GitHub)
+*   **Câu hỏi từ học viên**: Local có 3 nhánh `main`, `dev`, `frontend` nhưng trên web GitHub chỉ thấy 2 nhánh `main` và `frontend`.
+*   **Giải thích kỹ thuật**:
+    *   Trong Git, khi tạo một nhánh ở máy cá nhân (Local) bằng lệnh `git branch dev` hoặc `git checkout -b dev`, nhánh đó hoàn toàn chỉ tồn tại trên ổ cứng máy tính cá nhân.
+    *   GitHub (Remote) không tự động đồng bộ nhánh mới tạo nếu chưa từng có lệnh đẩy nhánh đó lên (`git push -u origin dev`).
+    *   Kiểm tra lệnh `git branch -a` cho thấy:
+        *   Local: `main`, `dev`, `frontend`.
+        *   Remote (`remotes/origin/*`): chỉ có `origin/main` và `origin/frontend`.
+*   **Hướng xử lý**: Chỉ cần thực hiện lệnh `git push -u origin dev` một lần duy nhất, nhánh `dev` sẽ được tạo và xuất hiện ngay trên giao diện web GitHub.

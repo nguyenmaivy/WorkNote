@@ -167,4 +167,4 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
 *   **Giải pháp đã xử lý**:
     *   Chuyển đổi sang `lint-staged.config.js` sử dụng cú pháp function `() => 'tsc --noEmit'`. Cú pháp này hướng dẫn `lint-staged` chạy kiểm tra toàn diện TypeScript theo đúng chuẩn `tsconfig.json` mà không truyền tham số file lẻ.
     *   Kiểm tra `npx lint-staged`: Tiến trình chạy mượt mà, exit code 0, toàn bộ 24 file `.ts/.tsx` đều vượt qua lint.
-    *   Cập nhật vùng staging sẵn sàng cho lệnh `git commit`.
+    *   Tạo commit thành công (`commit 77e093f4`): Toàn bộ 57 files được đóng gói sạch sẽ, Husky pre-commit hook thông qua hoàn toàn, không có bất kỳ file nhạy cảm hay rác nào của `.venv`, `tmp-spec-kitty`, hay `node_modules` bị lọt vào Git. Sẵn sàng đẩy lên remote (`git push origin main`).

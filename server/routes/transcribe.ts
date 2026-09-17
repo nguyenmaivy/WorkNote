@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Type } from "@google/genai";
-import { GEMINI_MODEL, MAX_FILE_SIZE_BYTES } from "../config.js";
+import { GEMINI_MODEL, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "../config.js";
 import { getAiClient, hasApiKey, geminiLimiter, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 import { normalizeMimeType, looseParseJson } from "../services/fileService.js";
 
@@ -37,11 +37,11 @@ router.post("/", async (req, res): Promise<any> => {
     if (!hasApiKey()) {
       return res.status(400).json({ error: "Cần cấu hình GEMINI_API_KEY để phiên âm bằng AI." });
     }
-    // Inline payload limit (~20MB). Bigger files should be sent as MP3/audio.
+    // Inline payload limit. Bigger files should be sent as MP3/audio.
     const approxBytes = Math.floor(base64Data.length * 0.75);
     if (approxBytes > MAX_FILE_SIZE_BYTES) {
       return res.status(400).json({
-        error: "File quá lớn để phiên âm AI (tối đa ~20MB). Hãy thử trích xuất audio (MP3) hoặc cắt ngắn video.",
+        error: `File quá lớn để phiên âm AI (tối đa ~${MAX_FILE_SIZE_LABEL}). Hãy thử trích xuất audio (MP3) hoặc cắt ngắn video.`,
       });
     }
 

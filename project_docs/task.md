@@ -27,3 +27,15 @@
 - [x] `npm run lint` — TypeScript pass, zero errors ✅
 - [x] `npm run dev` — Server khởi động thành công ✅
 - [x] Manual test: tất cả 7 tabs hoạt động bình thường ✅
+
+## AI Multi-Model & Privacy Engine (Hugging Face + Local AI)
+- [x] `project_docs/huggingface_integration_architecture_plan.md` — Kế hoạch kiến trúc toàn diện
+- [x] Đội 2 (The Librarian): `server/python/librarian_embed.py` — Python embedding worker (Hugging Face `paraphrase-multilingual-MiniLM-L12-v2`)
+- [x] Đội 2 (The Librarian): `server/services/embedService.ts` — Tích hợp `searchSourcesSemantic` với fallback an toàn
+- [x] Đội 2 (The Librarian): `server/routes/notebook.ts` — Nâng cấp retrieval ngữ nghĩa trong NotebookLM chat
+- [x] Đội 2 (The Librarian): `server/tests/embedServiceSemantic.test.ts` — Unit test ngữ nghĩa
+- [x] Đội 1 (The Sentry): `server/services/piiGuardService.ts` — Bóc tách & ẩn danh thông tin cá nhân (CCCD, SĐT, Email, STK, Tên)
+- [x] Đội 1 (The Sentry): `server/routes/privacy.ts` — API endpoints `/api/privacy/anonymize` & `/api/privacy/restore`
+- [x] Đội 1 (The Sentry): `server/tests/piiGuard.test.ts` — Unit test bảo mật dữ liệu cá nhân
+- [x] `server.ts` — Mount route `/api/privacy`
+- [x] Chạy kiểm thử toàn diện: 15/15 tests pass ✅

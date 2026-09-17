@@ -6,6 +6,7 @@ import {
   Mic,
   BookOpen,
   PiggyBank,
+  Notebook,
 } from "lucide-react";
 import type { TabId, AccentRegion } from "../types";
 import type { LucideIcon } from "lucide-react";
@@ -40,6 +41,13 @@ export const TABS: TabConfig[] = [
     icon: MessageSquare,
     desc: "Chat with AI grounded in your active document — ask questions, summarize, translate, on demand.",
     fullBleed: true,
+  },
+  {
+    id: "notebook",
+    label: "NotebookLM",
+    pageTitle: "NotebookLM Workspace",
+    icon: Notebook,
+    desc: "Tạo notebook học tập, đính kèm nguồn tài liệu, chat ngữ cảnh và tạo tóm tắt/quiz từ nội dung của bạn.",
   },
   {
     id: "mindmap",

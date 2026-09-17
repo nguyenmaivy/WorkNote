@@ -749,7 +749,7 @@ export default function AiVideoLab({ file }: AiVideoLabProps) {
                     {transcribing ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
                     {transcribing ? "Đang phiên âm…" : "🎙️ Tạo phụ đề bằng AI"}
                   </button>
-                  <span className="text-[11px] text-[var(--color-text-secondary)]">dùng Gemini (tốn token) · tối đa ~20MB</span>
+                  <span className="text-[11px] text-[var(--color-text-secondary)]">dùng Gemini (tốn token) · tối đa ~50MB</span>
                 </div>
               )}
               {transcribeErr && <span className="text-[11px] text-[var(--color-error)] pl-6">{transcribeErr}</span>}

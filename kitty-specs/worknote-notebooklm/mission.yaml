@@ -1,0 +1,111 @@
+mission:
+  name: worknote-notebooklm
+  version: "1.0.0"
+  description: "Spec-Kitty mission for upgrading WorkNote into a NotebookLM-style learning workspace."
+
+initial: discovery
+
+states:
+  - name: discovery
+    display_name: "Discovery"
+  - name: specify
+    display_name: "Specification"
+    on_enter: [on_enter_state]
+  - name: plan
+    display_name: "Planning"
+    on_enter: [on_enter_state]
+  - name: implement
+    display_name: "Implementation"
+    on_enter: [on_enter_state]
+  - name: review
+    display_name: "Review"
+    on_enter: [on_enter_state]
+  - name: done
+    display_name: "Done"
+    on_enter: [on_enter_state]
+
+transitions:
+  - trigger: advance
+    source: discovery
+    dest: specify
+  - trigger: advance
+    source: specify
+    dest: plan
+    conditions:
+      - 'artifact_exists("spec.md")'
+  - trigger: advance
+    source: plan
+    dest: implement
+    conditions:
+      - 'artifact_exists("plan.md")'
+      - 'artifact_exists("tasks.md")'
+  - trigger: advance
+    source: implement
+    dest: review
+    conditions:
+      - 'artifact_exists("tasks.md")'
+  - trigger: advance
+    source: review
+    dest: done
+    conditions:
+      - 'artifact_exists("tasks.md")'
+  - trigger: rework
+    source: review
+    dest: implement
+
+outputs:
+  - name: spec
+    type: artifact
+    path: spec.md
+  - name: plan
+    type: artifact
+    path: plan.md
+  - name: tasks
+    type: artifact
+    path: tasks.md
+
+workflow:
+  phases:
+    - name: discovery
+      description: "Clarify user needs and product fit."
+    - name: specify
+      description: "Capture requirements, user stories, acceptance criteria."
+    - name: plan
+      description: "Design architecture, data model, and task breakdown."
+    - name: implement
+      description: "Build code, APIs, UI, and tests."
+    - name: review
+      description: "Validate implementation and polish the deliverable."
+
+artifacts:
+  required:
+    - spec.md
+    - plan.md
+    - tasks.md
+
+validation:
+  checks:
+    - spec_exists
+    - plan_exists
+    - tasks_exists
+
+agent_context: |
+  You are helping turn the WorkNote React/Express project into a NotebookLM-style learning workspace.
+  Focus on creating a clean specification, an implementation plan, and a task breakdown that can be executed in work packages.
+
+  The mission should support:
+  - notebook/project management for learning sources,
+  - source ingestion and context-aware chat,
+  - AI-assisted summaries, mindmaps, and quiz generation,
+  - a frontend notebook-style UI,
+  - backend API structure and search support.
+
+task_metadata:
+  required:
+    - task_id
+    - phase
+    - priority
+    - owner
+  optional:
+    - dependencies
+    - estimated_hours

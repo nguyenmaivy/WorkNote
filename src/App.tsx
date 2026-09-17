@@ -14,6 +14,7 @@ import EduGamePlayground from "./components/EduGamePlayground";
 import AudioSpeechLab from "./components/AudioSpeechLab";
 import FullstackKnowledgeBase from "./components/FullstackKnowledgeBase";
 import StudentBudgetTracker from "./components/StudentBudgetTracker";
+import NotebookWorkspace from "./components/NotebookWorkspace";
 import AiVideoLab, { isVideoFile } from "./components/AiVideoLab";
 import UserProfileSettings, { getUserProfile, type UserProfile } from "./components/UserProfileSettings";
 
@@ -344,6 +345,12 @@ export default function App() {
               {currentTab === "budget" && (
                 <ErrorBoundary label="Spending Diary">
                   <StudentBudgetTracker />
+                </ErrorBoundary>
+              )}
+
+              {currentTab === "notebook" && (
+                <ErrorBoundary label="NotebookLM">
+                  <NotebookWorkspace />
                 </ErrorBoundary>
               )}
             </motion.div>

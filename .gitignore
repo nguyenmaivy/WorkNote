@@ -1,4 +1,6 @@
 node_modules/
+.venv/
+tmp-spec-kitty/
 build/
 dist/
 coverage/

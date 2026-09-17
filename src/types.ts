@@ -110,6 +110,90 @@ export interface LiveAudioTranslateResponse {
 
 export type AccentRegion = "north" | "central" | "south";
 
-export type TabId = "upload" | "chat" | "mindmap" | "game" | "audiolab" | "knowledge" | "budget";
+export type TabId =
+  | "upload"
+  | "chat"
+  | "mindmap"
+  | "game"
+  | "audiolab"
+  | "knowledge"
+  | "budget"
+  | "notebook";
+
+// ─── NotebookLM Data Model (WP01) ───────────────────────────────────────────
+
+export type NotebookSourceType = "document" | "url" | "transcript" | "youtube" | "text";
+
+export interface NotebookSource {
+  id: string;
+  type: NotebookSourceType;
+  title: string;
+  content: string;
+  origin?: string;
+  tokenCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotebookPage {
+  id: string;
+  title: string;
+  content: string;
+  sourceIds: string[];
+  metadata?: Record<string, string>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotebookSearchSnippet {
+  sourceId: string;
+  title: string;
+  snippet: string;
+  score: number;
+}
+
+export interface NotebookChatResponse {
+  success: boolean;
+  reply: string;
+  snippets?: NotebookSearchSnippet[];
+  isDemo?: boolean;
+}
+
+export interface NotebookSummaryResponse {
+  success: boolean;
+  summary: string;
+  isDemo?: boolean;
+}
+
+export interface NotebookQuizResponse {
+  success: boolean;
+  quiz: QuizQuestion[];
+  isDemo?: boolean;
+}
+
+export interface NotebookPagesResponse {
+  success: boolean;
+  pages: NotebookPage[];
+}
+
+export interface NotebookPageResponse {
+  success: boolean;
+  page: NotebookPage;
+}
+
+export interface NotebookSourcesResponse {
+  success: boolean;
+  sources: NotebookSource[];
+}
+
+export interface NotebookSourceResponse {
+  success: boolean;
+  source: NotebookSource;
+}
+
+export interface NotebookSearchResponse {
+  success: boolean;
+  snippets: NotebookSearchSnippet[];
+}
 
 export type TranslateSourceField = "summary" | "extractedText";

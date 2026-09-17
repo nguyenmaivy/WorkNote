@@ -3,6 +3,19 @@
 
 @import "tailwindcss";
 
+/* SimpleMindMap container reset — required by library docs */
+.smm-mind-map-host,
+.smm-mind-map-host * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.smm-mind-map-host {
+  background-image: radial-gradient(circle at 1px 1px, #e0e3e5 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
 @theme {
   /* ── Stitch DESIGN.md fonts ─────────────────────────────── */
   --font-sans: "DM Sans", system-ui, sans-serif;        /* body, label */

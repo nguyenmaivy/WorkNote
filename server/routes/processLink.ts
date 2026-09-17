@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { GEMINI_MODEL, MAX_FILE_SIZE_BYTES } from "../config.js";
+import { GEMINI_MODEL, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_LABEL } from "../config.js";
 import { getAiClient, geminiLimiter, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 import {
   getSafeGeminiPayload,
@@ -98,7 +98,7 @@ router.post("/", async (req, res): Promise<any> => {
 
     const contentLength = resFetch.headers.get("content-length");
     if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE_BYTES) {
-      return res.status(400).json({ error: "Tệp tin liên kết quá lớn (tối đa 20MB)." });
+      return res.status(400).json({ error: `Tệp tin liên kết quá lớn (tối đa ${MAX_FILE_SIZE_LABEL}).` });
     }
 
     const mimeType = resFetch.headers.get("content-type") || "application/octet-stream";
@@ -113,7 +113,7 @@ router.post("/", async (req, res): Promise<any> => {
     const arrayBuffer = await resFetch.arrayBuffer();
 
     if (arrayBuffer.byteLength > MAX_FILE_SIZE_BYTES) {
-      return res.status(400).json({ error: "Tệp tin tải về vượt quá giới hạn 20MB." });
+      return res.status(400).json({ error: `Tệp tin tải về vượt quá giới hạn ${MAX_FILE_SIZE_LABEL}.` });
     }
 
     const buffer = Buffer.from(arrayBuffer);

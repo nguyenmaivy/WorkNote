@@ -25,6 +25,10 @@ VietLearn AI Lab là một ứng dụng hỗ trợ học tập thông minh toàn
    * Cung cấp giáo trình phân tích giải đáp nhanh cho 8 chuyên đề công nghệ cốt lõi.
 7. **Sổ chi tiêu Sinh viên**:
    * Công cụ quản lý tài chính cá nhân, tính toán quỹ tiết kiệm học tập trực quan.
+8. **NotebookLM Workspace**:
+   * Tạo trang ghi chú học tập, đính kèm nguồn tài liệu (upload, URL, YouTube).
+   * Chat ngữ cảnh dựa trên ghi chú và nguồn đã index.
+   * Tạo tóm tắt AI và quiz ôn tập từ nội dung notebook.
 
 ---
 
@@ -44,7 +48,7 @@ Hệ thống đã được thiết kế lại và tối ưu hóa để phục v�
   * Giúp hệ thống hoạt động ổn định, tránh hoàn toàn lỗi sập hạn ngạch API (`429 Too Many Requests`) khi nhiều người dùng cùng nhấn phân tích tài liệu.
 * **Bảo vệ kết nối tải URL trực tuyến**:
   * Áp dụng `AbortController` giới hạn thời gian tải tối đa **15 giây** (Timeout) tránh treo socket máy chủ.
-  * Giới hạn kích thước file tải về từ liên kết tối đa **20MB** để ngăn ngừa tràn bộ nhớ RAM (OOM).
+  * Giới hạn kích thước file tải về từ liên kết tối đa **50MB** mặc định (có thể chỉnh bằng `MAX_FILE_SIZE_MB`) để ngăn ngừa tràn bộ nhớ RAM (OOM).
 
 ---
 
@@ -65,6 +69,7 @@ Hệ thống đã được thiết kế lại và tối ưu hóa để phục v�
    * Điền khóa API của bạn vào:
      ```env
      GEMINI_API_KEY=your_gemini_api_key_here
+     MAX_FILE_SIZE_MB=50
      ```
 
 3. **Chạy ứng dụng ở chế độ Phát triển (Development)**:
@@ -91,13 +96,28 @@ Hệ thống đã được thiết kế lại và tối ưu hóa để phục v�
    pm2 start dist/server.cjs -i max --name "vietlearn-ai-lab"
    ```
 
+## 🧪 Luồng kiểm tra chất lượng và hook tiền commit
+
+* Dự án sử dụng `husky` và `lint-staged` để chạy kiểm tra chất lượng trước khi commit.
+* Sau khi cài đặt, kích hoạt hook lần đầu bằng:
+  ```bash
+  npm run prepare
+  ```
+* Pre-commit hook sẽ chạy `npx lint-staged`, và `lint-staged` hiện được cấu hình để chạy:
+  * `npm run lint` trên các tệp `*.ts` và `*.tsx`
+* Để kiểm tra thủ công, dùng:
+  ```bash
+  npm run lint
+  npm test
+  ```
+
 ---
 
 ## 📂 Cấu trúc dự án chính
 
 * `server.ts`: Máy chủ Express tích hợp Vite middleware, xử lý API Rate Limiting, Multer Upload, và tích hợp bộ điều phối Gemini API.
 * `src/`: Cơ sở mã nguồn Frontend viết bằng React + TypeScript + TailwindCSS.
-  * `components/`: Chứa các phân khu tính năng UI biệt lập (Upload, Chatbot, Mindmap, RPG Game, Audio Lab, Budget).
+  * `components/`: Chứa các phân khu tính năng UI biệt lập (Upload, Chatbot, Mindmap, RPG Game, Audio Lab, Budget, NotebookLM).
   * `data/`: Dữ liệu bài học công nghệ tĩnh.
   * `types.ts`: Định nghĩa các kiểu dữ liệu dùng chung trong hệ thống.
-* `dist/`: Thư mục chứa mã nguồn đã biên dịch sẵn sàng triển khai.
+* `kitty-specs/worknote-notebooklm/`: Spec-Kitty mission cho nâng cấp NotebookLM (spec, plan, tasks WP01–WP10).

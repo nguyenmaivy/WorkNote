@@ -1,4 +1,7 @@
 import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // ─── Server ───────────────────────────────────────────────────────────────────
 export const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
@@ -9,7 +12,13 @@ export const GEMINI_TTS_MODEL = "gemini-3.1-flash-tts-preview";
 
 // ─── File Upload ──────────────────────────────────────────────────────────────
 export const UPLOAD_DIR = path.join(process.cwd(), "uploads");
-export const MAX_FILE_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
+const parsedMaxFileSizeMb = Number(process.env.MAX_FILE_SIZE_MB);
+export const MAX_FILE_SIZE_MB =
+  Number.isFinite(parsedMaxFileSizeMb) && parsedMaxFileSizeMb > 0
+    ? parsedMaxFileSizeMb
+    : 50; // default 50 MB
+export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+export const MAX_FILE_SIZE_LABEL = `${MAX_FILE_SIZE_MB}MB`;
 
 // ─── Concurrency ──────────────────────────────────────────────────────────────
 export const MAX_GEMINI_CONCURRENT = 3;

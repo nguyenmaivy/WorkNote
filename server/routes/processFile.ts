@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { UPLOAD_DIR, GEMINI_MODEL } from "../config.js";
+import { UPLOAD_DIR, GEMINI_MODEL, MAX_FILE_SIZE_BYTES } from "../config.js";
 import { getAiClient, geminiLimiter, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
 import {
   getSafeGeminiPayload,
@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
+  limits: { fileSize: MAX_FILE_SIZE_BYTES },
 });
 
 // ─── Demo Mock Data ───────────────────────────────────────────────────────────

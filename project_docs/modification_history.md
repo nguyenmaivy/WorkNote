@@ -1,3 +1,19 @@
+# Cập nhật 03/10/2026 — Giai đoạn 6 CI
+
+- GitHub Actions có frozen install, lint/types, 27 backend + 3 FE tests, build/smoke, secret scan và dependency audit. [Bằng chứng](phase6_ci.md).
+- Chuẩn hóa Node/pnpm/lockfile, PR template, CONTRIBUTING, Dependabot; tách integration AI cần Python/model.
+- Mở draft PR cho snapshot hiện tại; CD để sau. Branch protection chờ chủ dự án chọn chính sách.
+
+# Cập nhật 03/10/2026 — Tài liệu portfolio và demo thực tế
+
+- Viết lại README và PRD theo luồng tài liệu → hỏi đáp → ôn tập; hướng dẫn demo/local/cloud và production với `NODE_ENV` đúng.
+- Thêm mục lục, kiến trúc, hướng dẫn ảnh, file mẫu và script Playwright chụp giao diện thật.
+- Roadmap có ưu tiên và tiêu chí; các mốc refactor trước đây được giữ dưới dạng lịch sử.
+- TypeScript, 29 tests, build và app local đã chạy; giới hạn embedding fallback, bundle lớn, lockfile/CI và chất lượng AI được ghi trong [verification.md](verification.md).
+- Ảnh dùng dữ liệu mẫu; notebook/source tạm được dọn qua API sau capture. Không thay đổi logic ứng dụng trong đợt biên tập này.
+
+> Phần dưới là nhật ký các giai đoạn trước; các số đo/khẳng định hiệu năng và bảo mật cần bằng chứng hiện tại trước khi dùng trong giới thiệu.
+
 # 📜 Lịch sử chỉnh sửa & Bài học kỹ thuật (Modification History)
 
 Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn, lý do thực hiện các cải tiến và giải thích kiến thức kỹ thuật thu được từ đợt tối ưu hóa hiệu năng chống nghẽn mạng và quá tải hệ thống.
@@ -9,8 +25,8 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
     *   Frontend đọc file bằng `FileReader.readAsDataURL`, chuyển đổi thành một chuỗi Base64 dài và gửi POST JSON lên máy chủ.
     *   **Phân tích tác hại**: Base64 làm phình dung lượng truyền tải dữ liệu trên mạng thêm **33%**. Việc phân tích chuỗi JSON chứa base64 dung lượng lớn (ví dụ 30MB-50MB) bằng `JSON.parse` trên server Node.js chạy đơn luồng (Single-thread) là tác vụ **đồng bộ chặn luồng (synchronous blocking)**. Trong lúc CPU bận parse JSON này, toàn bộ server sẽ đứng hình, tất cả người dùng khác đều bị nghẽn mạng và lag.
 *   **Giải pháp đã thực hiện**:
-    *   **Frontend ([DocUploadSection.tsx](file:///d:/Nam-4/Build-app-web/WorkNote/src/components/DocUploadSection.tsx))**: Loại bỏ hoàn toàn `FileReader`. Đóng gói file thô trực tiếp vào đối tượng `FormData` và gửi dưới dạng nhị phân `multipart/form-data`.
-    *   **Backend ([server.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server.ts))**: Sử dụng thư viện `multer` cấu hình Disk Storage để nhận file. Tệp được truyền tải theo từng mẩu dữ liệu nhỏ (chunks) và ghi thẳng xuống ổ đĩa tạm trong thư mục `uploads/` một cách bất đồng bộ (non-blocking). RAM máy chủ không bị quá tải và Event Loop hoàn toàn giải phóng để phục vụ các yêu cầu khác.
+    *   **Frontend ([DocUploadSection.tsx](../src/components/DocUploadSection.tsx))**: Loại bỏ hoàn toàn `FileReader`. Đóng gói file thô trực tiếp vào đối tượng `FormData` và gửi dưới dạng nhị phân `multipart/form-data`.
+    *   **Backend ([server.ts](../server.ts))**: Sử dụng thư viện `multer` cấu hình Disk Storage để nhận file. Tệp được truyền tải theo từng mẩu dữ liệu nhỏ (chunks) và ghi thẳng xuống ổ đĩa tạm trong thư mục `uploads/` một cách bất đồng bộ (non-blocking). RAM máy chủ không bị quá tải và Event Loop hoàn toàn giải phóng để phục vụ các yêu cầu khác.
     *   **Dọn dẹp tự động**: Bọc toàn bộ xử lý trong cấu trúc `try-catch-finally`, gọi `fs.promises.unlink` trong phần `finally` để chắc chắn tệp tạm luôn bị xóa bỏ sau khi hoàn thành, tránh rác đĩa cứng.
 *   **Bài học kỹ thuật**: Luôn sử dụng Stream và Multipart Form-Data để truyền tải dữ liệu nhị phân lớn trên Node.js/Express. Tuyệt đối tránh gửi Base64 qua JSON cho các tệp tin lớn.
 
@@ -21,7 +37,7 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
     *   Khi nhiều người dùng cùng nhấn phân tích tệp hoặc khi tính năng dịch âm thanh trực tiếp gửi request liên tục (6 giây/lần), máy chủ sẽ đồng thời gọi một lượng lớn request HTTPS sang Gemini API.
     *   **Phân tích tác hại**: Việc này làm cạn kiệt băng thông máy chủ và nhanh chóng chạm ngưỡng giới hạn tần suất gọi API của Google AI Studio (lỗi HTTP 429 Too Many Requests), khiến dịch vụ của tất cả mọi người bị ngắt quãng.
 *   **Giải pháp đã thực hiện**:
-    *   Tự thiết kế một lớp điều phối hàng đợi bất đồng bộ gọn nhẹ tên là `ConcurrencyLimiter` trong [server.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server.ts).
+    *   Tự thiết kế một lớp điều phối hàng đợi bất đồng bộ gọn nhẹ tên là `ConcurrencyLimiter` trong [server.ts](../server.ts).
     *   Class này lưu trữ các tác vụ chờ (các hàm promise) trong một mảng `queue` và theo dõi số lượng tác vụ đang hoạt động thông qua biến `activeCount`. Chỉ cho phép tối đa **3 cuộc gọi Gemini hoạt động cùng một lúc**. Khi một tác vụ hoàn thành, tác vụ tiếp theo trong hàng đợi mới được kích hoạt.
 *   **Bài học kỹ thuật**: Khi tích hợp các dịch vụ bên thứ ba (đặc biệt là các API dịch vụ AI giới hạn tần suất hoặc tính tiền theo lượt gọi), bắt buộc phải có một cơ chế kiểm soát số lượng tiến trình đồng thời (Concurrency Throttling) để bảo vệ hệ thống và tối ưu chi phí.
 
@@ -31,7 +47,7 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
 *   **Vấn đề ban đầu**:
     *   Máy chủ Express không có bất kỳ rào cản bảo vệ nào. Người dùng hoặc các bot tự động có thể gửi liên tục hàng ngàn request spam làm sập server.
 *   **Giải pháp đã thực hiện**:
-    *   Tích hợp `express-rate-limit` vào [server.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server.ts).
+    *   Tích hợp `express-rate-limit` vào [server.ts](../server.ts).
     *   Cấu hình 2 tầng giới hạn tần suất theo địa chỉ IP:
         *   Tầng API thông thường (`/api/`): tối đa 150 request / phút.
         *   Tầng API tài nguyên nặng (`/api/process-file`, `/api/process-link`, `/api/translate-live-audio`): tối đa 10 request / 5 phút.
@@ -72,16 +88,16 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
     *   Triển khai Đội 1 (The Sentry) xây dựng lá chắn bảo mật dữ liệu cá nhân, tự động ẩn danh hóa và phục hồi thông tin nhạy cảm.
 *   **Các thành phần kỹ thuật đã xây dựng**:
     1. **Đội 2 — The Librarian (Semantic Vector Search)**:
-       * Tạo worker Python [librarian_embed.py](file:///d:/Nam-4/Build-app-web/WorkNote/server/python/librarian_embed.py): Sử dụng `transformers` và mô hình `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (chạy 100% offline nội bộ trên CPU). Áp dụng kỹ thuật Mean Pooling và chuẩn hóa $L_2$ để tính Cosine Similarity chính xác giữa câu hỏi và tài liệu.
-       * Cập nhật [embedService.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server/services/embedService.ts): Thêm hàm bất đồng bộ `searchSourcesSemantic` kết nối tiến trình con Node.js sang Python thông qua Stream nhị phân JSON stdin/stdout. Tích hợp cơ chế **Graceful Fallback**: nếu Python worker quá thời gian hoặc gặp sự cố, hệ thống tự động quay về thuật toán Bag-of-Words cũ mà không làm gián đoạn người dùng.
-       * Cập nhật [notebook.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server/routes/notebook.ts): Sử dụng `searchSourcesSemantic` trong endpoint `/api/notebook/chat` giúp câu trả lời NotebookLM trích xuất chính xác nguồn kiến thức ngay cả khi từ ngữ hỏi khác với từ ngữ trong tài liệu.
-       * Tạo [embedServiceSemantic.test.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server/tests/embedServiceSemantic.test.ts): Kiểm thử tự động khả năng phân hạng tài liệu theo ngữ nghĩa tiếng Việt.
+       * Tạo worker Python [librarian_embed.py](../server/python/librarian_embed.py): Sử dụng `transformers` và mô hình `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (chạy 100% offline nội bộ trên CPU). Áp dụng kỹ thuật Mean Pooling và chuẩn hóa $L_2$ để tính Cosine Similarity chính xác giữa câu hỏi và tài liệu.
+       * Cập nhật [embedService.ts](../server/services/embedService.ts): Thêm hàm bất đồng bộ `searchSourcesSemantic` kết nối tiến trình con Node.js sang Python thông qua Stream nhị phân JSON stdin/stdout. Tích hợp cơ chế **Graceful Fallback**: nếu Python worker quá thời gian hoặc gặp sự cố, hệ thống tự động quay về thuật toán Bag-of-Words cũ mà không làm gián đoạn người dùng.
+       * Cập nhật [notebook.ts](../server/routes/notebook.ts): Sử dụng `searchSourcesSemantic` trong endpoint `/api/notebook/chat` giúp câu trả lời NotebookLM trích xuất chính xác nguồn kiến thức ngay cả khi từ ngữ hỏi khác với từ ngữ trong tài liệu.
+       * Tạo [embedServiceSemantic.test.ts](../server/tests/embedServiceSemantic.test.ts): Kiểm thử tự động khả năng phân hạng tài liệu theo ngữ nghĩa tiếng Việt.
     2. **Đội 1 — The Sentry (Bảo vệ dữ liệu cá nhân PII Guard)**:
-       * Tạo service [piiGuardService.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server/services/piiGuardService.ts): Hỗ trợ phát hiện và mã hóa ẩn danh hóa đa định dạng nhạy cảm (CCCD 12 số, CMND 9 số, Số điện thoại Việt Nam +84/09x/..., Email RFC 5322, Số tài khoản ngân hàng STK, API Keys sk-/AIza, Tên riêng sinh viên theo ngữ cảnh).
+       * Tạo service [piiGuardService.ts](../server/services/piiGuardService.ts): Hỗ trợ phát hiện và mã hóa ẩn danh hóa đa định dạng nhạy cảm (CCCD 12 số, CMND 9 số, Số điện thoại Việt Nam +84/09x/..., Email RFC 5322, Số tài khoản ngân hàng STK, API Keys sk-/AIza, Tên riêng sinh viên theo ngữ cảnh).
        * Cung cấp cơ chế **Reversible Vault**: Cho phép khôi phục nguyên trạng văn bản khi người dùng cần hiển thị lại (`unmaskPII`), trong khi nội dung chuyển giao cho các mô hình AI hoặc lưu trữ công cộng là dữ liệu vô danh tính.
-       * Tạo router [privacy.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server/routes/privacy.ts): Cung cấp 2 API endpoints `/api/privacy/anonymize` và `/api/privacy/restore`.
-       * Gắn router vào [server.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server.ts) tại `/api/privacy`.
-       * Tạo [piiGuard.test.ts](file:///d:/Nam-4/Build-app-web/WorkNote/server/tests/piiGuard.test.ts): Kiểm thử 5 kịch bản bảo mật và tính toàn vẹn của dữ liệu sau giải mã.
+       * Tạo router [privacy.ts](../server/routes/privacy.ts): Cung cấp 2 API endpoints `/api/privacy/anonymize` và `/api/privacy/restore`.
+       * Gắn router vào [server.ts](../server.ts) tại `/api/privacy`.
+       * Tạo [piiGuard.test.ts](../server/tests/piiGuard.test.ts): Kiểm thử 5 kịch bản bảo mật và tính toàn vẹn của dữ liệu sau giải mã.
     3. **Kiểm thử và xác minh chất lượng (Verification)**:
        * Toàn bộ 15 bài kiểm thử đơn vị (`npm test`) vượt qua 100% (`15/15 tests pass`, `tsc --noEmit` không có bất kỳ lỗi cú pháp nào).
 *   **Bài học kỹ thuật**:
@@ -168,3 +184,45 @@ Tài liệu này ghi chép lại chi tiết quá trình nâng cấp mã nguồn,
     *   Chuyển đổi sang `lint-staged.config.js` sử dụng cú pháp function `() => 'tsc --noEmit'`. Cú pháp này hướng dẫn `lint-staged` chạy kiểm tra toàn diện TypeScript theo đúng chuẩn `tsconfig.json` mà không truyền tham số file lẻ.
     *   Kiểm tra `npx lint-staged`: Tiến trình chạy mượt mà, exit code 0, toàn bộ 24 file `.ts/.tsx` đều vượt qua lint.
     *   Tạo commit thành công (`commit 77e093f4`): Toàn bộ 57 files được đóng gói sạch sẽ, Husky pre-commit hook thông qua hoàn toàn, không có bất kỳ file nhạy cảm hay rác nào của `.venv`, `tmp-spec-kitty`, hay `node_modules` bị lọt vào Git. Sẵn sàng đẩy lên remote (`git push origin main`).
+
+---
+
+## 14. Giải thích hiện tượng Nhánh Local và Remote (`dev` chưa xuất hiện trên GitHub)
+*   **Câu hỏi từ học viên**: Local có 3 nhánh `main`, `dev`, `frontend` nhưng trên web GitHub chỉ thấy 2 nhánh `main` và `frontend`.
+*   **Giải thích kỹ thuật**:
+    *   Trong Git, khi tạo một nhánh ở máy cá nhân (Local) bằng lệnh `git branch dev` hoặc `git checkout -b dev`, nhánh đó hoàn toàn chỉ tồn tại trên ổ cứng máy tính cá nhân.
+    *   GitHub (Remote) không tự động đồng bộ nhánh mới tạo nếu chưa từng có lệnh đẩy nhánh đó lên (`git push -u origin dev`).
+    *   Kiểm tra lệnh `git branch -a` cho thấy:
+        *   Local: `main`, `dev`, `frontend`.
+        *   Remote (`remotes/origin/*`): chỉ có `origin/main` và `origin/frontend`.
+*   **Hướng xử lý**: Chỉ cần thực hiện lệnh `git push -u origin dev` một lần duy nhất, nhánh `dev` sẽ được tạo và xuất hiện ngay trên giao diện web GitHub.
+
+---
+
+## 15. Triển khai Đội 3 (The Tutor) — Qwen2.5-1.5B-Instruct Nén 4-bit (GGUF) Chạy 100% Offline
+*   **Yêu cầu kỹ thuật**:
+    *   Tích hợp mô hình `Qwen/Qwen2.5-1.5B-Instruct-GGUF` nén lượng tử hóa 4-bit (`q4_k_m`, dung lượng chỉ ~986MB).
+    *   Đảm bảo 3 tính năng cốt lõi hoạt động hoàn toàn cục bộ, không cần Internet hay Gemini API key:
+        1. Chat tương tác hỏi đáp với học viên.
+        2. Tóm tắt tài liệu văn bản tự động thành các gạch đầu dòng.
+        3. Sinh đề thi trắc nghiệm Game RPG (kèm EXP thưởng, cốt truyện nhập vai, đáp án đúng và giải thích) ở định dạng JSON chuẩn.
+*   **Các thành phần kỹ thuật đã xây dựng**:
+    1. **Môi trường & Động cơ suy luận**:
+       * Cài đặt `llama-cpp-python` phiên bản v0.3.35 (tương thích kiến trúc `qwen2`).
+       * Tải model `qwen2.5-1.5b-instruct-q4_k_m.gguf` thông qua `huggingface_hub`.
+    2. **Worker Python [tutor_llm.py](../server/python/tutor_llm.py)**:
+       * Tải model vào RAM (chỉ chiếm ~1.2GB RAM) với `n_ctx=2048`, tối ưu đa luồng CPU (`n_threads=6`).
+       * Xử lý 3 action: `chat`, `summarize`, `quiz_rpg`.
+       * Bộ lọc regex bóc tách JSON và tự động sửa nháy đơn/kép chống vỡ format khi LLM sinh code fence.
+    3. **Tutor Service [tutorService.ts](../server/services/tutorService.ts)**:
+       * Kết nối Node.js child_process an toàn với luồng dữ liệu UTF-8 qua stdin/stdout.
+       * Cung cấp các hàm `chatWithTutor`, `summarizeWithTutor`, `generateQuizRpgWithTutor`.
+    4. **Express Router [tutor.ts](../server/routes/tutor.ts) & [server.ts](../server.ts)**:
+       * Gắn vào route `/api/tutor` với 3 endpoints:
+         * `POST /api/tutor/chat`
+         * `POST /api/tutor/summarize`
+         * `POST /api/tutor/quiz-rpg`
+       * Tích hợp rate limiter bảo vệ tài nguyên CPU.
+    5. **Kiểm thử tự động [tutor.test.ts](../server/tests/tutor.test.ts)**:
+       * 3/3 bài kiểm thử Đội 3 vượt qua với thời gian phản hồi ấn tượng (Chat ~2.2s, Tóm tắt ~3.3s, Quiz RPG ~9.1s).
+       * Toàn bộ 18 bài kiểm thử của dự án (`npm test`) vượt qua 100% không lỗi.

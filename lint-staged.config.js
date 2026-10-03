@@ -1,3 +1,4 @@
 export default {
-  '*.{ts,tsx}': () => 'tsc --noEmit',
+  '*.{js,mjs,ts,tsx}': 'eslint',
+  '*.{ts,tsx}': () => 'corepack pnpm run typecheck',
 };

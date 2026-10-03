@@ -1,0 +1,13 @@
+Ghi chú ôn tập React
+
+React là thư viện JavaScript dùng để xây dựng giao diện người dùng từ các component có thể tái sử dụng.
+Component là một phần giao diện độc lập, ví dụ nút bấm, thẻ tài liệu hoặc thanh điều hướng.
+Props là dữ liệu được truyền từ component cha xuống component con. Component con không sửa trực tiếp props.
+State là dữ liệu do component quản lý và có thể thay đổi khi người dùng tương tác. Khi state thay đổi, React cập nhật giao diện.
+Ví dụ: một nút đếm nhận nhãn qua props và dùng state để lưu số lần bấm.
+useState giúp khai báo state. useEffect dùng để đồng bộ component với hệ thống bên ngoài, ví dụ gọi API hoặc đăng ký sự kiện; cần dọn dẹp subscription khi phù hợp.
+Trong ứng dụng học tập, danh sách tài liệu có thể được lưu ở IndexedDB để còn dữ liệu sau khi tải lại trang.
+
+Câu hỏi ôn tập: Props và state khác nhau như thế nào? Hãy minh họa bằng một nút đếm số lần bấm.
+
+Đây là tài liệu mẫu do dự án cung cấp để thử giao diện, không chứa dữ liệu cá nhân.

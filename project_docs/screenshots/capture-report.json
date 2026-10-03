@@ -1,0 +1,148 @@
+{
+  "baseURL": "http://localhost:3000",
+  "viewport": "1600x1000",
+  "pageErrors": [
+    "Getting rbox of element \"g\" is not possible"
+  ],
+  "responses": [
+    {
+      "path": "/api/chat",
+      "status": 200
+    },
+    {
+      "path": "/api/chat",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/sources",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/sources",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages",
+      "status": 201
+    },
+    {
+      "path": "/api/notebook/pages/249ec66d-c435-4ce1-8a29-c97f9a677eaa",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/sources/upload",
+      "status": 201
+    },
+    {
+      "path": "/api/notebook/pages",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/sources",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages/249ec66d-c435-4ce1-8a29-c97f9a677eaa",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/chat",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages/249ec66d-c435-4ce1-8a29-c97f9a677eaa",
+      "status": 200
+    },
+    {
+      "path": "/api/mindmaps/generate",
+      "status": 200
+    },
+    {
+      "path": "/api/notebook/pages/249ec66d-c435-4ce1-8a29-c97f9a677eaa",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "01-library.png",
+    "02-notebook-sources.png",
+    "03-notebook-chat.png",
+    "04-mindmaps.png",
+    "05-rpg.png",
+    "07-classic-quiz.png",
+    "06-spending.png"
+  ],
+  "chat": {
+    "status": 200,
+    "data": {
+      "success": true,
+      "reply": "State là dữ liệu do component quản lý và có thể thay đổi khi người dùng tương tác. useState hook dùng để khai báo state.",
+      "provider": "local",
+      "model": "worknote-qwen2.5-1.5b",
+      "snippets": [
+        {
+          "sourceId": "243e4f83-be75-457a-b890-a18bb856af3d",
+          "title": "react-study-note.txt",
+          "snippet": "State là dữ liệu do component quản lý và có thể thay đổi khi người dùng tương tác.",
+          "score": 0.3546090913322759
+        }
+      ]
+    }
+  },
+  "mindmap": {
+    "status": 200,
+    "data": {
+      "success": true,
+      "sourceHash": "bf446a2feecb140da096",
+      "mindmap": {
+        "id": "root",
+        "label": "Ôn tập React — Props & State",
+        "sourceIds": [
+          "243e4f83-be75-457a-b890-a18bb856af3d"
+        ],
+        "children": [
+          {
+            "id": "node_1",
+            "label": "Ý chính",
+            "sourceIds": [
+              "243e4f83-be75-457a-b890-a18bb856af3d"
+            ],
+            "children": [
+              {
+                "id": "node_1_1",
+                "label": "Ý phụ",
+                "sourceIds": [
+                  "243e4f83-be75-457a-b890-a18bb856af3d"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "provider": "local",
+      "model": "worknote-qwen2.5-1.5b",
+      "stats": {
+        "sourceCount": 1,
+        "totalChunks": 1,
+        "analyzedChunks": 1,
+        "sampled": false
+      }
+    }
+  },
+  "result": "completed_with_page_errors"
+}

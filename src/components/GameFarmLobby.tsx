@@ -2720,7 +2720,7 @@ function drawBridge(ctx: CanvasRenderingContext2D, x: number, y: number) {
 function drawFlameCell(ctx: CanvasRenderingContext2D, A: Assets, cx: number, cy: number, frame: number, tick: number) {
   const flick = 0.85 + Math.abs(Math.sin((tick + cx + cy) * 0.4)) * 0.25;
   // outer red glow
-  let grd = ctx.createRadialGradient(cx, cy, 2, cx, cy, TILE * 0.75 * flick);
+  const grd = ctx.createRadialGradient(cx, cy, 2, cx, cy, TILE * 0.75 * flick);
   grd.addColorStop(0, "rgba(254,240,138,0.95)"); // yellow-white core
   grd.addColorStop(0.45, "rgba(249,115,22,0.85)"); // orange
   grd.addColorStop(0.8, "rgba(220,38,38,0.5)");   // red

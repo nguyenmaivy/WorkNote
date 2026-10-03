@@ -15,19 +15,25 @@ import {
   createSource,
   deleteSource,
   buildNotebookContext,
+  chunkContent,
   validatePageInput,
   validateSourceInput,
   type NotebookSourceType,
 } from "../services/notebookService.js";
 import { searchSources, searchSourcesSemantic } from "../services/embedService.js";
+import { librarianSidecar } from "../services/sidecarService.js";
+import { geminiSemaphore } from "../utils/semaphore.js";
+import { routeTextTask } from "../services/providerRouter.js";
 import {
   getAiClient,
   hasApiKey,
+  hasLlmKey,
   withGeminiRetry,
   friendlyGeminiError,
 } from "../services/geminiService.js";
 import {
   getSafeGeminiPayload,
+  looseParseJson,
   extractYoutubeId,
   fetchYoutubeCaptions,
 } from "../services/fileService.js";
@@ -129,6 +135,8 @@ router.put("/pages/:id", (req, res) => {
     content: req.body.content,
     sourceIds: req.body.sourceIds,
     metadata: req.body.metadata,
+    mindmap: req.body.mindmap,
+    mindmapMeta: req.body.mindmapMeta,
   });
   if (!page) return res.status(404).json({ error: "Page not found" });
   res.json({ success: true, page });
@@ -184,7 +192,13 @@ router.post("/sources", async (req, res): Promise<any> => {
           return res.status(400).json({ error: `File từ URL vượt quá ${MAX_FILE_SIZE_LABEL}` });
         }
         const name = new URL(url).pathname.split("/").pop() || "url_source";
-        const text = await extractTextFromFile(name, resp.headers.get("content-type") || "text/plain", buf);
+        let text: string;
+        const releaseUrl = await geminiSemaphore.acquire();
+        try {
+          text = await extractTextFromFile(name, resp.headers.get("content-type") || "text/plain", buf);
+        } finally {
+          releaseUrl();
+        }
         const source = createSource({
           type: "url",
           title: title?.trim() || name,
@@ -223,7 +237,13 @@ router.post("/sources/upload", upload.single("file"), async (req, res): Promise<
     tempPath = req.file.path;
     const buffer = await fs.promises.readFile(tempPath);
     const name = req.body.title?.trim() || req.file.originalname;
-    const text = await extractTextFromFile(req.file.originalname, req.file.mimetype, buffer);
+    let text: string;
+    const releaseUpload = await geminiSemaphore.acquire();
+    try {
+      text = await extractTextFromFile(req.file.originalname, req.file.mimetype, buffer);
+    } finally {
+      releaseUpload();
+    }
 
     const source = createSource({
       type: "document",
@@ -300,41 +320,37 @@ router.post("/chat", async (req, res): Promise<any> => {
       if (page) attachedSources = getSourcesByIds(page.sourceIds);
     }
 
-    const snippets = searchQuery ? await searchSourcesSemantic(attachedSources, searchQuery, 5) : [];
+    const snippets = searchQuery ? await librarianSidecar.search(attachedSources, searchQuery, 5) : [];
     const snippetContext = snippets.map((s) => `[${s.title}]: ${s.snippet}`).join("\n");
     const baseContext = buildNotebookContext(pageId, searchQuery);
     const contextText = snippetContext
       ? `${baseContext}\n\n## Đoạn nguồn liên quan\n${snippetContext}`
       : baseContext;
 
-    if (!hasApiKey()) {
+    if (!hasLlmKey()) {
       const lastContent = lastUserMsg?.content || "";
       return res.json({
         success: true,
         isDemo: true,
-        reply: `(Demo) Bạn hỏi: "${lastContent}". Cấu hình GEMINI_API_KEY để nhận câu trả lời dựa trên ${snippets.length} đoạn nguồn tìm được.`,
+        reply: `(Demo) Bạn hỏi: "${lastContent}". Hãy bật local LLM hoặc cấu hình API fallback để nhận câu trả lời dựa trên ${snippets.length} đoạn nguồn tìm được.`,
         snippets,
       });
     }
 
-    const ai = getAiClient();
+    // Xây dựng prompt chat với context
     const systemInstruction = CHAT_SYSTEM.replace("{{CONTEXT}}", contextText);
-    const contentsPayload = messages.map((m: any) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
-    }));
+    const historyText = messages
+      .slice(-6)
+      .map((m: any) => `${m.role === "user" ? "Người dùng" : "AI"}: ${m.content}`)
+      .join("\n");
+    const chatPrompt = `${systemInstruction}\n\nLịch sử chat:\n${historyText}`;
 
-    const response = await withGeminiRetry(() =>
-      ai.models.generateContent({
-        model: GEMINI_MODEL,
-        contents: contentsPayload,
-        config: { systemInstruction, temperature: 0.7 },
-      })
-    );
-
-    res.json({
+    const result = await routeTextTask("CHAT", chatPrompt);
+    return res.json({
       success: true,
-      reply: response.text || "Xin lỗi, chưa thể trả lời.",
+      reply: result.text || "Xin lỗi, chưa thể trả lời.",
+      provider: result.provider,
+      model: result.model,
       snippets,
     });
   } catch (error: any) {
@@ -357,36 +373,28 @@ router.post("/summary", async (req, res): Promise<any> => {
     const attached = getSourcesByIds(page.sourceIds);
     const context = [
       `Ghi chú: ${page.title}\n${page.content}`,
-      ...attached.map((s) => `Nguồn ${s.title}:\n${s.content.slice(0, 3000)}`),
+      ...attached.map((s) => `Nguồn ${s.title}:\n${chunkContent(s.content, 3000)}`),
     ].join("\n\n");
 
-    if (!hasApiKey()) {
+    if (!hasLlmKey()) {
       return res.json({
         success: true,
         isDemo: true,
-        summary: `### Tóm tắt (Demo): ${page.title}\n\nĐây là bản tóm tắt mẫu. Cấu hình GEMINI_API_KEY để AI tóm tắt ${attached.length + 1} nguồn nội dung thực tế.`,
+        summary: `### Tóm tắt (Demo): ${page.title}\n\nHãy bật local LLM hoặc cấu hình API fallback để tóm tắt ${attached.length + 1} nguồn nội dung thực tế.`,
       });
     }
 
-    const ai = getAiClient();
-    const response = await withGeminiRetry(() =>
-      ai.models.generateContent({
-        model: GEMINI_MODEL,
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `Tóm tắt nội dung học tập sau bằng Tiếng Việt, dùng Markdown với bullet points rõ ràng:\n\n${context}`,
-              },
-            ],
-          },
-        ],
-        config: { temperature: 0.5 },
-      })
+    const result = await routeTextTask(
+      "TEXT_SUMMARY",
+      `Tóm tắt nội dung học tập sau bằng Tiếng Việt, dùng Markdown với bullet points rõ ràng:\n\n${context}`
     );
 
-    res.json({ success: true, summary: response.text || "Không tạo được tóm tắt." });
+    res.json({
+      success: true,
+      summary: result.text || "Không tạo được tóm tắt.",
+      provider: result.provider,
+      model: result.model,
+    });
   } catch (error: any) {
     console.error("Notebook summary error:", error);
     res.status(500).json({ error: friendlyGeminiError(error) });
@@ -407,11 +415,11 @@ router.post("/quiz", async (req, res): Promise<any> => {
     const attached = getSourcesByIds(page.sourceIds);
     const context = [
       `Ghi chú: ${page.title}\n${page.content}`,
-      ...attached.map((s) => `Nguồn ${s.title}:\n${s.content.slice(0, 3000)}`),
+      ...attached.map((s) => `Nguồn ${s.title}:\n${chunkContent(s.content, 3000)}`),
     ].join("\n\n");
     const numQuestions = Math.min(Math.max(Number(count) || 3, 1), 10);
 
-    if (!hasApiKey()) {
+    if (!hasLlmKey()) {
       return res.json({
         success: true,
         isDemo: true,
@@ -427,25 +435,10 @@ router.post("/quiz", async (req, res): Promise<any> => {
       });
     }
 
-    const ai = getAiClient();
-    const response = await withGeminiRetry(() =>
-      ai.models.generateContent({
-        model: GEMINI_MODEL,
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `Tạo ${numQuestions} câu hỏi trắc nghiệm từ nội dung sau. Trả về JSON array với các field: id, question, options (4 phần tử), correctAnswer, explanation.\n\n${context}`,
-              },
-            ],
-          },
-        ],
-        config: {
-          temperature: 0.6,
-          responseMimeType: "application/json",
-        },
-      })
+    const result = await routeTextTask(
+      "QUIZ",
+      `Tạo ${numQuestions} câu hỏi trắc nghiệm từ nội dung sau. Trả về JSON array với các field: id, question, options (4 phần tử), correctAnswer, explanation. Chỉ trả về JSON, không thêm Markdown.\n\n${context}`,
+      { jsonOutput: true }
     );
 
     let quiz: Array<{
@@ -456,7 +449,7 @@ router.post("/quiz", async (req, res): Promise<any> => {
       explanation: string;
     }> = [];
     try {
-      const parsed = JSON.parse(response.text || "[]");
+      const parsed = looseParseJson(result.text || "[]");
       if (Array.isArray(parsed)) {
         quiz = parsed;
       } else if (parsed && Array.isArray(parsed.quiz)) {
@@ -466,7 +459,12 @@ router.post("/quiz", async (req, res): Promise<any> => {
       quiz = [];
     }
 
-    res.json({ success: true, quiz });
+    res.json({
+      success: true,
+      quiz,
+      provider: result.provider,
+      model: result.model,
+    });
   } catch (error: any) {
     console.error("Notebook quiz error:", error);
     res.status(500).json({ error: friendlyGeminiError(error) });

@@ -1,3 +1,32 @@
+# Checklist WorkNote — Portfolio
+
+Cập nhật **03/10/2026**. Chi tiết ưu tiên và tiêu chí ở [roadmap](future_roadmap.md).
+
+## Tài liệu và demo đã hoàn thành
+
+- [x] Viết lại [README](../README.md): bài toán, tính năng, điểm kỹ thuật, 3 cấu hình chạy và giới hạn.
+- [x] Thêm [mục lục](README.md), [kiến trúc](architecture.md), cập nhật [PRD](prd.md).
+- [x] Chạy development, production startup smoke, TypeScript, 29 tests và build.
+- [x] Tạo [file mẫu](examples/react-study-note.txt), [script chụp](capture-demo.mjs), 7 ảnh thật và [hướng dẫn](user_guide.md).
+- [x] Ghi [bằng chứng và vấn đề còn lại](verification.md), phân biệt pass luồng với chất lượng AI.
+
+## Tiếp theo — trước khi gửi hồ sơ
+
+- [x] P0-01: thống nhất pnpm 9.15.9/lockfile; clean install và CI được kiểm chứng theo [giai đoạn 6](phase6_ci.md).
+- [x] P0-02: tách unit/integration AI, thêm FE tests, build/smoke và quality gate GitHub.
+- [ ] P0-03: trạng thái AI kiểm tra endpoint thật; chuẩn hóa placeholder `.env.example`.
+- [ ] P0-04: E2E Library → hỏi đáp → quiz, có reload và tình huống lỗi.
+- [ ] P0-05: đánh giá câu trả lời/nguồn, không coi mindmap “Ý chính/Ý phụ” là đạt.
+- [ ] P0-06: thống nhất tên sản phẩm, package metadata và thông tin tác giả/liên hệ.
+
+Trước demo public: auth/ownership, storage, contract upload/URL, quota và kiểm chứng deployment theo P1.
+
+---
+
+# Nhật ký checklist refactor trước đây
+
+> Checkbox và số test dưới đây là ghi nhận lịch sử; không thay thế [kiểm chứng ngày 03/10/2026](verification.md).
+
 # Task List — WorkNote Refactor
 
 ## Server Side
@@ -38,4 +67,13 @@
 - [x] Đội 1 (The Sentry): `server/routes/privacy.ts` — API endpoints `/api/privacy/anonymize` & `/api/privacy/restore`
 - [x] Đội 1 (The Sentry): `server/tests/piiGuard.test.ts` — Unit test bảo mật dữ liệu cá nhân
 - [x] `server.ts` — Mount route `/api/privacy`
-- [x] Chạy kiểm thử toàn diện: 15/15 tests pass ✅
+- [x] Đội 3 (The Tutor): Nạp model `Qwen/Qwen2.5-1.5B-Instruct-GGUF` (4-bit `q4_k_m`) chạy 100% offline
+- [x] Đội 3 (The Tutor): `server/python/tutor_llm.py` — Python worker hỗ trợ Chat, Tóm tắt, Sinh đề thi RPG Quiz JSON
+- [x] Đội 3 (The Tutor): `server/services/tutorService.ts` — Node.js service kết nối worker
+- [x] Đội 3 (The Tutor): `server/routes/tutor.ts` — API endpoints `/api/tutor/chat`, `/api/tutor/summarize`, `/api/tutor/quiz-rpg`
+- [x] Đội 3 (The Tutor): `server/tests/tutor.test.ts` — Unit test cho cả 3 tính năng của The Tutor
+- [x] Chạy kiểm thử toàn diện: 18/18 tests pass ✅
+
+## Giai đoạn 6 — CI
+
+Chi tiết và kết quả live: [phase6_ci.md](phase6_ci.md). CD để sau theo yêu cầu; không có workflow deploy/release.

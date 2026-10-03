@@ -1,6 +1,7 @@
-﻿# 🏛️ Bản Kế Hoạch Kiến Trúc & Chiến Lược Tích Hợp Hugging Face (Privacy-First AI Architecture)
+# 🏛️ Bản Kế Hoạch Kiến Trúc & Chiến Lược Tích Hợp Hugging Face (Privacy-First AI Architecture)
+
+> **Tài liệu ý tưởng/kế hoạch.** “Zero Data Egress” và các mục tiêu bảo mật không phải bảo đảm của bản hiện tại. Text router có local-first; OCR/STT/dịch/TTS có luồng mạng riêng. Xem [kiến trúc thực tế](architecture.md) và [kiểm chứng](verification.md).
 **Dự án**: VietLearn AI Lab (WorkNote)  
-**Tác giả**: Bậc thầy Kỹ sư AI (30 năm kinh nghiệm AI & 15 năm Kỹ sư CNTT)  
 **Trọng tâm cốt lõi**: **Bảo mật dữ liệu cá nhân (Personal Data Privacy)**, **Tự chủ Offline/Local AI**, và **Tối ưu hóa hiệu năng CPU/RAM**.
 
 ---

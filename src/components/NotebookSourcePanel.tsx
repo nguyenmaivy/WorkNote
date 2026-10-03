@@ -22,20 +22,40 @@ export default function NotebookSourcePanel({
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
     setLoading(true);
     setError(null);
-    try {
-      await notebookApi.uploadSource(file);
-      onSourcesChange();
-    } catch (err: any) {
-      setError(err?.message || "Upload thất bại");
-    } finally {
-      setLoading(false);
-      if (fileRef.current) fileRef.current.value = "";
+    setUploadProgress(null);
+
+    const fileList = Array.from(files);
+    const errors: string[] = [];
+
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      setUploadProgress(
+        fileList.length > 1
+          ? `Đang tải lên ${i + 1}/${fileList.length}: ${file.name}`
+          : `Đang tải lên: ${file.name}`
+      );
+      try {
+        await notebookApi.uploadSource(file);
+      } catch (err: any) {
+        errors.push(`${file.name}: ${err?.message || "Upload thất bại"}`);
+      }
+    }
+
+    onSourcesChange();
+    setUploadProgress(null);
+    setLoading(false);
+    if (fileRef.current) fileRef.current.value = "";
+
+    if (errors.length > 0) {
+      setError(errors.join("\n"));
     }
   };
 
@@ -90,6 +110,7 @@ export default function NotebookSourcePanel({
           <input
             ref={fileRef}
             type="file"
+            multiple={true}
             className="hidden"
             accept=".pdf,.txt,.md,.docx,.xlsx,.png,.jpg,.jpeg"
             onChange={handleUpload}
@@ -118,8 +139,14 @@ export default function NotebookSourcePanel({
           </div>
         </div>
 
+        {uploadProgress && (
+          <p className="mt-2 text-[12px] text-[var(--color-text-secondary)] flex items-center gap-1.5">
+            <Loader2 size={11} className="animate-spin shrink-0" />
+            {uploadProgress}
+          </p>
+        )}
         {error && (
-          <p className="mt-2 text-[12px] text-[var(--color-error)]">{error}</p>
+          <p className="mt-2 text-[12px] text-[var(--color-error)] whitespace-pre-line">{error}</p>
         )}
       </div>
 

@@ -47,7 +47,7 @@ export const TABS: TabConfig[] = [
     label: "NotebookLM",
     pageTitle: "NotebookLM Workspace",
     icon: Notebook,
-    desc: "Tạo notebook học tập, đính kèm nguồn tài liệu, chat ngữ cảnh và tạo tóm tắt/quiz từ nội dung của bạn.",
+    desc: "Tạo không gian học tập theo nguồn tài liệu: tải nguồn lên, đính kèm vào notebook và hỏi đáp trực tiếp trên nội dung đó.",
   },
   {
     id: "mindmap",
@@ -164,7 +164,13 @@ export const QUICK_CHAT_CHIPS: QuickChip[] = [
 // ─── Supported File Types ───────────────────────────────────────────────────────
 
 export const SUPPORTED_FILE_TYPES = {
-  extensions: [".pdf", ".txt", ".md", ".csv", ".docx", ".xlsx", ".png", ".jpg", ".jpeg", ".mp3", ".wav"],
+  extensions: [
+    ".pdf", ".txt", ".md", ".csv", ".docx", ".xlsx",
+    ".png", ".jpg", ".jpeg", ".webp",
+    ".mp3", ".wav", ".m4a", ".ogg", ".flac", ".aac",
+    ".mp4", ".webm",
+  ],
   accept:
-    "application/pdf, text/plain, text/markdown, text/csv, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, image/png, image/jpeg, audio/mpeg, audio/wav",
+    "application/pdf, text/plain, text/markdown, text/csv, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, image/png, image/jpeg, image/webp, audio/mpeg, audio/mp3, audio/wav, audio/x-wav, audio/mp4, audio/x-m4a, audio/aac, audio/ogg, audio/flac, video/mp4, video/webm, .pdf, .txt, .md, .csv, .docx, .xlsx, .png, .jpg, .jpeg, .webp, .mp3, .wav, .m4a, .ogg, .flac, .aac, .mp4, .webm",
 };
+

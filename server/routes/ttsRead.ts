@@ -27,7 +27,19 @@ const VOICE_BY_LANG: Record<string, string> = {
 const ALLOWED_VOICES = new Set([
   "vi-VN-HoaiMyNeural", "vi-VN-NamMinhNeural",
   "en-US-AriaNeural", "en-US-AndrewNeural", "en-US-EmmaNeural", "en-US-BrianNeural",
-  "ja-JP-NanamiNeural", "ko-KR-SunHiNeural", "zh-CN-XiaoxiaoNeural", "fr-FR-DeniseNeural",
+  "ja-JP-NanamiNeural", "ja-JP-KeitaNeural",
+  "ko-KR-SunHiNeural", "ko-KR-InJoonNeural",
+  "zh-CN-XiaoxiaoNeural", "zh-CN-YunxiNeural",
+  "fr-FR-DeniseNeural", "fr-FR-HenriNeural",
+  "de-DE-KatjaNeural", "de-DE-ConradNeural",
+  "es-ES-ElviraNeural", "es-ES-AlvaroNeural",
+  "ru-RU-SvetlanaNeural", "ru-RU-DmitryNeural",
+  "it-IT-ElsaNeural", "it-IT-DiegoNeural",
+  "pt-BR-FranciscaNeural", "pt-BR-AntonioNeural",
+  "th-TH-PremwadeeNeural", "th-TH-NiwatNeural",
+  "id-ID-GadisNeural", "id-ID-ArdiNeural",
+  "ar-SA-ZariyahNeural", "ar-SA-HamedNeural",
+  "hi-IN-SwaraNeural", "hi-IN-MadhurNeural",
 ]);
 
 // Giới hạn độ dài mỗi lần đọc để tránh audio quá lớn / chờ quá lâu.
@@ -36,7 +48,8 @@ const MAX_LEN = 8000;
 // ─── POST /api/tts-read ─────────────────────────────────────────────────────────
 router.post("/", async (req, res): Promise<any> => {
   try {
-    let { text, lang, voice: requestedVoice } = req.body as { text?: string; lang?: string; voice?: string };
+    const { lang, voice: requestedVoice } = req.body as { lang?: string; voice?: string };
+    let { text } = req.body as { text?: string };
     if (!text || !text.trim()) {
       return res.status(400).json({ error: "Thiếu nội dung cần đọc." });
     }

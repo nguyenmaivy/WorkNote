@@ -21,7 +21,7 @@ export type GeminiPayload = MultimodalPayload | TextPayload;
  */
 export function normalizeMimeType(originalMime: string, filename: string): string {
   const ext = (filename.split(".").pop() || "").toLowerCase();
-  let mime = (originalMime || "application/octet-stream").split(";")[0].trim().toLowerCase();
+  const mime = (originalMime || "application/octet-stream").split(";")[0].trim().toLowerCase();
 
   // Extension takes priority — most reliable source
   if (ext === "pdf") return "application/pdf";
@@ -30,7 +30,7 @@ export function normalizeMimeType(originalMime: string, filename: string): strin
   }
   if (["mp3", "wav", "m4a", "ogg", "flac", "aac", "aiff"].includes(ext)) {
     const audioMap: Record<string, string> = {
-      mp3: "audio/mp3", wav: "audio/wav", m4a: "audio/aac",
+      mp3: "audio/mp3", wav: "audio/wav", m4a: "audio/mp4",
       ogg: "audio/ogg", flac: "audio/flac", aac: "audio/aac", aiff: "audio/aiff",
     };
     return audioMap[ext] ?? `audio/${ext}`;
@@ -45,7 +45,9 @@ export function normalizeMimeType(originalMime: string, filename: string): strin
   // Mime-type fallbacks — normalize common variants Gemini doesn't accept
   if (mime === "audio/mpeg" || mime === "audio/x-mp3" || mime === "audio/x-mpeg") return "audio/mp3";
   if (mime === "audio/x-wav" || mime === "audio/wave" || mime === "audio/vnd.wave") return "audio/wav";
-  if (mime === "audio/x-m4a" || mime === "audio/mp4" || mime === "audio/x-aac") return "audio/aac";
+  if (mime === "audio/x-m4a" || mime === "audio/m4a") return "audio/mp4";
+  if (mime === "audio/mp4") return "audio/mp4";
+  if (mime === "audio/x-aac") return "audio/aac";
   if (mime === "audio/x-ogg" || mime === "application/ogg") return "audio/ogg";
   if (mime === "video/x-msvideo" || mime === "video/avi") return "video/mp4";
 
@@ -190,7 +192,7 @@ export const FILE_ANALYSIS_RESPONSE_SCHEMA = {
  * Đóng lại chuỗi/ngoặc đang mở dở để JSON.parse có thể đọc được phần đã sinh ra.
  */
 export function repairTruncatedJson(input: string): string {
-  let str = input.trim().replace(/^```(?:json)?/i, "").replace(/```\s*$/, "").trim();
+  const str = input.trim().replace(/^```(?:json)?/i, "").replace(/```\s*$/, "").trim();
 
   const stack: string[] = [];
   let inString = false;
@@ -232,13 +234,47 @@ export function looseParseJson(raw: string): any | null {
   try {
     return JSON.parse(raw);
   } catch {
-    /* thử vá bên dưới */
+    /* thử tiếp bên dưới */
   }
+
+  // Tìm khối JSON nằm giữa cặp ngoặc { và }
+  const firstBrace = raw.indexOf("{");
+  const lastBrace = raw.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const candidate = raw.slice(firstBrace, lastBrace + 1);
+    try {
+      return JSON.parse(candidate);
+    } catch {}
+    try {
+      return JSON.parse(repairTruncatedJson(candidate));
+    } catch {}
+  } else if (firstBrace !== -1) {
+    // Trường hợp bị cắt cụt chưa có dấu đóng }
+    const candidate = raw.slice(firstBrace);
+    try {
+      return JSON.parse(repairTruncatedJson(candidate));
+    } catch {}
+  }
+
   try {
     return JSON.parse(repairTruncatedJson(raw));
-  } catch {
-    return null;
+  } catch {}
+
+  // 4. Cứu hộ: Nếu JSON bị lỗi ngoặc kép chưa escape (ví dụ: cảm thấy "hoa mắt chóng mặt")
+  if (raw.includes('"summary"')) {
+    const m = raw.match(/"summary"\s*:\s*"([\s\S]*?)(?:",\s*"extractedText"|",\s*"quiz"|",\s*"mindmap"|"\s*})/);
+    if (m && m[1]) {
+      const summary = m[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\t/g, "\t");
+      return {
+        summary,
+        extractedText: "",
+        quiz: [],
+        mindmap: { id: "root", label: "Tài liệu", children: [] },
+      };
+    }
   }
+
+  return null;
 }
 
 /**
@@ -261,12 +297,14 @@ export function normalizeAnalysis(data: any, fallbackLabel: string): any {
 /**
  * Tạo prompt phân tích tài liệu nhất quán cho cả 2 loại input (file & link).
  */
-export function buildFileAnalysisPrompt(filename: string): string {
+export function buildFileAnalysisPrompt(filename: string, hasPreTranscribedText = false): string {
   const ext = (filename.split(".").pop() || "").toLowerCase();
   const isAudio = ["mp3", "wav", "m4a", "ogg", "flac", "aac", "aiff"].includes(ext);
   const isVideo = ["mp4", "webm", "mov", "avi", "mkv"].includes(ext);
 
-  const mediaNote = isAudio
+  const mediaNote = (isAudio || isVideo) && hasPreTranscribedText
+    ? `\n\n⚠️ LƯU Ý: Đây là bản phiên âm lời thoại hoàn chỉnh trích xuất từ tệp ${isAudio ? "âm thanh" : "video"} "${filename}". Bạn KHÔNG CẦN chép lại văn bản lời thoại này vào trường "extractedText" (chỉ cần ghi ngắn gọn "[Đã lưu bản phiên âm đầy đủ]"). Hãy dành toàn bộ dung lượng token để TÓM TẮT thật sâu sắc, chi tiết từng phần bằng Markdown Tiếng Việt sinh động trong trường "summary", tạo bộ câu hỏi trắc nghiệm và sơ đồ tư duy hoàn chỉnh.`
+    : isAudio
     ? `\n\n⚠️ ĐÂY LÀ FILE ÂM THANH: Hãy PHIÊN ÂM toàn bộ lời nói trong file thành văn bản chữ viết (speech-to-text) rồi điền đầy đủ vào trường "extractedText". Không được để trường này trống.`
     : isVideo
     ? `\n\n⚠️ ĐÂY LÀ FILE VIDEO: Hãy PHIÊN ÂM toàn bộ lời nói / phụ đề thành văn bản chữ viết rồi điền đầy đủ vào trường "extractedText". Không được để trường này trống.`

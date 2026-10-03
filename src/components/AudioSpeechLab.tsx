@@ -90,7 +90,7 @@ export default function AudioSpeechLab() {
     try {
       const sl = sourceLang === "auto" ? "auto" : sourceLang.split("-")[0];
       const tl = targetLang.split("-")[0];
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+      const url = `https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
       
       const res = await fetch(url);
       const data = await res.json();
@@ -148,7 +148,7 @@ export default function AudioSpeechLab() {
       setRecordedText("");
       audioChunksRef.current = [];
       
-      let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       recordStreamRef.current = stream;
 
       // Start Web Speech API Recognition

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 🛡️ ĐỘI 1: VỆ BINH BẢO MẬT & THANH LỌC DỮ LIỆU CÁ NHÂN (The Sentry / PII Guard)
  * Tác giả: Bậc thầy Kỹ sư AI & CNTT
  * Mục tiêu: Tự động phát hiện, mã hóa ẩn danh hóa (Anonymization) và phục hồi (Deanonymization)
@@ -23,7 +23,7 @@ const PII_PATTERNS: PIIPatternDef[] = [
   // 1. API Keys & Secrets (AIza, sk-, Bearer tokens...)
   {
     type: "SECRET_KEY",
-    placeholderPrefix: "MÃ_BÍ_MẬT",
+    placeholderPrefix: "SECRET",
     regex: /\b(?:sk-[a-zA-Z0-9]{20,}|AIza[0-9A-Za-z-_]{35}|ghp_[a-zA-Z0-9]{36}|Bearer\s+[a-zA-Z0-9_\-\.]{20,})\b/g,
   },
   // 2. Email Address (RFC 5322)
@@ -41,19 +41,19 @@ const PII_PATTERNS: PIIPatternDef[] = [
   // 4. Số điện thoại Việt Nam (+84, 84, 03x, 05x, 07x, 08x, 09x)
   {
     type: "PHONE",
-    placeholderPrefix: "SỐ_ĐIỆN_THOẠI",
+    placeholderPrefix: "PHONE",
     regex: /(?:\+84|84|0)(?:3[2-9]|5[6|8|9]|7[0|6-9]|8[1-9]|9[0-9])(?:\d{7}|\s\d{3}\s\d{4}|\.\d{3}\.\d{4}|-\d{3}-\d{4})\b/g,
   },
   // 5. Số tài khoản ngân hàng / Số thẻ (12 đến 19 chữ số hoặc có phân tách khoảng trắng/dấu gạch)
   {
     type: "BANK_ACCOUNT",
-    placeholderPrefix: "TÀI_KHOẢN_NGÂN_HÀNG",
+    placeholderPrefix: "BANK",
     regex: /(?<=(?:STK|tài khoản|ngân hàng|số thẻ|TK|card)[:\s]*)\b(?:\d[ -]?){9,18}\d\b/gi,
   },
   // 6. Họ và tên có tiền tố chỉ định (Ví dụ: "Họ và tên: Nguyễn Văn A", "Sinh viên: Trần Thị B")
   {
     type: "PERSON_NAME",
-    placeholderPrefix: "HỌ_TÊN",
+    placeholderPrefix: "NAME",
     regex: /(?<=(?:Họ và tên|Họ tên|Họ & tên|Sinh viên|Học viên|Tên tôi là|Tôi là|Học sinh)[:\s]+)[A-ZÀ-Ỹ][a-zà-ỹ]+(?:\s+[A-ZÀ-Ỹ][a-zà-ỹ]+){1,4}/gu,
   },
 ];
@@ -90,7 +90,7 @@ export function maskPII(text: string): PIIAnonymizeResult {
       }
 
       counterByType[pattern.type] = (counterByType[pattern.type] || 0) + 1;
-      const token = `[${pattern.placeholderPrefix}_${counterByType[pattern.type]}]`;
+      const token = `__PII_${pattern.placeholderPrefix}_${counterByType[pattern.type]}__`;
 
       vault[token] = trimmed;
       valueToTokenMap.set(trimmed, token);
@@ -125,4 +125,27 @@ export function unmaskPII(maskedText: string, vault: Record<string, string>): st
   }
 
   return restored;
+}
+
+/**
+ * Khôi phục PII đệ quy cho toàn bộ object / array JSON (summary, quiz, mindmap, extractedText).
+ */
+export function unmaskDeep<T = any>(data: T, vault: Record<string, string>): T {
+  if (!data || !vault || Object.keys(vault).length === 0) {
+    return data;
+  }
+  if (typeof data === "string") {
+    return unmaskPII(data, vault) as unknown as T;
+  }
+  if (Array.isArray(data)) {
+    return data.map((item) => unmaskDeep(item, vault)) as unknown as T;
+  }
+  if (typeof data === "object") {
+    const res: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+      res[key] = unmaskDeep(value, vault);
+    }
+    return res as T;
+  }
+  return data;
 }

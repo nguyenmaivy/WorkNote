@@ -2,13 +2,21 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import type { UploadedFile } from "../types";
 import { idbGetAllFiles, idbPutFile, idbDeleteFile } from "../services/fileStore";
 
-const isPlayable = (mime: string) =>
-  mime.startsWith("audio/") || mime.startsWith("video/") ||
-  mime.includes("audio") || mime.includes("video");
+const isPlayable = (mime: string, name = "") => {
+  const ext = (name.split(".").pop() || "").toLowerCase();
+  const m = (mime || "").toLowerCase();
+  return (
+    m.startsWith("audio/") ||
+    m.startsWith("video/") ||
+    m.includes("audio") ||
+    m.includes("video") ||
+    ["mp3", "wav", "m4a", "ogg", "flac", "aac", "mp4", "webm"].includes(ext)
+  );
+};
 
 /** Tạo objectUrl phát lại file gốc từ blob (nếu là audio/video) */
 function hydrate(file: UploadedFile): UploadedFile {
-  if (file.blob && !file.objectUrl && isPlayable(file.mimeType)) {
+  if (file.blob && !file.objectUrl && isPlayable(file.mimeType, file.name)) {
     try {
       return { ...file, objectUrl: URL.createObjectURL(file.blob) };
     } catch {

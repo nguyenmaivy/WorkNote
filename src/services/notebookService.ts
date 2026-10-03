@@ -45,7 +45,7 @@ export const notebookApi = {
 
   async updatePage(
     id: string,
-    payload: Partial<Pick<NotebookPage, "title" | "content" | "sourceIds" | "metadata">>
+    payload: Partial<Pick<NotebookPage, "title" | "content" | "sourceIds" | "metadata" | "mindmap" | "mindmapMeta">>
   ): Promise<NotebookPage> {
     const data = await request<NotebookPageResponse>(`/api/notebook/pages/${id}`, {
       method: "PUT",

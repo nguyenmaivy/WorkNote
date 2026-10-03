@@ -124,9 +124,7 @@ export default function MindMapViewer({ initialData, onUpdate }: MindMapViewerPr
       skipExternalSync.current = false;
       return;
     }
-    if (initialData) {
-      applyExternalData(initialData);
-    }
+    applyExternalData(initialData);
   }, [initialData, applyExternalData]);
 
   const changeLayout = (next: SimpleMindMapLayout) => {

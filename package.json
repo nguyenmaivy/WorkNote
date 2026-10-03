@@ -16,6 +16,7 @@
     "test:integration": "node scripts/run-backend-tests.mjs integration",
     "test:frontend": "vitest run",
     "test:smoke": "node scripts/smoke-production.mjs",
+    "audit:ci": "node scripts/audit-dependencies.mjs",
     "check": "corepack pnpm run lint && corepack pnpm test && corepack pnpm run build && corepack pnpm run test:smoke"
   },
   "dependencies": {

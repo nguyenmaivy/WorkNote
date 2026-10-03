@@ -6,6 +6,7 @@ import multer from "multer";
 
 import { PORT, UPLOAD_DIR, MAX_FILE_SIZE_LABEL } from "./server/config.js";
 import { apiLimiter, heavyAiLimiter } from "./server/middleware/rateLimiter.js";
+import { startLocalLlmSupervisor, stopLocalLlmSupervisor } from "./server/services/localLlmSupervisor.js";
 
 // Routes
 import processFileRouter from "./server/routes/processFile.js";
@@ -20,6 +21,8 @@ import youtubeTranscriptRouter from "./server/routes/youtubeTranscript.js";
 import transcribeRouter from "./server/routes/transcribe.js";
 import notebookRouter from "./server/routes/notebook.js";
 import privacyRouter from "./server/routes/privacy.js";
+import tutorRouter from "./server/routes/tutor.js";
+import mindmapsRouter from "./server/routes/mindmaps.js";
 
 const app = express();
 
@@ -29,8 +32,8 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 }
 
 // ─── Body Parser ──────────────────────────────────────────────────────────────
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json({ limit: "200mb" }));
+app.use(express.urlencoded({ extended: true, limit: "200mb" }));
 
 // ─── Rate Limiters ────────────────────────────────────────────────────────────
 app.use("/api/", apiLimiter);
@@ -42,6 +45,8 @@ app.use("/api/notebook/chat", heavyAiLimiter);
 app.use("/api/notebook/summary", heavyAiLimiter);
 app.use("/api/notebook/quiz", heavyAiLimiter);
 app.use("/api/notebook/sources/upload", heavyAiLimiter);
+app.use("/api/tutor", heavyAiLimiter);
+app.use("/api/mindmaps/generate", heavyAiLimiter);
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use("/api/process-file", processFileRouter);
@@ -56,6 +61,14 @@ app.use("/api/youtube-transcript", youtubeTranscriptRouter); // real timed capti
 app.use("/api/transcribe", transcribeRouter); // Gemini timestamped transcription (uploaded media)
 app.use("/api/notebook", notebookRouter);
 app.use("/api/privacy", privacyRouter);
+app.use("/api/tutor", tutorRouter);
+app.use("/api/mindmaps", mindmapsRouter);
+
+// ─── Status Route ─────────────────────────────────────────────────────────────
+import { getAvailableProviders } from "./server/config.js";
+app.get("/api/status", (_req, res) => {
+  res.json({ success: true, providers: getAvailableProviders() });
+});
 
 // Multer error handler: return clear JSON for file size or other upload errors
 app.use((err: any, _req: any, res: any, next: any) => {
@@ -73,6 +86,7 @@ import { initializeWebSockets } from "./server/websockets/index.js";
 
 // ─── Vite / Static Middleware ─────────────────────────────────────────────────
 async function initMiddlewaresAndStart() {
+  startLocalLlmSupervisor();
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -96,5 +110,13 @@ async function initMiddlewaresAndStart() {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
   });
 }
+
+function shutdown(): void {
+  stopLocalLlmSupervisor();
+  process.exit(0);
+}
+
+process.once("SIGINT", shutdown);
+process.once("SIGTERM", shutdown);
 
 initMiddlewaresAndStart();

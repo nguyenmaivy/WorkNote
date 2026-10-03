@@ -12,7 +12,9 @@ export function useTranslation(activeFile: UploadedFile | null) {
   const [translateTargetLang, setTranslateTargetLang] = useState<string>("en");
   const [translateSourceField, setTranslateSourceField] = useState<TranslateSourceField>("extractedText");
   const [translationError, setTranslationError] = useState<string | null>(null);
+  const [translateSourceLang, setTranslateSourceLang] = useState<string>('auto');
 
+  
   // Reset khi đổi file
   useEffect(() => {
     setTranslatedText("");
@@ -60,6 +62,25 @@ export function useTranslation(activeFile: UploadedFile | null) {
   const changeTargetLang = (lang: string) => {
     setTranslateTargetLang(lang);
     setTranslatedText("");
+  };
+
+    // Cập nhật hàm dịch audio
+  const handleTranslateAudio = async (base64Audio: string, mimeType: string) => {
+    if (!activeFile) return;
+    setIsTranslating(true);
+    try {
+      const data = await apiClient.translateLiveAudio(
+        base64Audio,
+        mimeType,
+        translateSourceLang,          // <- truyền sourceLang
+        translateTargetLang
+      );
+      setTranslatedText(data.translation ?? (data as any).translatedText ?? '');
+    } catch (err: any) {
+      setTranslationError(err.message || 'Dịch audio thất bại.');
+    } finally {
+      setIsTranslating(false);
+    }
   };
 
   return {

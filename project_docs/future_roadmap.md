@@ -1,50 +1,51 @@
-# 🗺️ Kế hoạch hoàn thiện dự án VietLearn AI Lab (Roadmap)
+﻿# Roadmap hoàn thiện WorkNote cho portfolio
 
-Tài liệu này vạch ra các hướng phát triển tiếp theo để nâng cấp VietLearn AI Lab từ một phiên bản Lab thử nghiệm (Prototype) thành một sản phẩm học tập hoàn chỉnh, sẵn sàng thương mại hóa và phục vụ hàng ngàn người dùng thực tế.
+Rà soát **03/10/2026**. Đây là danh sách đề xuất từ mã nguồn và phiên chạy thực tế, không phải thông báo các mục đã được triển khai. Ưu tiên hoàn thiện một luồng tài liệu → hỏi đáp → ôn tập đáng tin cậy trước khi mở rộng thêm tính năng.
 
----
+## P0 — Trước khi gửi repository cho nhà tuyển dụng
 
-## 1. Hệ thống Quản lý Người dùng (Authentication & Authorization)
-*   **Vấn đề hiện tại**: Dự án chưa có hệ thống tài khoản. Tất cả người dùng đều dùng chung một bộ nhớ tạm (React State) và chia sẻ khóa `GEMINI_API_KEY` của hệ thống.
-*   **Giải pháp đề xuất**:
-    *   Tích hợp dịch vụ xác thực như **Firebase Auth**, **Auth0** hoặc tự xây dựng với **JWT** (JSON Web Tokens) kết hợp mã hóa mật khẩu `bcrypt`.
-    *   Phân quyền người dùng: Người dùng miễn phí (Free Tier - có hạn mức dùng thử AI) và người dùng trả phí (Premium Tier - mở khóa không giới hạn).
-    *   Bảo mật API Key: Không cho phép người dùng tự cấu hình API Key ở Client, thay vào đó máy chủ quản lý API Key an toàn ở file `.env`.
+| ID | Việc cần làm | Bằng chứng / lý do | Tiêu chí hoàn thành |
+| --- | --- | --- | --- |
+| P0-01 | Thống nhất package manager, runtime và lockfile | Có npm/pnpm lockfile; dependency khai báo ở `package-lock.json` lệch `package.json` | Một package manager được chọn, lockfile khớp; clone mới → frozen install → lint → test → build thành công; ghi `engines`/`packageManager` phù hợp |
+| P0-02 | Tách unit test và integration AI trong CI | CI đã có, nhưng chưa cài Python/model; Tutor test gọi model thực | Unit suite chạy không cần key/model; integration job có setup hoặc skip có lý do; không dùng fallback install để che lỗi lockfile |
+| P0-03 | Kiểm tra trạng thái AI thực và chuẩn hóa `.env.example` | `/api/status` báo cấu hình, không probe endpoint; placeholder có thể bị hiểu là khóa thật | UI phân biệt configured/ready/error/demo; cấu hình mẫu chạy được theo 3 chế độ README, không chứa placeholder bị coi là key hợp lệ |
+| P0-04 | Hoàn thiện một kịch bản demo có thể lặp lại | Đã có ảnh và script NotebookLM; chưa có E2E toàn bộ pipeline Library | TXT mẫu → phân tích → chọn file → hỏi đáp → quiz; reload vẫn đúng dữ liệu; báo lỗi rõ khi model tắt; có script và evidence |
+| P0-05 | Đánh giá chất lượng câu trả lời và nguồn | Local đã trả lời thật, nhưng một lần thử đã diễn giải sai tác động của props lên UI | Bộ câu hỏi có đáp án chuẩn và nguồn; chấm đúng/sai, câu ngoài nguồn, câu có prompt injection; ghi kết quả thay vì chỉ check HTTP 200 |
+| P0-06 | Thống nhất tên, lời giới thiệu và dữ liệu demo | UI dùng VietLearn, repo WorkNote, package tên `react-example`; một số câu UI ngụ ý mọi dữ liệu local | Tên và mô tả thống nhất; giải thích cloud rõ; dữ liệu demo tách khỏi dữ liệu cá nhân; bổ sung thông tin tác giả/liên hệ đúng thực tế trước gửi hồ sơ |
 
-## 2. Tích hợp Cơ sở Dữ liệu (Database Integration)
-*   **Vấn đề hiện tại**: Toàn bộ dữ liệu (file upload, quizzes sinh ra, sơ đồ tư duy, lịch sử chat, budget chi tiêu) sẽ bị xóa sạch khi người dùng tải lại trang (F5).
-*   **Giải pháp đề xuất**:
-    *   Tích hợp hệ quản trị cơ sở dữ liệu quan hệ **PostgreSQL** (hoặc **MongoDB** cho cấu hình sơ đồ tư duy linh hoạt).
-    *   **Lưu trữ dữ liệu**:
-        *   Bảng `users`: Thông tin người dùng, cấp độ tài khoản, lịch sử học tập.
-        *   Bảng `documents`: Lưu trữ nội dung văn bản đã OCR, kết quả tóm tắt, sơ đồ tư duy JSON và câu hỏi trắc nghiệm ôn tập. Khi người dùng khác tải lên file trùng (check hash SHA-256), chỉ cần đọc trực tiếp từ DB mà không cần gọi sang Gemini API (giúp tiết kiệm **95%** chi phí vận hành).
-        *   Bảng `chat_histories`: Lưu trữ các cuộc hội thoại hỏi đáp để người dùng có thể xem lại bài học cũ.
+Bộ README, hướng dẫn ảnh, PRD, kiến trúc và báo cáo hiện tại đã được cập nhật. P0 ở trên là phần engineering/đóng gói còn lại, không yêu cầu xây thêm nhiều module để làm portfolio hấp dẫn hơn.
 
-## 3. Nâng cấp Lab Âm thanh qua WebSockets & WebRTC
-*   **Vấn đề hiện tại**: Tính năng live translation ([AudioSpeechLab.tsx](file:///d:/Nam-4/Build-app-web/WorkNote/src/components/AudioSpeechLab.tsx)) đang gửi request HTTP POST mỗi 6 giây. Việc này tạo ra độ trễ cao và tốn tài nguyên kết nối TCP.
-*   **Giải pháp đề xuất**:
-    *   Sử dụng thư viện **Socket.io** thiết lập kết nối song công liên tục (WebSocket).
-    *   Frontend stream dữ liệu âm thanh dạng nhị phân thô (Raw PCM / WebM chunks) liên tục với độ trễ thấp (< 1 giây).
-    *   Máy chủ nhận luồng âm thanh và trung chuyển sang API Stream của Gemini hoặc Whisper để trả về văn bản dịch tức thời (Real-time Speech Translation).
+## P1 — Trước khi mở demo công khai có upload/AI
 
-## 4. Tăng tính tương tác cho Game RPG 2D
-*   **Vấn đề hiện tại**: Trò chơi RPG hiện tại ở dạng cơ bản, chưa liên kết sâu với tiến trình học tập.
-*   **Giải pháp đề xuất**:
-    *   Đồng bộ hóa kết quả: Lưu điểm số, thời gian làm bài, tỷ lệ trả lời đúng của học sinh vào cơ sở dữ liệu.
-    *   Bảng xếp hạng (Leaderboard): Hiển thị bảng vinh danh các học sinh có điểm số RPG cao nhất trong tuần.
-    *   Cơ chế đổi thưởng: Liên kết với tính năng Sổ chi tiêu sinh viên (Student Budget Tracker), học sinh làm bài tập RPG đúng sẽ được cộng "tiền thưởng ảo" vào quỹ chi tiêu học tập trong app.
+| ID | Việc cần làm | Hiện trạng | Tiêu chí hoàn thành |
+| --- | --- | --- | --- |
+| P1-01 | Auth và quyền sở hữu dữ liệu | Notebook API dùng store chung, chưa kiểm tra user; Firebase mới có client init | User A không đọc/sửa/xóa notebook hoặc nguồn của B; auth kiểm tra server-side, có test 401/403 |
+| P1-02 | Database, backup và migration | Notebook lưu JSON; Library ở IndexedDB; không phải dữ liệu đều mất khi F5 như roadmap cũ | DB có schema/migration và ownership; backup/restore được thử; rõ dữ liệu client/server; không mất ghi khi nhiều request |
+| P1-03 | Đồng nhất giới hạn upload và xử lý lỗi | UI có nhãn 200MB, route có giới hạn 20 MiB/2 GiB; ảnh và notebook chưa theo cùng quy tắc | Một contract theo loại file; UI/API đồng nhất; thử sát giới hạn, MIME sai, cancel, timeout; đo RAM/đĩa; dọn file tạm cả khi lỗi |
+| P1-04 | Bảo vệ đường nhập URL | Route fetch có timeout/size nhưng không đủ chứng minh chống SSRF | Kiểm tra protocol, IP nội bộ, DNS và redirect; kiểm tra size trong lúc đọc; tests dùng server/fixture an toàn |
+| P1-05 | Ngân sách AI, privacy và khả năng quan sát | Limiter/quota theo tiến trình; một số route không qua text router | Hạn mức theo user, timeout/retry có giới hạn, log không ghi nội dung nhạy cảm, theo dõi provider/latency/cost; kiểm tra PII từng luồng |
+| P1-06 | Bộ phụ thuộc embedding có thể tái tạo | Phiên chạy fallback do thiếu `torch` | Requirements riêng cho embedding, setup có hướng dẫn, test xác nhận thật sự chạy neural và test riêng cho fallback |
+| P1-07 | Tối ưu bundle và các trạng thái UI | JS build ~1.472 MB (decimal), gzip ~429 KB; mindmap mới có thể hiện cây mẫu; capture ghi lỗi SVG `rbox` khi chuyển tab | Lazy-load tab lớn, đo trước/sau; cây mẫu không bị hiểu là AI; chuyển tab không phát sinh lỗi SVG; kiểm tra bàn phím, mobile, loading/empty/error |
+| P1-08 | Kiểm chứng deployment | Production chạy local, chưa deploy từ phiên này | Một môi trường demo có dữ liệu giả, health checks, restart/rollback; người khác mở và làm được walkthrough; kiểm tra giấy phép repo/assets/model trước phát hành |
 
-## 5. Đồng bộ hóa Cache phân tán với Redis
-*   **Vấn đề hiện tại**: Khi chạy Cluster Mode với PM2 trên nhiều core CPU (hoặc nhiều server vật lý), cache lưu trong bộ nhớ RAM cục bộ của tiến trình này sẽ không thể dùng chung cho tiến trình khác.
-*   **Giải pháp đề xuất**:
-    *   Cài đặt máy chủ **Redis** làm bộ nhớ đệm dùng chung cho toàn hệ thống.
-    *   Sử dụng Redis để lưu trữ:
-        *   Trạng thái Rate Limiting của người dùng (đồng bộ IP blacklist).
-        *   Kết quả phân tích tài liệu (SHA-256 cache).
-        *   Phiên đăng nhập (Session store) của người dùng.
+## P2 — Sau khi luồng chính ổn định
 
-## 6. Container hóa & Quy trình Triển khai tự động (Docker & CI/CD)
-*   **Vấn đề hiện tại**: Việc cấu hình môi trường chạy máy chủ thủ công dễ xảy ra lỗi không đồng nhất hệ điều hành (Windows vs Linux).
-*   **Giải pháp đề xuất**:
-    *   Viết tệp `Dockerfile` đóng gói toàn bộ ứng dụng Node.js + React.
-    *   Thiết lập luồng tự động build và deploy **CI/CD** (GitHub Actions / GitLab CI) đẩy container lên các nền tảng đám mây như Google Cloud Run, AWS ECS hoặc Render khi có code mới.
+- Đánh giá câu hỏi ôn tập, lịch sử học và spaced repetition bằng dữ liệu đo được.
+- Kiểm chứng WebSocket audio/lobby hiện có trước khi mở rộng multiplayer; đo reconnect và độ trễ, không giả định chưa có WebSocket.
+- Thử tài liệu dài, PDF scan, DOCX/XLSX và media theo ma trận provider; ghi rõ các trường hợp phụ thuộc cloud.
+- Chỉ bổ sung Redis, queue phân tán hoặc nhiều instance khi đã đo được nút thắt; đồng bộ storage, limiter, job và lobby trước khi cluster.
+- Bổ sung video demo ngắn và bản README tiếng Anh sau khi kịch bản demo đã ổn định.
+
+## Những tuyên bố cần số đo trước khi đưa vào CV
+
+Không dùng “tiết kiệm 95–98% token”, “chịu hàng nghìn người dùng”, “không còn 429”, “100% offline/toàn bộ dữ liệu an toàn”, “AI chính xác tuyệt đối” làm kết quả đã đạt. Hiện chưa có benchmark để chứng minh. Có thể trình bày phần thực sự có: tích hợp local LLM, phân tách backend, multipart upload, lưu trữ trình duyệt, source-based chat và 29 tests đạt trên môi trường đã ghi nhận.
+
+## Kịch bản trình bày dự án trong 5 phút
+
+1. **30 giây:** bài toán tài liệu rời rạc và luồng học tập chính.
+2. **2 phút:** file mẫu → NotebookLM → gắn nguồn → câu hỏi → nhãn local → Mind Maps.
+3. **1 phút:** giải thích React/Express/Python, nơi lưu dữ liệu và quyết định local/cloud.
+4. **1 phút:** mở tests và báo cáo, phân biệt pass chức năng với chất lượng AI.
+5. **30 giây:** nêu một giới hạn thực tế và hướng xử lý, ví dụ quyền sở hữu dữ liệu hoặc clean install.
+
+Ghi đúng phần bạn tự thực hiện, phần dùng thư viện/model và cách dùng công cụ hỗ trợ. Không tự gán số người dùng, vai trò trong nhóm hoặc hiệu quả kinh doanh khi chưa có bằng chứng.

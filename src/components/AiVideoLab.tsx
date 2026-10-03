@@ -168,28 +168,21 @@ function loadYouTubeApi(): Promise<void> {
   return ytApiPromise;
 }
 
-/** Read an uploaded file's bytes as base64 (for sending to the transcribe API). */
-async function fileToBase64(file: UploadedFile): Promise<string | null> {
-  if (file.base64Data) return file.base64Data;
-  let blob = file.blob;
-  if (!blob && file.objectUrl) {
+/** Lấy dữ liệu file dạng Blob để gửi Multipart FormData (tránh phình RAM và lỗi 413) */
+async function fileToBlob(file: UploadedFile): Promise<Blob | null> {
+  if (file.blob) return file.blob;
+  if (file.objectUrl) {
     try {
-      blob = await (await fetch(file.objectUrl)).blob();
-    } catch {
-      /* ignore */
-    }
+      return await (await fetch(file.objectUrl)).blob();
+    } catch {}
   }
-  if (!blob) return null;
-  return new Promise((resolve) => {
-    const r = new FileReader();
-    r.onload = () => {
-      const s = String(r.result || "");
-      const comma = s.indexOf(",");
-      resolve(comma >= 0 ? s.slice(comma + 1) : s);
-    };
-    r.onerror = () => resolve(null);
-    r.readAsDataURL(blob!);
-  });
+  if (file.base64Data) {
+    try {
+      const res = await fetch(`data:${file.mimeType || "application/octet-stream"};base64,${file.base64Data}`);
+      return await res.blob();
+    } catch {}
+  }
+  return null;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────────
@@ -275,12 +268,17 @@ export default function AiVideoLab({ file }: AiVideoLabProps) {
     setTranscribing(true);
     setTranscribeErr(null);
     try {
-      const b64 = await fileToBase64(file);
-      if (!b64) throw new Error("Không đọc được dữ liệu file. Hãy tải lại file.");
+      const blob = await fileToBlob(file);
+      if (!blob) throw new Error("Không đọc được dữ liệu file. Hãy tải lại file.");
+      
+      const formData = new FormData();
+      formData.append("file", blob, file.name || "media.mp3");
+      formData.append("name", file.name);
+      formData.append("mimeType", file.mimeType || "audio/mpeg");
+
       const res = await fetch("/api/transcribe", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ base64Data: b64, mimeType: file.mimeType, name: file.name }),
+        body: formData,
       });
       const data = await res.json();
       if (!res.ok || !data?.success || !data.segments?.length) {

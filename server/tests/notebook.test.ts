@@ -2,6 +2,7 @@ import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import {
   createPage,
+  updatePage,
   createSource,
   getPage,
   listPages,
@@ -55,6 +56,22 @@ describe("notebookService CRUD", () => {
     const ctx = buildNotebookContext(page.id);
     assert.ok(ctx.includes("Lesson"));
     assert.ok(ctx.includes("Important fact"));
+  });
+
+  it("persists a generated mindmap on a notebook page", () => {
+    const page = createPage({ title: "Lesson" });
+    const updated = updatePage(page.id, {
+      mindmap: { id: "root", label: "Lesson", children: [] },
+      mindmapMeta: {
+        provider: "local",
+        model: "test-model",
+        sourceHash: "abc123",
+        generatedAt: new Date().toISOString(),
+      },
+    });
+
+    assert.equal(updated?.mindmap?.label, "Lesson");
+    assert.equal(getPage(page.id)?.mindmapMeta?.provider, "local");
   });
 });
 

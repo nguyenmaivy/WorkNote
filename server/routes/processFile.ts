@@ -2,19 +2,13 @@ import { Router } from "express";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { UPLOAD_DIR, GEMINI_MODEL, MAX_FILE_SIZE_BYTES } from "../config.js";
-import { getAiClient, geminiLimiter, hasApiKey, withGeminiRetry, friendlyGeminiError } from "../services/geminiService.js";
-import {
-  getSafeGeminiPayload,
-  buildFileAnalysisPrompt,
-  FILE_ANALYSIS_RESPONSE_SCHEMA,
-  looseParseJson,
-  normalizeAnalysis,
-} from "../services/fileService.js";
+import { UPLOAD_DIR, MAX_FILE_SIZE_BYTES, MAX_DOC_FILE_SIZE_BYTES } from "../config.js";
+import { uploadQueue } from "../services/uploadQueue.js";
+import { getStats as getProviderStats } from "../services/rateLimitTracker.js";
+import { processFileCoreController } from "../controllers/processFileController.js";
 
 const router = Router();
 
-// Multer với disk storage để tránh nghẽn RAM
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
   filename: (_req, file, cb) => {
@@ -28,115 +22,58 @@ const upload = multer({
   limits: { fileSize: MAX_FILE_SIZE_BYTES },
 });
 
-// ─── Demo Mock Data ───────────────────────────────────────────────────────────
-function buildDemoResponse(name: string) {
-  return {
-    success: true,
-    isDemo: true,
-    summary: `### Tóm tắt tài liệu: ${name}\n\nĐây là chế độ Demo (Chưa cấu hình GEMINI_API_KEY trong Secrets).\nTài liệu của bạn chứa thông tin học tập quan trọng. Sau khi cấu hình API Key, AI sẽ đọc chính xác từng dòng và chuyển thể thành các định dạng tương tác dưới đây.`,
-    extractedText: `Văn bản mẫu được giả lập cho tài liệu ${name}. Xin hãy cấu hình API Key của bạn trong Secrets để sử dụng sức mạnh xử lý thực tế của gemini-3.5-flash!`,
-    quiz: [
-      {
-        id: "q1",
-        question: "Làm thế nào để chuyển đổi Web App thông thường sang ứng dụng Mobile?",
-        options: [
-          "Chỉ có thể viết lại toàn bộ từ đầu bằng ngôn ngữ khác",
-          "Sử dụng Hybrid Framework như React Native, Expo, Flutter hoặc Capacitor",
-          "Dùng trình duyệt Safari trên điện thoại để mở thủ công",
-          "Cài đặt trực tiếp file .exe lên điện thoại Android",
-        ],
-        correctAnswer: "Sử dụng Hybrid Framework như React Native, Expo, Flutter hoặc Capacitor",
-        explanation: "Các Hybrid Framework cho phép biên dịch một cơ sở mã nguồn ra cả Android, iOS và Web.",
-      },
-    ],
-    mindmap: {
-      id: "root",
-      label: name,
-      children: [
-        {
-          id: "node_1",
-          label: "1. Kiến Trúc Đa Nền Tảng",
-          children: [
-            { id: "node_1_1", label: "Frontend: React / React Native" },
-            { id: "node_1_2", label: "Backend: Express / Node.js" },
-          ],
-        },
-      ],
-    },
-  };
-}
+// Middleware: Backpressure kiểm tra dung lượng đĩa (cần trống ít nhất 5GB)
+const checkDiskSpace = async (req: any, res: any, next: any) => {
+  try {
+    const stats = await fs.promises.statfs(UPLOAD_DIR);
+    const availableBytes = stats.bavail * stats.bsize;
+    if (availableBytes < 5 * 1024 * 1024 * 1024) { // 5GB
+      return res.status(507).json({ error: "Server đang quá tải dung lượng (Disk Full), vui lòng thử lại sau." });
+    }
+    next();
+  } catch (err) {
+    console.error("[DiskCheck] Error checking disk space", err);
+    next();
+  }
+};
+
+// ─── GET /api/process-file/status ────────────────────────────────────────────
+router.get("/status", (_req, res) => {
+  res.json({
+    queue: uploadQueue.getStats(),
+    queueList: uploadQueue.getQueueList(),
+    providers: getProviderStats(),
+  });
+});
 
 // ─── POST /api/process-file ───────────────────────────────────────────────────
-router.post("/", upload.single("file"), async (req, res): Promise<any> => {
-  let tempFilePath: string | null = null;
-  try {
-    let name: string;
-    let mimeType: string;
-    let base64Data: string;
-    let buffer: Buffer;
+router.post("/", checkDiskSpace, upload.single("file"), async (req, res): Promise<any> => {
+  // Xác định priority trước khi đưa vào queue
+  const rawMime = req.body?.mimeType || req.file?.mimetype || "";
+  const rawName = req.body?.name || req.file?.originalname || "";
+  const ext = (rawName.split(".").pop() || "").toLowerCase();
+  
+  const isAudioVideo =
+    rawMime.startsWith("audio/") || rawMime.startsWith("video/") ||
+    ["mp3", "wav", "m4a", "ogg", "mp4", "webm", "mov", "avi"].includes(ext);
+  const isImage =
+    rawMime.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif"].includes(ext);
 
-    if (req.file) {
-      tempFilePath = req.file.path;
-      name = req.body.name || req.file.originalname;
-      mimeType = req.body.mimeType || req.file.mimetype;
-      buffer = await fs.promises.readFile(tempFilePath);
-      base64Data = buffer.toString("base64");
-    } else {
-      const { name: bodyName, mimeType: bodyMime, base64Data: bodyBase64 } = req.body;
-      if (!bodyBase64) {
-        return res.status(400).json({ error: "Missing file payload (multipart or base64)" });
-      }
-      name = bodyName;
-      mimeType = bodyMime;
-      base64Data = bodyBase64;
-      buffer = Buffer.from(base64Data, "base64");
-    }
+  const fileSize = req.file?.size || (req.body?.base64Data ? (req.body.base64Data.length * 3 / 4) : 0);
 
-    if (!hasApiKey()) {
-      return res.json(buildDemoResponse(name));
-    }
-
-    const ai = getAiClient();
-    const payload = await getSafeGeminiPayload(name, mimeType || "application/octet-stream", base64Data, buffer);
-    const promptMessage = buildFileAnalysisPrompt(name);
-
-    const contentsPayload =
-      payload.type === "multimodal"
-        ? [payload.filePart, promptMessage]
-        : [promptMessage + `\n\nNội dung văn bản:\n${payload.textContent}`];
-
-    const rawText = await geminiLimiter.run(() =>
-      withGeminiRetry(async () => {
-        const response = await ai.models.generateContent({
-          model: GEMINI_MODEL,
-          contents: contentsPayload,
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: FILE_ANALYSIS_RESPONSE_SCHEMA,
-          },
-        });
-        return response.text || "";
-      })
-    );
-
-    const parsedData = looseParseJson(rawText);
-    if (!parsedData) {
-      return res.status(400).json({
-        error: "Nội dung tệp quá dài hoặc phức tạp để phân tích trọn vẹn. Hãy thử tệp ngắn gọn hơn.",
-      });
-    }
-
-    return res.json({ success: true, ...normalizeAnalysis(parsedData, name) });
-  } catch (error: any) {
-    console.error("Error in /api/process-file:", error);
-    res.status(500).json({ error: friendlyGeminiError(error) });
-  } finally {
-    if (tempFilePath) {
-      fs.promises.unlink(tempFilePath).catch((e) =>
-        console.warn("Failed to delete temp file:", tempFilePath, e)
-      );
-    }
+  // Xử lý Backpressure (Giai đoạn 1): Loại bỏ file Document > 20MB
+  if (!isAudioVideo && !isImage && fileSize > MAX_DOC_FILE_SIZE_BYTES) {
+    return res.status(413).json({ error: `Dung lượng tệp tài liệu vượt quá giới hạn 20MB. Hệ thống chỉ hỗ trợ đến 2GB cho tệp tin Âm thanh/Video.` });
   }
+
+  // Priority: 0=vision(ảnh/scan), 1=audio/video, 2=document text
+  const priority = isImage ? 0 : isAudioVideo ? 1 : 2;
+  const label = `${rawName || "file"} [${isImage ? "vision" : isAudioVideo ? "av" : "doc"}]`;
+
+  return uploadQueue.enqueue(
+    () => processFileCoreController(req, res),
+    { priority, label }
+  );
 });
 
 export default router;

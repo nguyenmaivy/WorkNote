@@ -1,6 +1,9 @@
 import { randomUUID } from "crypto";
+import fs from "fs";
+import path from "path";
+import type { MindMapNodeData } from "./mindMapGenerationService.js";
 
-// ─── In-memory store (prototype per spec) ─────────────────────────────────────
+// ─── JSON file persistence ─────────────────────────────────────────────────────
 
 export type NotebookSourceType = "document" | "url" | "transcript" | "youtube" | "text";
 
@@ -21,12 +24,59 @@ export interface NotebookPage {
   content: string;
   sourceIds: string[];
   metadata?: Record<string, string>;
+  mindmap?: MindMapNodeData;
+  mindmapMeta?: {
+    provider: string;
+    model: string;
+    sourceHash: string;
+    generatedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
 
-const pages = new Map<string, NotebookPage>();
-const sources = new Map<string, NotebookSource>();
+const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_FILE = path.join(DATA_DIR, "notebook.json");
+const IS_TEST_RUNTIME =
+  process.env.NODE_ENV === "test" ||
+  !!process.env.NODE_TEST_CONTEXT ||
+  process.argv.some((arg) => /server[\\/]tests[\\/]/i.test(arg));
+
+function loadStore(): { pages: Record<string, NotebookPage>; sources: Record<string, NotebookSource> } {
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(DATA_FILE)) return { pages: {}, sources: {} };
+    const raw = fs.readFileSync(DATA_FILE, "utf-8");
+    const parsed = JSON.parse(raw);
+    return {
+      pages: parsed.pages || {},
+      sources: parsed.sources || {},
+    };
+  } catch {
+    console.warn("[NotebookStore] Không đọc được notebook.json, khởi động với store rỗng.");
+    return { pages: {}, sources: {} };
+  }
+}
+
+const _initial = loadStore();
+const pages = new Map<string, NotebookPage>(Object.entries(_initial.pages));
+const sources = new Map<string, NotebookSource>(Object.entries(_initial.sources));
+
+let _saveTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleSave(): void {
+  if (IS_TEST_RUNTIME) return;
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    _saveTimer = null;
+    const data = {
+      pages: Object.fromEntries(pages),
+      sources: Object.fromEntries(sources),
+    };
+    fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8", (err) => {
+      if (err) console.error("[NotebookStore] Lưu notebook.json thất bại:", err.message);
+    });
+  }, 300);
+}
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -47,6 +97,9 @@ export function validatePageInput(input: Partial<NotebookPage>): string | null {
   }
   if (input.sourceIds !== undefined && !Array.isArray(input.sourceIds)) {
     return "sourceIds must be an array";
+  }
+  if (input.mindmap !== undefined && (!input.mindmap || typeof input.mindmap.label !== "string")) {
+    return "mindmap must contain a label";
   }
   return null;
 }
@@ -92,12 +145,13 @@ export function createPage(data: { title: string; content?: string; sourceIds?: 
     updatedAt: ts,
   };
   pages.set(page.id, page);
+  scheduleSave();
   return page;
 }
 
 export function updatePage(
   id: string,
-  data: Partial<Pick<NotebookPage, "title" | "content" | "sourceIds" | "metadata">>
+  data: Partial<Pick<NotebookPage, "title" | "content" | "sourceIds" | "metadata" | "mindmap" | "mindmapMeta">>
 ): NotebookPage | null {
   const existing = pages.get(id);
   if (!existing) return null;
@@ -108,14 +162,19 @@ export function updatePage(
     ...(data.content !== undefined ? { content: data.content } : {}),
     ...(data.sourceIds !== undefined ? { sourceIds: data.sourceIds } : {}),
     ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
+    ...(data.mindmap !== undefined ? { mindmap: data.mindmap } : {}),
+    ...(data.mindmapMeta !== undefined ? { mindmapMeta: data.mindmapMeta } : {}),
     updatedAt: nowIso(),
   };
   pages.set(id, updated);
+  scheduleSave();
   return updated;
 }
 
 export function deletePage(id: string): boolean {
-  return pages.delete(id);
+  const deleted = pages.delete(id);
+  if (deleted) scheduleSave();
+  return deleted;
 }
 
 // ─── Sources CRUD ─────────────────────────────────────────────────────────────
@@ -152,6 +211,7 @@ export function createSource(data: {
     updatedAt: ts,
   };
   sources.set(source.id, source);
+  scheduleSave();
   return source;
 }
 
@@ -164,11 +224,48 @@ export function deleteSource(id: string): boolean {
         page.updatedAt = nowIso();
       }
     }
+    scheduleSave();
   }
   return deleted;
 }
 
 // ─── Context assembly ─────────────────────────────────────────────────────────
+
+/**
+ * Chia nội dung dài thành các chunk theo đoạn văn, trả về phần liên quan nhất.
+ * Mỗi chunk tối đa maxChunkLen ký tự, tổng context tối đa totalLimit ký tự.
+ */
+export function chunkContent(content: string, totalLimit = 6000, maxChunkLen = 1000): string {
+  if (content.length <= totalLimit) return content;
+
+  // Chia theo đoạn văn (2+ newlines) hoặc sentence
+  const paragraphs = content
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 20);
+
+  if (paragraphs.length === 0) return content.slice(0, totalLimit);
+
+  // Lấy đoạn đầu, đoạn giữa, đoạn cuối để có coverage tốt hơn slice(0, N)
+  const result: string[] = [];
+  let totalLen = 0;
+
+  // Luôn lấy đoạn đầu (intro/context)
+  const head = paragraphs.slice(0, 3);
+  // Luôn lấy đoạn cuối (conclusion/summary)
+  const tail = paragraphs.slice(-2);
+  // Phần giữa
+  const middle = paragraphs.slice(3, -2);
+
+  for (const p of [...head, ...middle, ...tail]) {
+    const chunk = p.length > maxChunkLen ? p.slice(0, maxChunkLen) + "…" : p;
+    if (totalLen + chunk.length > totalLimit) break;
+    result.push(chunk);
+    totalLen += chunk.length;
+  }
+
+  return result.join("\n\n");
+}
 
 export function buildNotebookContext(pageId?: string, extraQuery?: string): string {
   const parts: string[] = [];
@@ -179,7 +276,7 @@ export function buildNotebookContext(pageId?: string, extraQuery?: string): stri
       parts.push(`## Ghi chú notebook: ${page.title}\n${page.content}`);
       const attached = getSourcesByIds(page.sourceIds);
       for (const src of attached) {
-        parts.push(`## Nguồn đính kèm: ${src.title}\n${src.content.slice(0, 4000)}`);
+        parts.push(`## Nguồn đính kèm: ${src.title}\n${chunkContent(src.content, 4000)}`);
       }
     }
   }
@@ -193,6 +290,10 @@ export function buildNotebookContext(pageId?: string, extraQuery?: string): stri
 
 /** Reset store — for tests only */
 export function _resetStoreForTests(): void {
+  if (_saveTimer) {
+    clearTimeout(_saveTimer);
+    _saveTimer = null;
+  }
   pages.clear();
   sources.clear();
 }

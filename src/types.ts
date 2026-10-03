@@ -15,6 +15,14 @@ export interface MindMapNode {
   icon?: string;           // emoji hoặc icon identifier
   notes?: string;          // ghi chú chi tiết cho node
   color?: string;          // override color cho node
+  sourceIds?: string[];    // nguồn Library/NotebookLM tạo ra node
+}
+
+export interface MindMapMeta {
+  provider: string;
+  model: string;
+  sourceHash: string;
+  generatedAt: string;
 }
 
 export interface UploadedFile {
@@ -27,6 +35,7 @@ export interface UploadedFile {
   extractedText?: string;
   quiz?: QuizQuestion[];
   mindmap?: MindMapNode;
+  mindmapMeta?: MindMapMeta;
   status: "idle" | "processing" | "success" | "error";
   errorMsg?: string;
   sourceUrl?: string; // URL gốc nếu file được nạp từ link — để "Thử lại" chạy lại được
@@ -40,6 +49,8 @@ export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
   timestamp: string;
+  provider?: "local" | "gemini" | "openrouter" | "groq";
+  model?: string;
 }
 
 export type TechTopicId =
@@ -106,6 +117,7 @@ export interface LiveAudioTranslateResponse {
   isDemo?: boolean;
   transcription: string;
   translation: string;
+  translatedText?: string;
 }
 
 export type AccentRegion = "north" | "central" | "south";
@@ -141,6 +153,8 @@ export interface NotebookPage {
   content: string;
   sourceIds: string[];
   metadata?: Record<string, string>;
+  mindmap?: MindMapNode;
+  mindmapMeta?: MindMapMeta;
   createdAt: string;
   updatedAt: string;
 }
@@ -155,6 +169,8 @@ export interface NotebookSearchSnippet {
 export interface NotebookChatResponse {
   success: boolean;
   reply: string;
+  provider?: "local" | "gemini" | "openrouter" | "groq";
+  model?: string;
   snippets?: NotebookSearchSnippet[];
   isDemo?: boolean;
 }
@@ -162,12 +178,16 @@ export interface NotebookChatResponse {
 export interface NotebookSummaryResponse {
   success: boolean;
   summary: string;
+  provider?: "local" | "gemini" | "openrouter" | "groq";
+  model?: string;
   isDemo?: boolean;
 }
 
 export interface NotebookQuizResponse {
   success: boolean;
   quiz: QuizQuestion[];
+  provider?: "local" | "gemini" | "openrouter" | "groq";
+  model?: string;
   isDemo?: boolean;
 }
 
@@ -194,6 +214,20 @@ export interface NotebookSourceResponse {
 export interface NotebookSearchResponse {
   success: boolean;
   snippets: NotebookSearchSnippet[];
+}
+
+export interface MindMapGenerationResponse {
+  success: boolean;
+  mindmap: MindMapNode;
+  provider: "local" | "gemini" | "openrouter" | "groq";
+  model: string;
+  sourceHash: string;
+  stats: {
+    sourceCount: number;
+    totalChunks: number;
+    analyzedChunks: number;
+    sampled: boolean;
+  };
 }
 
 export type TranslateSourceField = "summary" | "extractedText";

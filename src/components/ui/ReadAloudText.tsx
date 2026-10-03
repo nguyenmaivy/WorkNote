@@ -31,6 +31,58 @@ const VOICE_OPTIONS: Record<string, { id: string; label: string }[]> = {
     { id: "en-US-EmmaNeural", label: "Emma (Nữ)" },
     { id: "en-US-BrianNeural", label: "Brian (Nam)" },
   ],
+  ja: [
+    { id: "ja-JP-NanamiNeural", label: "Nanami (Nữ)" },
+    { id: "ja-JP-KeitaNeural", label: "Keita (Nam)" },
+  ],
+  ko: [
+    { id: "ko-KR-SunHiNeural", label: "Sun-Hi (Nữ)" },
+    { id: "ko-KR-InJoonNeural", label: "In-Joon (Nam)" },
+  ],
+  zh: [
+    { id: "zh-CN-XiaoxiaoNeural", label: "Xiaoxiao (Nữ)" },
+    { id: "zh-CN-YunxiNeural", label: "Yunxi (Nam)" },
+  ],
+  fr: [
+    { id: "fr-FR-DeniseNeural", label: "Denise (Nữ)" },
+    { id: "fr-FR-HenriNeural", label: "Henri (Nam)" },
+  ],
+  de: [
+    { id: "de-DE-KatjaNeural", label: "Katja (Nữ)" },
+    { id: "de-DE-ConradNeural", label: "Conrad (Nam)" },
+  ],
+  es: [
+    { id: "es-ES-ElviraNeural", label: "Elvira (Nữ)" },
+    { id: "es-ES-AlvaroNeural", label: "Alvaro (Nam)" },
+  ],
+  ru: [
+    { id: "ru-RU-SvetlanaNeural", label: "Svetlana (Nữ)" },
+    { id: "ru-RU-DmitryNeural", label: "Dmitry (Nam)" },
+  ],
+  it: [
+    { id: "it-IT-ElsaNeural", label: "Elsa (Nữ)" },
+    { id: "it-IT-DiegoNeural", label: "Diego (Nam)" },
+  ],
+  pt: [
+    { id: "pt-BR-FranciscaNeural", label: "Francisca (Nữ)" },
+    { id: "pt-BR-AntonioNeural", label: "Antonio (Nam)" },
+  ],
+  th: [
+    { id: "th-TH-PremwadeeNeural", label: "Premwadee (Nữ)" },
+    { id: "th-TH-NiwatNeural", label: "Niwat (Nam)" },
+  ],
+  id: [
+    { id: "id-ID-GadisNeural", label: "Gadis (Nữ)" },
+    { id: "id-ID-ArdiNeural", label: "Ardi (Nam)" },
+  ],
+  ar: [
+    { id: "ar-SA-ZariyahNeural", label: "Zariyah (Nữ)" },
+    { id: "ar-SA-HamedNeural", label: "Hamed (Nam)" },
+  ],
+  hi: [
+    { id: "hi-IN-SwaraNeural", label: "Swara (Nữ)" },
+    { id: "hi-IN-MadhurNeural", label: "Madhur (Nam)" },
+  ],
 };
 
 const VIET_CHARS =

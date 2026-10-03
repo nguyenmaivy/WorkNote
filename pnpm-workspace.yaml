@@ -1,11 +1,8 @@
-allowBuilds:
-  '@firebase/util': true
-  '@google/genai': true
-  esbuild: true
-  msedge-tts: true
-  protobufjs: true
+packages:
+  - '.'
 onlyBuiltDependencies:
-  - "@firebase/util"
-  - "@google/genai"
+  - '@firebase/util'
+  - '@google/genai'
   - esbuild
+  - msedge-tts
   - protobufjs

@@ -1,6 +1,6 @@
 # WorkNote — VietLearn AI Lab
 
-[![CI](https://github.com/nguyenmaivy/WorkNote/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenmaivy/WorkNote/actions/workflows/ci.yml)
+[![CI](https://github.com/nguyenmaivy/WorkNote/actions/workflows/ci.yml/badge.svg?branch=ci%2Fphase6-quality-gates)](https://github.com/nguyenmaivy/WorkNote/actions/workflows/ci.yml)
 
 **Biến tài liệu học tập thành không gian hỏi đáp, sơ đồ tư duy và ôn tập tương tác.**
 
@@ -8,7 +8,7 @@ WorkNote là dự án web full-stack hướng đến sinh viên cần đọc, h�
 
 Dự án kết hợp **React + TypeScript**, **Express** và **Python local LLM**, ưu tiên xử lý văn bản bằng model cục bộ và cho phép dùng API cloud khi được cấu hình. Tên hiển thị trong giao diện hiện là **VietLearn AI Lab**; tên dự án và thư mục là **WorkNote**.
 
-> **Trạng thái:** bản phát triển phục vụ học tập và portfolio, đã chạy thử tại máy local. Chưa công bố demo trực tuyến hoặc xác nhận sẵn sàng phục vụ nhiều người dùng. Kiểm tra ngày **03/10/2026**: TypeScript đạt, **29/29 tests đạt**, build thành công. Xem [phạm vi kiểm chứng](project_docs/verification.md).
+> **Trạng thái:** bản phát triển phục vụ học tập và portfolio, đã chạy thử tại máy local. Chưa công bố demo trực tuyến hoặc xác nhận sẵn sàng phục vụ nhiều người dùng. CI ngày **03/10/2026**: lint/types đạt, **30/30 tests đạt**, build và production smoke đạt trên GitHub runner sạch. Xem [giai đoạn 6](project_docs/phase6_ci.md) và [phiên demo local AI](project_docs/verification.md).
 
 ![NotebookLM: hỏi đáp từ tài liệu mẫu bằng model local](project_docs/screenshots/03-notebook-chat.png)
 
@@ -45,7 +45,7 @@ Library và NotebookLM hiện quản lý nguồn riêng; tải file vào Library
 - **Tích hợp AI có phương án dự phòng:** router chọn local → OpenRouter → Gemini cho chat/tóm tắt/quiz đi qua router; OCR và speech dùng luồng riêng.
 - **Quản lý tài nguyên:** Multer ghi file tạm xuống đĩa, giới hạn tần suất API, hàng đợi và giới hạn đồng thời cho tác vụ AI. Các cơ chế này giảm áp lực, không bảo đảm hết lỗi quota.
 - **Kết nối Node/Python:** supervisor quản lý endpoint local tương thích OpenAI; Tutor có đường gọi local và worker Python dự phòng.
-- **Lưu trữ và kiểm thử:** IndexedDB cho Library, JSON file cho notebook; tests cho CRUD, tìm kiếm, PII, chuẩn hóa đầu ra, mindmap và Tutor. `pnpm run typecheck` kiểm tra kiểu; `pnpm run lint` chạy ESLint từ giai đoạn 6.
+- **Lưu trữ và kiểm thử:** IndexedDB cho Library, JSON file cho notebook; tests cho CRUD, tìm kiếm, PII, chuẩn hóa đầu ra, mindmap và Tutor. `corepack pnpm run typecheck` kiểm tra kiểu; `corepack pnpm run lint` chạy ESLint từ giai đoạn 6.
 
 Xem [kiến trúc và các đánh đổi](project_docs/architecture.md) để đi từ tính năng đến file mã nguồn liên quan.
 
@@ -53,7 +53,7 @@ Xem [kiến trúc và các đánh đổi](project_docs/architecture.md) để đ
 
 ### 1. Chuẩn bị và cài dependencies
 
-- **Node.js 22.14.0** và **pnpm 9.15.9**. Phiên kiểm chứng dùng Node `22.14.0`, npm `11.13.0`; không dùng hướng dẫn Node 18 cũ vì dependency PDF yêu cầu Node mới hơn.
+- **Node.js 22.14.0** và **pnpm 9.15.9**. CI dùng Node `22.14.0`, pnpm `9.15.9`; không dùng hướng dẫn Node 18 cũ vì dependency PDF yêu cầu Node mới hơn.
 - **Python 3.10** nếu chạy model local; không cần Python khi chỉ xem giao diện hoặc dùng cloud text.
 - Model GGUF cần tải khoảng **1,1 GB**; dành thêm dung lượng cho `.venv` và dependencies. Chưa đo yêu cầu RAM tối thiểu trong phiên này.
 
@@ -133,7 +133,7 @@ GROQ_API_KEY=
 ### 3. Khởi động và kiểm tra
 
 ```powershell
-pnpm run dev
+corepack pnpm run dev
 ```
 
 Mở **http://localhost:3000**. Một tiến trình Express phục vụ cả API và Vite; không cần mở thêm frontend ở cổng 5173.
@@ -153,31 +153,31 @@ Thử ngay: **NotebookLM → Tạo notebook → Tải tài liệu lên → chọ
 ### 4. Build và chạy production tại máy local
 
 ```powershell
-pnpm run build
+corepack pnpm run build
 $env:NODE_ENV = "production"
-pnpm start
+corepack pnpm start
 ```
 
 Trên macOS/Linux:
 
 ```bash
-pnpm run build
-NODE_ENV=production pnpm start
+corepack pnpm run build
+NODE_ENV=production corepack pnpm start
 ```
 
-Build tạo frontend trong `dist/` và server tại `dist/server.cjs`. Server vẫn cần `node_modules`, `.env` và Python/model nếu bật local AI. Chỉ chạy `pnpm start` mà không đặt `NODE_ENV=production` sẽ đi vào nhánh Vite development.
+Build tạo frontend trong `dist/` và server tại `dist/server.cjs`. Server vẫn cần `node_modules`, `.env` và Python/model nếu bật local AI. Chỉ chạy `corepack pnpm start` mà không đặt `NODE_ENV=production` sẽ đi vào nhánh Vite development.
 
-Dừng bằng `Ctrl+C`. Khi quay lại development trong cùng cửa sổ PowerShell, đặt `$env:NODE_ENV = "development"` rồi chạy `pnpm run dev`. Chạy từ thư mục gốc để server tìm đúng model, Python scripts và dữ liệu notebook.
+Dừng bằng `Ctrl+C`. Khi quay lại development trong cùng cửa sổ PowerShell, đặt `$env:NODE_ENV = "development"` rồi chạy `corepack pnpm run dev`. Chạy từ thư mục gốc để server tìm đúng model, Python scripts và dữ liệu notebook.
 
 ### 5. Kiểm tra chất lượng
 
 ```powershell
-pnpm run check
+corepack pnpm run check
 # Chỉ khi máy đã có Python/model:
-pnpm run test:integration
+corepack pnpm run test:integration
 ```
 
-`pnpm run check` chạy ESLint, TypeScript, backend unit tests, FE interaction tests, build và production smoke. Tutor/semantic tests được tách sang `test:integration`; máy chạy CI thông thường không cần Python/model hoặc API keys. Tìm kiếm có thể fallback nên integration pass cũng cần đối chiếu log để xác nhận neural embedding.
+`corepack pnpm run check` chạy ESLint, TypeScript, backend unit tests, FE interaction tests, build và production smoke. Tutor/semantic tests được tách sang `test:integration`; máy chạy CI thông thường không cần Python/model hoặc API keys. Tìm kiếm có thể fallback nên integration pass cũng cần đối chiếu log để xác nhận neural embedding.
 
 ## Hướng dẫn nhanh bằng ảnh
 
@@ -243,3 +243,5 @@ WorkNote/
 ## CI trên GitHub
 
 [Workflow CI](https://github.com/nguyenmaivy/WorkNote/actions/workflows/ci.yml) kiểm tra secret, dependency audit, lint/types, tests và production build/smoke. Xem [giai đoạn 6](project_docs/phase6_ci.md) và [CONTRIBUTING](CONTRIBUTING.md). Giai đoạn hiện tại chỉ CI; CD triển khai sau. Dependency audit chặn critical, các advisory mức khác vẫn được giữ trong report để xử lý.
+
+CI đang hoạt động trên nhánh `ci/phase6-quality-gates` trong [draft PR #2](https://github.com/nguyenmaivy/WorkNote/pull/2). Bản source/tài liệu này chưa merge vào `main`; để chạy đúng phiên bản, checkout nhánh đó trước khi cài dependencies. Badge hiện trỏ đến nhánh CI; chuyển badge về `main` sau khi merge.

@@ -1,5 +1,7 @@
 # WorkNote: Kế hoạch hoàn thiện 6 giai đoạn
 
+> **Cập nhật 03/10/2026:** chủ dự án đã yêu cầu thực hiện Giai đoạn 6 (CI, CD để sau). Trạng thái hiện tại và bằng chứng: [phase6_ci.md](phase6_ci.md). Các ràng buộc review phía dưới ghi lại giai đoạn lập tài liệu trước đó.
+
 > **Kế hoạch review trước đây.** Quy định triển khai và trạng thái trong tài liệu này thuộc mốc lập kế hoạch; phần biên tập tài liệu 03/10/2026 đã được chủ dự án yêu cầu. Việc cần làm hiện tại: [roadmap portfolio](future_roadmap.md).
 
 **Trạng thái:** Bản dự thảo để review, chưa phải yêu cầu triển khai đã chốt  

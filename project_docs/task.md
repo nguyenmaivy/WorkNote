@@ -12,8 +12,8 @@ Cập nhật **03/10/2026**. Chi tiết ưu tiên và tiêu chí ở [roadmap](f
 
 ## Tiếp theo — trước khi gửi hồ sơ
 
-- [ ] P0-01: thống nhất package manager/lockfile, clean install trên môi trường mới.
-- [ ] P0-02: tách unit/integration AI và làm CI tái tạo được.
+- [x] P0-01: thống nhất pnpm 9.15.9/lockfile; clean install và CI được kiểm chứng theo [giai đoạn 6](phase6_ci.md).
+- [x] P0-02: tách unit/integration AI, thêm FE tests, build/smoke và quality gate GitHub.
 - [ ] P0-03: trạng thái AI kiểm tra endpoint thật; chuẩn hóa placeholder `.env.example`.
 - [ ] P0-04: E2E Library → hỏi đáp → quiz, có reload và tình huống lỗi.
 - [ ] P0-05: đánh giá câu trả lời/nguồn, không coi mindmap “Ý chính/Ý phụ” là đạt.
@@ -73,3 +73,7 @@ Trước demo public: auth/ownership, storage, contract upload/URL, quota và ki
 - [x] Đội 3 (The Tutor): `server/routes/tutor.ts` — API endpoints `/api/tutor/chat`, `/api/tutor/summarize`, `/api/tutor/quiz-rpg`
 - [x] Đội 3 (The Tutor): `server/tests/tutor.test.ts` — Unit test cho cả 3 tính năng của The Tutor
 - [x] Chạy kiểm thử toàn diện: 18/18 tests pass ✅
+
+## Giai đoạn 6 — CI
+
+Chi tiết và kết quả live: [phase6_ci.md](phase6_ci.md). CD để sau theo yêu cầu; không có workflow deploy/release.

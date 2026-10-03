@@ -1,7 +1,7 @@
 # Workflow scope
 
 `ci.yml` validates PRs and pushes on `main`, `dev`, `frontend`, and `ci/**`.
-The `CI gate` job is the required branch-protection check. It fails if any dependency fails or is cancelled.
+The `CI gate` job is the intended branch-protection check; branch protection is pending explicit owner approval (see `project_docs/phase6_ci.md`). It fails if any dependency fails or is cancelled.
 
 This phase runs CI only. The build and isolated production smoke are checks; no release package, publish or deployment is configured. The dependency audit report is retained for review.
 

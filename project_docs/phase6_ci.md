@@ -38,3 +38,13 @@ Các job: **Secret scan**, **Dependency audit**, **Lint, tests and build**, và 
 Push commit mới lên nhánh PR để CI chạy lại. Mở tab **Checks**, xem job thất bại và log. Khi tất cả gate đạt và thay đổi đã được review, merge PR theo chính sách nhánh. CD được thiết kế ở một PR khác sau khi bạn chốt môi trường chạy.
 
 Chi tiết lệnh local và commit convention: [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+## Bằng chứng thực thi ngày 03/10/2026
+
+- [Draft PR #2](https://github.com/nguyenmaivy/WorkNote/pull/2), nhánh `ci/phase6-quality-gates`; chưa merge vào `main` vì dự án đang chỉnh sửa.
+- [Lần chạy Actions đạt](https://github.com/nguyenmaivy/WorkNote/actions/runs/37113502698) tại commit `f99f9a27fd5da74c0e542ed975e764c50bc33e42`: cả 4 jobs thành công; frozen install, ESLint, TypeScript, **27 backend + 3 frontend tests**, build và production smoke đều đạt. Tab Checks của PR cung cấp kết quả mới nhất sau từng commit.
+- Local Windows/Node 22.14.0/pnpm 9.15.9: lint/types, các test nói trên, build/smoke đạt; Gitleaks history và snapshot source không phát hiện secret.
+- Audit production: **4 low, 21 moderate, 33 high, 0 critical**. `audit:ci` đọc JSON có kiểm tra schema, chặn critical; lỗi registry/report không hợp lệ làm CI thất bại. Có 3 unit tests kiểm tra chính sách này.
+- Branch protection **chưa cấu hình**: chính sách PR/approval/admin bypass chờ chủ dự án chọn. CI có check `CI gate` nhưng chưa tự buộc main phải đạt check đó.
+
+PR chứa snapshot các module ứng dụng đã được chỉnh sửa trước công việc CI để clean checkout có đủ các import và chạy được cùng phiên bản. Đây không phải phê duyệt toàn bộ refactor. Dữ liệu notebook cá nhân, upload, `.env`, model GGUF và môi trường Python cục bộ không được commit. CD không được cấu hình.

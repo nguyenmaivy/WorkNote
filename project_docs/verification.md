@@ -2,7 +2,11 @@
 
 Mục đích: ghi rõ README và bộ ảnh dựa trên điều gì. Kiểm tra trên checkout hiện tại có sẵn dependencies và model; **chưa chạy clean install trên máy mới, chưa deploy public**.
 
-## Môi trường
+## Cập nhật sau khi triển khai CI
+
+[Giai đoạn 6](phase6_ci.md) đã xác minh frozen install trên GitHub runner sạch, lint/types, 27 backend + 3 frontend tests, build và production smoke. Bộ 29 tests có AI trong báo cáo phía dưới thuộc phiên demo trước đó. Lockfile npm đã bỏ, pnpm 9.15.9 được cố định, unit/integration được tách riêng. Git object thiếu đã khôi phục bằng refetch; đọc diff và commit/push đã hoạt động. Các giới hạn AI/UI/bảo mật còn lại vẫn cần xử lý.
+
+## Môi trường phiên demo trước CI
 
 | Thành phần | Ghi nhận |
 | --- | --- |
@@ -60,9 +64,9 @@ Phản hồi API và danh sách ảnh nằm trong [capture-report.json](screensh
 ## Tái kiểm tra
 
 ```powershell
-npm test
-npm run build
-# Terminal khác: npm run dev, chờ local model Ready
+corepack pnpm run check
+corepack pnpm run test:integration
+# Terminal khác: corepack pnpm run dev, chờ local model Ready
 node project_docs/capture-demo.mjs
 ```
 

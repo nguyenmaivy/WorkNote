@@ -1,3 +1,9 @@
+# Cập nhật 03/10/2026 — Giai đoạn 6 CI
+
+- GitHub Actions có frozen install, lint/types, 27 backend + 3 FE tests, build/smoke, secret scan và dependency audit. [Bằng chứng](phase6_ci.md).
+- Chuẩn hóa Node/pnpm/lockfile, PR template, CONTRIBUTING, Dependabot; tách integration AI cần Python/model.
+- Mở draft PR cho snapshot hiện tại; CD để sau. Branch protection chờ chủ dự án chọn chính sách.
+
 # Cập nhật 03/10/2026 — Tài liệu portfolio và demo thực tế
 
 - Viết lại README và PRD theo luồng tài liệu → hỏi đáp → ôn tập; hướng dẫn demo/local/cloud và production với `NODE_ENV` đúng.

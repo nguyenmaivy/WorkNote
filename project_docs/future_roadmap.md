@@ -1,6 +1,8 @@
-﻿# Roadmap hoàn thiện WorkNote cho portfolio
+# Roadmap hoàn thiện WorkNote cho portfolio
 
 Rà soát **03/10/2026**. Đây là danh sách đề xuất từ mã nguồn và phiên chạy thực tế, không phải thông báo các mục đã được triển khai. Ưu tiên hoàn thiện một luồng tài liệu → hỏi đáp → ôn tập đáng tin cậy trước khi mở rộng thêm tính năng.
+
+Cập nhật CI: **P0-01/P0-02 đã đạt** trên nhánh CI với runner sạch; chi tiết ở [giai đoạn 6](phase6_ci.md). Bảng phía dưới giữ bằng chứng phát hiện ban đầu; các mục khác vẫn còn mở. Package metadata hiện đã đổi thành `worknote`.
 
 ## P0 — Trước khi gửi repository cho nhà tuyển dụng
 

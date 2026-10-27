@@ -64,11 +64,11 @@ export const TABS: TabConfig[] = [
     desc: "Review knowledge through an integrated 2D RPG game with quizzes generated from your materials.",
   },
   {
-    id: "audiolab",
-    label: "Audio Lab",
-    pageTitle: "Multilingual Audio Lab",
+    id: "meeting",
+    label: "Meeting",
+    pageTitle: "Meeting & Conversation",
     icon: Mic,
-    desc: "Advanced AI-driven Text-to-Speech synthesis and real-time translation focusing on regional Vietnamese dialects.",
+    desc: "Ghi họp local, hội thoại dịch online và công cụ văn bản/TTS — chọn rõ chế độ xử lý dữ liệu.",
   },
   {
     id: "knowledge",

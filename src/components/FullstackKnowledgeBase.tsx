@@ -135,15 +135,15 @@ const responseSchema = {
     },
     {
       id: "audio_lab",
-      title: "4. Audio Speech Lab Engine",
+      title: "4. Meeting & Conversation",
       category: "PHÒNG LAB ÂM THANH",
       icon: Globe,
       color: "border-teal-400 bg-teal-50/70 text-teal-700",
       accentColor: "bg-teal-600",
-      summary: "Môi trường ghi âm micro thời gian thực và tự động phát âm đa quốc gia TTS.",
-      tech: "HTML5 MediaRecorder API, Web Audio API, Web SpeechSynthesis API",
-      files: "src/components/AudioSpeechLab.tsx",
-      details: "Phân tách âm tiết bằng trình duyệt, bóc ghi âm cục bộ rồi truyền lên AI bóc băng văn bản, hỗ trợ người học nghe hướng dẫn phát âm chính xác tiếng Anh, Nhật, Hàn dưới dạng hàng đợi giọng nói thông suốt.",
+      summary: "Một workspace cho ghi họp local, hội thoại dịch online và văn bản/TTS.",
+      tech: "Sherpa/SQLite cho local; Web Speech và Google Translate cho online",
+      files: "src/components/MeetingHub.tsx, src/components/AudioSpeechLab.tsx",
+      details: "Chế độ local lưu transcript theo phiên; hội thoại online dùng mic trình duyệt và gửi văn bản đi dịch. Hai chế độ không dùng chung engine hay tự chuyển dữ liệu cho nhau; dừng ghi trước khi phát TTS.",
       payload: `// Điều phối hàng đợi âm thanh tổng hợp đa ngôn ngữ (TTS)
 const speakOut = (text, lang) => {
   const synth = window.speechSynthesis;

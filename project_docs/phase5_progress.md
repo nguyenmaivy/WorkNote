@@ -5,6 +5,12 @@
 **Ngày cập nhật:** 2026-09-30
 **Mục tiêu:** Tách coupling Frontend và Backend theo Kế hoạch Giai đoạn 5.
 
+## Bổ sung modularization Meeting — 22/10/2026
+
+`MeetingHub.tsx` là điểm điều phối duy nhất trên sidebar: local → `MeetingWorkspace.tsx`, online/text–TTS → `AudioSpeechLab.tsx` đã thu gọn. Bỏ MediaRecorder bản ghi ngắn trùng lặp, giả waveform/voice controls không chức năng; giữ mic browser dịch live và TXT export. Không thêm engine abstraction/runtime/model mới hoặc sửa SQLite schema để đổi UI.
+
+Tách trạng thái local backend khỏi online browser; kiểm tra tất cả session trước bật audio, fail-closed nếu status lỗi; khóa đổi mục khi online mic/TTS hoạt động. Stop/unmount abort recognition, cancel playback/request và generation guard. Đây là refactor có thay đổi điều hướng được người dùng chọn, không chứng minh toàn bộ M1 production-ready. [PRD](prd.md), [tests](test_cases.md), [kết quả](meeting_m1_results.md). Báo cáo refactor 30/09 bên dưới giữ nguyên lịch sử.
+
 ## 1. Frontend Refactor (Hoàn tất)
 - Đã tách nhỏ thành công `App.tsx` (từ ~600 dòng xuống còn 169 dòng).
 - Đã bóc tách hoàn toàn `DocUploadSection.tsx` (từ 944 dòng xuống còn 82 dòng) thông qua custom hook `useDocumentUpload` và các component con.

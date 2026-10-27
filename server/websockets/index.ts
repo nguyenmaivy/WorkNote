@@ -2,6 +2,7 @@ import { WebSocketServer } from "ws";
 import type { Server } from "http";
 import { setupLiveAudioTranslateHandler } from "./liveAudioTranslateHandler.js";
 import { setupLobbyHandler } from "./lobbyHandler.js";
+import { setupMeetingUpgrade } from "./meetingHandler.js";
 
 export function initializeWebSockets(httpServer: Server) {
   // Multiple WS endpoints on one HTTP server → use noServer + route the upgrade
@@ -22,7 +23,9 @@ export function initializeWebSockets(httpServer: Server) {
     } catch {
       pathname = req.url || "";
     }
-    if (pathname === "/api/ws/translate") {
+    if (pathname === "/api/ws/meeting") {
+      setupMeetingUpgrade(req, socket, head);
+    } else if (pathname === "/api/ws/translate") {
       translateWss.handleUpgrade(req, socket, head, (ws) => translateWss.emit("connection", ws, req));
     } else if (pathname === "/api/ws/lobby") {
       lobbyWss.handleUpgrade(req, socket, head, (ws) => lobbyWss.emit("connection", ws, req));

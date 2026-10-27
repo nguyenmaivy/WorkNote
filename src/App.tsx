@@ -11,7 +11,7 @@ import DocUploadSection from "./components/DocUploadSection";
 import ChatbotSection from "./components/ChatbotSection";
 import MindMapWorkspace from "./components/MindMapWorkspace";
 import EduGamePlayground from "./components/EduGamePlayground";
-import AudioSpeechLab from "./components/AudioSpeechLab";
+import MeetingHub from "./components/MeetingHub";
 import FullstackKnowledgeBase from "./components/FullstackKnowledgeBase";
 import StudentBudgetTracker from "./components/StudentBudgetTracker";
 import NotebookWorkspace from "./components/NotebookWorkspace";
@@ -129,9 +129,9 @@ export default function App() {
                 </ErrorBoundary>
               )}
 
-              {currentTab === "audiolab" && (
-                <ErrorBoundary label="Audio Lab">
-                  <AudioSpeechLab />
+              {currentTab === "meeting" && (
+                <ErrorBoundary label="Meeting">
+                  <MeetingHub />
                 </ErrorBoundary>
               )}
 
@@ -189,7 +189,7 @@ export default function App() {
               © 2026 VietLearn AI Studio • Built with Artificial Intelligence
             </p>
             <p className="mt-2">
-              Powered by Google Gemini and TTS. All data stored locally and securely.
+              Local và cloud tùy chế độ. Kiểm tra thông báo dữ liệu trước khi dùng dịch hoặc TTS online.
             </p>
           </footer>
         </main>

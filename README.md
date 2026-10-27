@@ -36,8 +36,20 @@ Library và NotebookLM hiện quản lý nguồn riêng; tải file vào Library
 | **Mind Maps** | Chọn tài liệu hoặc notebook, tạo và chỉnh sửa cây kiến thức | Cần nguồn và LLM; có ảnh trong hướng dẫn |
 | **RPG Games** | Farm lobby, RPG Quest và Classic Quiz | Có câu hỏi mẫu; chưa kiểm chứng multiplayer hoặc đo hiệu quả học tập |
 | **AI Chatbot** | Chat với ngữ cảnh tài liệu đang chọn | Tùy cấu hình; không phải mọi nhánh AI đều chạy local |
-| **Audio / Video Lab** | Phiên âm, phụ đề, dịch và đọc văn bản | Cần mạng/provider tương ứng; chưa kiểm chứng media trong phiên tài liệu này |
+| **Meeting** | Một workspace: ghi họp local, hội thoại dịch online và văn bản/TTS | Local dùng Sherpa Việt + SQLite; online dùng mic trình duyệt/Google/Gemini. Không chạy thu local và online cùng lúc trong workspace; M1 chưa nghiệm thu 60 phút |
+| **Video trong Library** | Phiên âm, phụ đề cho media đã chọn | Luồng riêng, cần mạng/provider tương ứng; không phải capture system audio |
 | **Knowledge / Spending** | Kiến thức tĩnh, giao dịch và mục tiêu tiết kiệm | Tiện ích bổ sung; chi tiêu lưu tại trình duyệt |
+
+### Meeting — thay cho mục Audio Lab riêng
+
+Chọn **Meeting** trên sidebar, rồi chọn:
+- **Ghi họp local:** mic hoặc system audio Windows, Sherpa Việt int8 xử lý cửa sổ khoảng 5 giây; lưu transcript SQLite, mở lại phiên, export Markdown. Cần env/model M0 có sẵn; không tự tải model hoặc lưu file audio.
+- **Hội thoại online:** mic trình duyệt → nhận dạng → Google Translate; cần consent và mạng. Xuất phụ đề song ngữ TXT; không tự lưu vào phiên local.
+- **Văn bản & TTS:** dịch văn bản online, đọc bằng Gemini hoặc browser voice. Chỉ phát khi không có phiên local đang ghi; browser voice không bảo đảm offline.
+
+Mic online/TTS bị khóa nếu có bất kỳ phiên local đang chạy hoặc chưa đọc được trạng thái. Online audio hoạt động khóa đổi mode; dừng trước khi chuyển. Đây không phải khóa phân tán giữa mọi browser/client. Không tự gửi transcript local sang dịch vụ online.
+
+M1 còn thiếu nghiệm thu phần cứng và phiên thật 60 phút. Xem [hướng dẫn](project_docs/user_guide.md), [kết quả M1](project_docs/meeting_m1_results.md), [PRD](project_docs/prd.md) và [test tự động](project_docs/test_cases.md). Dịch local, VAD và AI reply chưa được triển khai.
 
 ## Điểm kỹ thuật để đánh giá dự án
 
@@ -190,7 +202,7 @@ corepack pnpm run test:integration
 
 ## Dữ liệu và giới hạn
 
-- **Library:** IndexedDB trong trình duyệt. **Notebook:** `data/notebook.json` trên server; lịch sử chat ở localStorage. Xóa dữ liệu trình duyệt hoặc đổi origin ảnh hưởng dữ liệu phía client.
+- **Meeting local:** `data/meeting.sqlite` trên máy server (kèm WAL/SHM), chưa mã hóa cấp ứng dụng; online subtitles chỉ ở màn hình cho tới khi xuất TXT. **Library:** IndexedDB trong trình duyệt. **Notebook:** `data/notebook.json` trên server; lịch sử chat ở localStorage. Xóa dữ liệu trình duyệt hoặc đổi origin ảnh hưởng dữ liệu phía client.
 - Chưa có xác thực và kiểm tra quyền sở hữu notebook ở API; hồ sơ UI chưa phải tài khoản đăng nhập. Chưa phù hợp để mở server chung chứa dữ liệu riêng của nhiều người.
 - Store JSON, limiter và lobby gắn với tiến trình. Chưa xác minh nhiều instance; không áp dụng hướng dẫn PM2 cluster từ tài liệu cũ.
 - Giới hạn upload giữa UI và các route chưa thống nhất. Nên thử TXT nhỏ trước; chưa kiểm chứng media 2 GiB hoặc tài liệu lớn.

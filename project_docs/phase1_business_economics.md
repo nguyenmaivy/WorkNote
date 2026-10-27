@@ -5,6 +5,10 @@
 **Trạng thái:** Bản thiết kế chi tiết Giai đoạn 1
 **Ngày lập:** 2026-09-30
 
+## Cập nhật sản phẩm — 22/10/2026
+
+Audio Lab không còn là phân hệ riêng; **Meeting** gồm local session (Sherpa Việt/SQLite), hội thoại online (browser mic/Google), văn bản & TTS (Google/Gemini/browser). Không tự đưa transcript local ra cloud; thông báo xử lý dữ liệu và consent phải rõ. Chi phí mạng/provider cần tính riêng, không dùng nhãn “0 token” để cam kết miễn phí hoặc offline. M1 chưa nghiệm thu hardware/60 phút; VAD, dịch local và AI reply chưa trong implementation. [PRD](prd.md) và [kết quả M1](meeting_m1_results.md) cập nhật; các giả định kinh tế bên dưới giữ theo lịch sử.
+
 ## 1. Phạm vi dự án (Core MVP & In/Out-of-scope)
 
 ### In-scope (Phạm vi cốt lõi)

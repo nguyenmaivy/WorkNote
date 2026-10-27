@@ -1,0 +1,5 @@
+# Candidate ranges, not a verified lockfile. Record resolved versions in M0 report.
+PyAudioWPatch>=0.2.12.6,<0.3; sys_platform == "win32"
+faster-whisper>=1.1,<2
+sherpa-onnx>=1.10,<2
+numpy>=1.26,<3

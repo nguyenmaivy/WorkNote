@@ -1,6 +1,6 @@
 ﻿# PRD — WorkNote / VietLearn AI Lab
 
-Cập nhật **03/10/2026**. Phạm vi: bản phát triển phục vụ portfolio và học tập. Tài liệu mô tả sản phẩm hiện tại và tiêu chí cần nghiệm thu; kết quả đã chạy nằm riêng trong [verification.md](verification.md).
+Cập nhật **22/10/2026**. Phạm vi: bản phát triển phục vụ portfolio và học tập. Tài liệu mô tả sản phẩm hiện tại và tiêu chí cần nghiệm thu; kết quả đã chạy nằm riêng trong [verification.md](verification.md).
 
 ## 1. Vấn đề cần giải quyết
 
@@ -19,7 +19,8 @@ Người dùng chính là sinh viên tự học với ghi chú, tài liệu môn
 | Mind Maps | Chọn Library/Notebook, tạo cây, chỉnh sửa, lưu | Có implementation; xem evidence phiên demo |
 | Quiz / RPG | Dùng quiz của tài liệu đang chọn, có bộ mẫu khi chưa có quiz | Có implementation; có ảnh Classic Quiz mẫu |
 | AI Chatbot | Hỏi theo tài liệu hoạt động | Có implementation; kiểm chứng riêng với mỗi nhánh provider |
-| Audio / Video | Phiên âm, dịch, phụ đề và đọc văn bản | Module bổ sung, phụ thuộc provider/mạng |
+| Meeting | Một workspace: ghi họp local, hội thoại online, văn bản/TTS | Đã hợp nhất UI và có tests mock; M1 chưa nghiệm thu thiết bị/60 phút |
+| Video trong Library | Phiên âm và phụ đề từ media đã chọn | Luồng riêng, phụ thuộc provider/mạng; không phải system capture Meeting |
 | Knowledge / Spending | Kiến thức tĩnh và quản lý chi tiêu cá nhân | Tiện ích bổ sung, không phải trọng tâm demo |
 
 Ngoài phạm vi hoàn thành hiện tại: SaaS nhiều người dùng, thanh toán, cloud sync đầy đủ, SSO, cam kết SLA, benchmark chịu tải và đánh giá hiệu quả học tập thực nghiệm.
@@ -38,6 +39,21 @@ Ngoài phạm vi hoàn thành hiện tại: SaaS nhiều người dùng, thanh t
 | US-08 | Tôi muốn hiểu vì sao thao tác lỗi | Có thông báo khi provider không sẵn sàng, hết quota, file không hợp lệ; không spinner vô hạn |
 
 Các tiêu chí chưa được xác nhận chỉ vì có mã nguồn. Danh mục kiểm thử mở rộng nằm tại [test_cases.md](test_cases.md), công việc bổ sung nằm ở [roadmap](future_roadmap.md).
+
+## 3.1. Meeting làm trung tâm — yêu cầu hiện tại
+
+Không còn mục Audio Lab riêng trên sidebar. `MeetingHub` điều phối ba mục, không tự chuyển dữ liệu local sang online:
+
+| ID | Chế độ / yêu cầu | Tiêu chí nghiệm thu |
+| --- | --- | --- |
+| MT-01 | Ghi họp local | Sherpa Việt int8 trên Windows, một nguồn mic/system; SQLite lưu final raw trước gửi UI; reconnect/export Markdown giữ gap. Không hứa native streaming hoặc đa ngôn ngữ |
+| MT-02 | Hội thoại online | Mic trình duyệt SpeechRecognition → Google Translate; consent rõ trước start; phụ đề song ngữ export TXT, không lưu thành session SQLite; không quảng cáo trực tiếp bắt video/system |
+| MT-03 | Văn bản & TTS | Dịch văn bản online; Gemini TTS hoặc giọng trình duyệt theo lựa chọn rõ ràng, có Stop/error. Không ngầm gửi transcript họp; giọng trình duyệt không được cam kết offline |
+| MT-04 | Tránh thu/phát chồng nhau | Bất kỳ phiên local starting/recording/stopping khóa mic online/TTS; không đọc được trạng thái thì fail-closed. Online audio hoạt động khóa đổi mode trong workspace |
+| MT-05 | Vòng đời online | Stop/unmount tắt recognition và tự restart, hủy request/phát audio; response muộn không thêm vào lượt mới; lỗi không tạo bản dịch demo |
+| MT-06 | Bảo toàn dữ liệu | Đổi mode không xóa session; rời Meeting không ngầm stop worker local; không overwrite text_raw bằng bản dịch |
+
+**Ngoài phạm vi đợt hợp nhất:** VAD/endpointing, dịch local, AI suggested reply, tự đồng bộ phụ đề online vào SQLite, khóa capture tuyệt đối giữa nhiều client và TTS routing chống echo nâng cao. M1 vẫn phải kiểm chứng lifecycle thiết bị, chất lượng và phiên thật 60 phút; tests UI mock không đóng gate này. Xem [kết quả M1](meeting_m1_results.md) và [roadmap meeting](local_meeting_copilot_plan.md).
 
 ## 4. Yêu cầu phi chức năng
 

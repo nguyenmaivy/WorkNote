@@ -1,6 +1,6 @@
 # Tài liệu WorkNote
 
-Cập nhật: **03/10/2026**. WorkNote là tên dự án; VietLearn AI Lab là tên hiện trên giao diện.
+Cập nhật: **22/10/2026**. WorkNote là tên dự án; VietLearn AI Lab là tên hiện trên giao diện.
 
 ## Bắt đầu từ đâu?
 
@@ -39,6 +39,9 @@ Các tài liệu sau được giữ để theo dõi quá trình phát triển. N
 | [Test cases](test_cases.md) | Danh mục kịch bản, không phải tất cả đều đã chạy |
 | [Walkthrough Phase 1](walkthrough.md) | Ghi chép triển khai cũ; không thay thế hướng dẫn người dùng mới |
 | [Kế hoạch Hugging Face](huggingface_integration_architecture_plan.md) | Ý tưởng kiến trúc AI; không phải cam kết toàn bộ ứng dụng offline |
+| [Local Meeting Copilot](local_meeting_copilot_plan.md) | Đánh giá my-translator và roadmap capture/STT → note/Q&A → TTS local |
+| [M0: công cụ và kết quả](meeting_m0_results.md) | Đã benchmark/chọn Sherpa Việt int8; chưa đóng toàn bộ gate M0 |
+| [M1: triển khai và kiểm chứng](meeting_m1_results.md) | Session/transcript local bền vững; trạng thái kiểm thử và checklist nghiệm thu phần cứng |
 | [Lịch sử thay đổi](modification_history.md) | Nhật ký kỹ thuật và các lần học/thử nghiệm |
 | [Đặc tả NotebookLM](../kitty-specs/worknote-notebooklm/README.md) | Đặc tả theo work package |
 

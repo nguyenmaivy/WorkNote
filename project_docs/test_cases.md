@@ -6,7 +6,7 @@
 | --- | --- |
 | Phiên bản code bám theo | Multi-provider Phase 1 (process-file / transcribe / PII / orchestrator) + toàn bộ 8 tab UI |
 | Ngày lập | 2026-09-26 |
-| Cách chạy auto hiện có | `pnpm test` → `tsc --noEmit` + `tsx --test server/tests/*.test.ts` |
+| Cách chạy auto hiện có | `corepack pnpm test` → typecheck + backend unit + frontend Vitest; AI integration chạy riêng |
 
 **Mức ưu tiên**
 
@@ -62,7 +62,7 @@ Ghi rõ bộ key khi chạy. Logic trong `getAvailableProviders()`:
 
 | ID | Tên | P | Loại | Tiền điều kiện | Các bước | Kết quả mong đợi |
 | --- | --- | --- | --- | --- | --- | --- |
-| NAV-01 | Mở app, 8 tab | P0 | Manual | `pnpm run dev` | Vào trang chủ, lần lượt Library, Chatbot, NotebookLM, Mind Maps, RPG, Audio Lab, Knowledge, Spending | Mỗi tab render, không trắng màn, không uncaught error |
+| NAV-01 | Mở app, 8 tab | P0 | Manual | `pnpm run dev` | Vào trang chủ, lần lượt Library, Chatbot, NotebookLM, Mind Maps, RPG, Meeting (local/online/văn bản–TTS), Knowledge, Spending | Mỗi tab render, không trắng màn, không uncaught error |
 | NAV-02 | Sidebar mobile | P1 | Manual | Viewport &lt; `lg` | Mở menu, chọn tab, đóng overlay | Tab đổi; overlay đóng |
 | NAV-03 | ErrorBoundary | P1 | Manual | — | Gây lỗi render (nếu có nút dev) hoặc inject throw | UI lỗi thân thiện, không trắng toàn app |
 | NAV-04 | Reload giữ thư viện | P0 | Manual | Đã upload file success | F5 | File còn trong IndexedDB; audio/video phát lại được (`objectUrl` hydrate) |
@@ -240,7 +240,38 @@ API: `GET/POST/PUT/DELETE /api/notebook/pages`, sources, upload, search, chat, s
 
 ---
 
-## 7. Audio Lab
+## 7. Meeting hợp nhất — cập nhật 22/10/2026
+
+Các test tự động dưới đây có file thực thi, không cần mic/model/key và không gọi provider thật:
+
+| ID / PRD | Kiểm tra tự động | File |
+| --- | --- | --- |
+| HUB-01 / MT-01 | Sidebar chỉ có Meeting, default local, không tự start audio | `src/components/MeetingHub.test.tsx` |
+| HUB-02 / MT-04 | Có bất kỳ phiên local active thì khóa online, kể cả phiên không được chọn | `src/components/MeetingHub.test.tsx` |
+| HUB-03 / MT-04 | Online audio đang hoạt động chặn đổi mode; Stop mở lại | `src/components/MeetingHub.test.tsx` |
+| HUB-04 / MT-04 | API status lỗi thì fail-closed | `src/components/MeetingHub.test.tsx` |
+| ONL-01 / MT-02 | Consent và kiểm tra local status trước bật mic | `src/components/AudioSpeechLab.test.tsx` |
+| ONL-02 / MT-05 | Stop/unmount abort recognition và bỏ response dịch trả về muộn | `src/components/AudioSpeechLab.test.tsx` |
+| ONL-03 / MT-05 | Provider lỗi hiển thị lỗi thật, không bản dịch demo | `src/components/AudioSpeechLab.test.tsx` |
+| ONL-04 / MT-04 | UI status blocked không bật mic/audio | `src/components/AudioSpeechLab.test.tsx` |
+| ONL-05 / MT-04 | Recheck status trước start, không tin trạng thái UI cũ | `src/components/AudioSpeechLab.test.tsx` |
+| MT-AUTO / MT-01 | Consent/API start, final render, history pagination và seq dedup | `src/components/MeetingWorkspace.test.tsx` |
+| MT-STORE / MT-01 | Sequence, session, delete và IPC validation (coverage còn cơ bản) | `server/tests/meetingStore.test.ts` |
+| MT-WORKER / MT-01 | PCM mix, EOF, stop/tail, timeline gap và command lỗi bằng fakes | `scripts/test_meeting_worker.py` |
+
+Chạy từ repo root:
+
+```powershell
+corepack pnpm run typecheck
+corepack pnpm exec vitest run src/components/MeetingHub.test.tsx src/components/AudioSpeechLab.test.tsx src/components/MeetingWorkspace.test.tsx
+corepack pnpm run test:unit
+.venv-meeting-m0/Scripts/python.exe -I scripts/test_meeting_worker.py
+corepack pnpm run check
+```
+
+Cần bổ sung: TTS PCM/playback failure/cancel tests, WS/supervisor crash/replay/DB failure và browser E2E tự động. Consent từ chối mic, thiết bị thật, mất thiết bị, echo và 60 phút vẫn **Manual/Blocked**, không đánh dấu Auto Pass. Browser SpeechRecognition/Google Translate không phải `/api/translate-live-audio` hay `/api/ws/translate`; các endpoint legacy phía dưới không mô tả pipeline UI mới.
+
+### Danh mục audio legacy / các route còn tồn tại (không phải bằng chứng đã chạy)
 
 | ID | Tên | P | Loại | Các bước | Kết quả mong đợi |
 | --- | --- | --- | --- | --- | --- |

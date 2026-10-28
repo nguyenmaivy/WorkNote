@@ -5,6 +5,12 @@
 **Trạng thái:** Đã hoàn tất Audit
 **Ngày lập:** 2026-09-30
 
+## Bổ sung baseline Meeting — 22/10/2026
+
+Không thay các số đo/snapshot 30/09 phía dưới. MeetingHub đã hợp nhất Audio Lab, có tests navigation/consent/lifecycle bằng mocks. Lượt kiểm tra local mới: lint/typecheck PASS, frontend 15 tests, backend unit 29 tests, build và production smoke PASS; browser chuyển đủ ba mục không ghi âm/gọi cloud. Chi tiết [M1 results](meeting_m1_results.md); không thay bằng chứng CI GitHub cũ bằng kết quả local.
+
+Chưa đo latency end-to-end, RAM/backlog phiên thật 60 phút, chất lượng dịch online, TTS thực hoặc race nhiều client. Khi đo cần tách chờ cửa sổ 5 giây, STT processing và delivery UI; không suy ra subtitle nhanh từ RTF. Chỉ ghi âm sau consent; không chạy provider trả phí tự động. M0 quality/load/license còn thiếu được giữ nguyên.
+
 ## 1. Trạng thái Git (Git State)
 - **Branch**: `main` (Ahead of origin/main by 1 commit)
 - **Modified**: 31 files (config, services, hooks, components)

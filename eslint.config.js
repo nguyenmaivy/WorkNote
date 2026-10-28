@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['node_modules/**', '.pnpm-store/**', 'tmp-spec-kitty/**', 'dist/**', 'coverage/**', '.tmp-ci/**', '.venv/**', 'public/**', 'uploads/**', 'artifacts/**', '**/*.bak'] },
+  { ignores: ['.claude/worktrees/**', '.venv-meeting-m0/**', 'node_modules/**', '.pnpm-store/**', 'tmp-spec-kitty/**', 'dist/**', 'coverage/**', '.tmp-ci/**', '.venv/**', 'public/**', 'uploads/**', 'artifacts/**', '**/*.bak'] },
   {
     files: ['**/*.{js,mjs,ts,tsx}'],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],

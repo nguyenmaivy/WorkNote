@@ -23,6 +23,8 @@ import notebookRouter from "./server/routes/notebook.js";
 import privacyRouter from "./server/routes/privacy.js";
 import tutorRouter from "./server/routes/tutor.js";
 import mindmapsRouter from "./server/routes/mindmaps.js";
+import meetingRouter from "./server/routes/meeting.js";
+import { shutdownMeeting } from "./server/services/meetingSupervisor.js";
 
 const app = express();
 
@@ -63,6 +65,7 @@ app.use("/api/notebook", notebookRouter);
 app.use("/api/privacy", privacyRouter);
 app.use("/api/tutor", tutorRouter);
 app.use("/api/mindmaps", mindmapsRouter);
+app.use("/api/meeting", meetingRouter);
 
 // ─── Status Route ─────────────────────────────────────────────────────────────
 import { getAvailableProviders } from "./server/config.js";
@@ -111,9 +114,16 @@ async function initMiddlewaresAndStart() {
   });
 }
 
-function shutdown(): void {
-  stopLocalLlmSupervisor();
-  process.exit(0);
+let shuttingDown = false;
+async function shutdown(): Promise<void> {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  try {
+    await shutdownMeeting();
+  } finally {
+    stopLocalLlmSupervisor();
+    process.exit(0);
+  }
 }
 
 process.once("SIGINT", shutdown);

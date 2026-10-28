@@ -10,7 +10,22 @@
 
 > Trạng thái vẫn là tài liệu review. Chưa cài package, xóa file, refactor hay sửa cấu hình runtime. Chỉ bắt đầu code sau khi chủ dự án review bản cập nhật và xác nhận duyệt.
 
-## Tóm tắt hiện trạng
+## Phạm vi hiện hành — 22/10/2026
+
+Các quan sát 28–30/09 bên dưới được giữ như lịch sử, không phải hiện trạng toolchain. Audio Lab đã hợp nhất vào **Meeting**: ghi họp local (Sherpa Việt/SQLite), hội thoại online (mic browser/Google Translate), văn bản & TTS (Google/Gemini/browser). Không có Audio Lab riêng; không tự chuyển transcript local ra online. [PRD MT-01–06](prd.md) là nguồn yêu cầu, [test cases](test_cases.md) liên kết tests thực thi.
+
+| Phase | Điều chỉnh cho Meeting |
+| --- | --- |
+| 1 — Sản phẩm/chi phí | Một workspace, ba chế độ có privacy/cost khác nhau; không cam kết dịch/TTS miễn phí hoặc toàn app offline |
+| 2 — Flows/contracts | Giữ protocol local/SQLite riêng với phụ đề online tạm thời; active local/unknown khóa online audio; online audio khóa đổi mode |
+| 3 — PRD/DoD | Consent, stop/unmount, late response, raw transcript và gap; tiêu chí chất lượng/60 phút chưa đóng |
+| 4 — Baseline | Đo riêng chờ cửa sổ, inference, backlog và UI; chưa chạy hardware benchmark mới |
+| 5 — Modularization | MeetingHub điều phối, MeetingWorkspace local, AudioSpeechLab thu gọn thành online tools; bỏ recorder ngắn trùng và control giả |
+| 6 — Quality gates | Vitest navigation/lifecycle + backend unit + Python fake tests; smoke chung không chứng minh capture thực; giữ CD deferred |
+
+Không đổi thứ tự M0–M4 của roadmap meeting; VAD/endpointing/dịch local/AI reply là đề xuất, không feature đã hoàn thành. Bảo toàn lịch sử CI; kết quả mới tại [M1](meeting_m1_results.md). Không tuyên bố khóa capture tuyệt đối nhiều client.
+
+## Tóm tắt hiện trạng (snapshot lịch sử)
 
 | Giai đoạn | Có sẵn | Còn thiếu / cần xác minh |
 |---|---|---|

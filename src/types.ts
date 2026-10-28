@@ -127,7 +127,7 @@ export type TabId =
   | "chat"
   | "mindmap"
   | "game"
-  | "audiolab"
+  | "meeting"
   | "knowledge"
   | "budget"
   | "notebook";

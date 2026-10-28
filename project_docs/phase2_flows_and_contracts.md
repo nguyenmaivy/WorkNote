@@ -5,6 +5,12 @@
 **Trạng thái:** Bản thiết kế chi tiết Giai đoạn 2
 **Ngày lập:** 2026-09-30
 
+## Meeting contracts — 22/10/2026
+
+Một sidebar Meeting, ba mục: Ghi họp local / Hội thoại online / Văn bản & TTS. Local: mic/system → Python Sherpa → Node → SQLite commit → ordered final/gap replay; `protocol_version`, `session_id`, `seq`, segment identity/revision. Online: browser mic → SpeechRecognition → Google Translate → phụ đề tạm/TXT, không nhập SQLite hay protocol local. Text/TTS không tự lấy transcript local.
+
+Local starting/recording/stopping (bất kỳ session) hoặc status không rõ khóa online audio. Online audio khóa đổi mode trong workspace. Stop/unmount online abort recognition, cancel request/playback và bỏ response muộn; không ngầm stop worker local khi rời mục. Đây không phải distributed lock nhiều client. Contract source: `shared/meeting.ts`, `meetingApi.ts`; yêu cầu MT-01–06 tại [PRD](prd.md), tests tại [test_cases](test_cases.md). Các contracts pipeline file bên dưới giữ phạm vi lịch sử, không thay thế runtime validation hiện tại.
+
 ## 1. State Machine: Trạng thái File Pipeline
 
 | Trạng thái (State) | Sự kiện kích hoạt (Event) | Hành động tiếp theo |

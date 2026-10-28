@@ -92,6 +92,7 @@ class LocalLlmHandler(BaseHTTPRequestHandler):
                     max_tokens=max_tokens,
                     temperature=temperature,
                     stream=False,
+                    **({"response_format": {"type": "json_object"}} if body.get("response_format") == {"type": "json_object"} else {}),
                 )
 
             choice = response.get("choices", [{}])[0]

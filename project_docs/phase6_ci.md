@@ -2,6 +2,12 @@
 
 Phạm vi theo yêu cầu ngày **03/10/2026**: triển khai CI; CD chờ dự án hoàn thiện thêm.
 
+## Bổ sung kiểm chứng local — 22/10/2026
+
+Sau hợp nhất MeetingHub: lint/typecheck PASS; frontend **15 tests / 4 files**, backend unit **29 tests**, build và production smoke PASS trên máy local. Có 12 cases UI meeting/online/hub; Python worker fakes **5 tests PASS** lượt trước. Đây không phải CI GitHub mới; chưa commit/push/deploy trong đợt này.
+
+Lint ban đầu quét checkout cũ dưới `.claude/worktrees` và thất bại. Đã exclude thư mục worktree + env M0 (không bỏ qua source chính), sửa lỗi lint code mới và chạy lại tuần tự thành công. Danh mục test/traceability tại [test_cases.md](test_cases.md). Không đưa mic/model/provider cloud thật vào unit CI; capture/60 phút, TTS thực, API/WS/supervisor coverage còn thiếu. CD vẫn deferred; giữ nguyên bằng chứng CI lịch sử bên dưới.
+
 ## Kiểm tra tự động
 
 Workflow [ci.yml](../.github/workflows/ci.yml) chạy khi:

@@ -1,6 +1,6 @@
 # Checklist WorkNote — Portfolio
 
-Cập nhật **03/10/2026**. Chi tiết ưu tiên và tiêu chí ở [roadmap](future_roadmap.md).
+Cập nhật **22/10/2026**. Chi tiết ưu tiên và tiêu chí ở [roadmap](future_roadmap.md).
 
 ## Tài liệu và demo đã hoàn thành
 
@@ -9,6 +9,18 @@ Cập nhật **03/10/2026**. Chi tiết ưu tiên và tiêu chí ở [roadmap](f
 - [x] Chạy development, production startup smoke, TypeScript, 29 tests và build.
 - [x] Tạo [file mẫu](examples/react-study-note.txt), [script chụp](capture-demo.mjs), 7 ảnh thật và [hướng dẫn](user_guide.md).
 - [x] Ghi [bằng chứng và vấn đề còn lại](verification.md), phân biệt pass luồng với chất lượng AI.
+
+## Meeting hợp nhất — 22/10/2026
+
+- [x] Một mục Meeting trên sidebar, ba mục local / hội thoại online / văn bản & TTS; bỏ bộ recorder ngắn và control giả trùng lặp của Audio Lab.
+- [x] Phân biệt dữ liệu local/online, consent mic online; không tự gửi transcript local đi dịch.
+- [x] Kiểm tra mọi phiên local trước bật online audio; khóa khi không rõ trạng thái; ngăn đổi mode khi mic/TTS online hoạt động.
+- [x] Cleanup recognition/playback, hủy/loại response cũ sau Stop/unmount.
+- [x] Typecheck và 12 tests liên quan (`MeetingHub`, `AudioSpeechLab`, `MeetingWorkspace`) đã chạy PASS; đây là tests mock, không phải nghiệm thu audio thật.
+- [ ] Hoàn thiện test API/WS/supervisor M1 và kiểm chứng restart/DB failure/stop tail.
+- [ ] Nghiệm thu mic/system, mất thiết bị và ghi thật 60 phút trên baseline, có consent.
+- [ ] Đóng gate M0 quality/reference, tải STT+LLM đủ dài và license ONNX trước phân phối.
+- [ ] VAD/endpointing, dịch local và AI reply: chỉ đề xuất sau, không phải tính năng đã hoàn thành.
 
 ## Tiếp theo — trước khi gửi hồ sơ
 

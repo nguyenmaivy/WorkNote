@@ -5,6 +5,36 @@
 **Trạng thái:** Bản thiết kế chi tiết Giai đoạn 3
 **Ngày lập:** 2026-09-30
 
+## Meeting acceptance — 22/10/2026
+
+```gherkin
+Feature: Meeting trung tâm, chế độ local và online tách biệt
+  Scenario: Điều hướng không trùng Audio Lab
+    Given ứng dụng mở
+    When chọn Meeting
+    Then có Ghi họp local, Hội thoại online, Văn bản & TTS
+    And không có Audio Lab riêng trên sidebar
+    And không tự bật mic hoặc gọi cloud
+
+  Scenario: Không thu/phát online khi local đang ghi
+    Given có bất kỳ session local starting, recording hoặc stopping
+    When mở Hội thoại online hoặc Văn bản & TTS
+    Then mic online và TTS bị khóa
+    And không ngầm dừng hay xóa phiên local
+
+  Scenario: Không xác minh được trạng thái
+    Given đọc trạng thái local thất bại
+    Then không cho bắt đầu online audio
+
+  Scenario: Dừng online không nhận bản dịch muộn
+    Given đã consent và bắt đầu mic online
+    When Stop hoặc unmount trong lúc chờ dịch
+    Then recognition không tự restart và request/playback bị hủy
+    And response cũ không ghi vào lượt mới
+```
+
+DoD: liên kết MT-01–06 → tests trong [test_cases.md](test_cases.md); typecheck/lint/unit/frontend/build/smoke chạy thật. Tests mock không xác nhận chất lượng dịch, PCM/TTS thật hoặc capture 60 phút. Không có dịch local/VAD/AI reply; raw transcript không overwrite bằng bản dịch. Bảo toàn các acceptance đề xuất lịch sử bên dưới, không coi là đã Pass.
+
 ## 1. Acceptance Criteria (Gherkin BDD)
 
 ### Feature: Upload Media file lớn (Tới 2GB)

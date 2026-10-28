@@ -6,7 +6,7 @@ Trước khi bắt đầu, làm theo [hướng dẫn cài và chạy](../README.
 
 ## 1. Làm quen với Library
 
-Mở `http://localhost:3000`. Thanh bên trái chứa Library, AI Chatbot, NotebookLM, Mind Maps, RPG Games, Audio Lab, Knowledge và Spending.
+Mở `http://localhost:3000`. Thanh bên trái chứa Library, AI Chatbot, NotebookLM, Mind Maps, RPG Games, Meeting, Knowledge và Spending. Cập nhật điều hướng **22/10/2026**: Audio Lab đã chuyển vào Meeting; các ảnh 03/10 phía dưới là ảnh lịch sử, chưa phản ánh thanh điều hướng mới.
 
 ![Library khi chưa có tài liệu](screenshots/01-library.png)
 
@@ -72,10 +72,33 @@ Hai ảnh dùng giao diện và câu hỏi mẫu có sẵn, không phải quiz s
 
 - **AI Chatbot:** chọn tài liệu Library làm ngữ cảnh rồi hỏi đáp; tách với hội thoại NotebookLM.
 - **Knowledge:** xem các chuyên đề kiến thức có sẵn.
-- **Audio Lab:** thử đọc văn bản hoặc dịch âm thanh sau khi cấu hình provider và cấp quyền microphone. Chưa có ảnh/kết quả kiểm chứng audio trong phiên này.
+- **Meeting:** xem ba chế độ bên dưới; không còn mục Audio Lab riêng.
 - **Spending:** giao diện giao dịch, biểu đồ và mục tiêu tiết kiệm. Ảnh dưới dùng dữ liệu mẫu mặc định của ứng dụng, không phải dữ liệu tài chính cá nhân.
 
 ![Spending với dữ liệu mẫu mặc định](screenshots/06-spending.png)
+
+## 6.1. Meeting — local, hội thoại online và TTS
+
+### Ghi họp local
+1. Mở **Meeting → Ghi họp local** trên `http://localhost:3000`.
+2. Chuẩn bị env `.venv-meeting-m0` Python 3.10 và model Sherpa Việt int8 theo [M0](meeting_m0_results.md); xem [giới hạn M1](meeting_m1_results.md). Thiếu env/model phải báo lỗi, không có fallback transcript giả.
+3. Chọn **Microphone** hoặc **System audio**, chọn đúng thiết bị; xác nhận consent rồi **Start transcription**. Chỉ ghi sau thao tác này.
+4. Transcript đến theo cửa sổ khoảng 5 giây, không phải subtitle streaming tức thời. Đọc cả gap/error.
+5. **Stop**, rồi export Markdown hoặc mở lại phiên. **Reconnect** tải lại final đã lưu. Chỉ xóa phiên đã dừng/lỗi sau khi xác nhận; export đã tải là bản riêng.
+
+Rời mục không ngầm dừng worker local; quay lại để Stop. Nếu có phiên local đang chạy, mic online/TTS bị khóa kể cả khi bạn đang xem một phiên khác.
+
+### Hội thoại online
+1. Dừng phiên local trước, chọn **Hội thoại online**.
+2. Chọn ngôn ngữ gốc/đích; xác nhận có consent và chấp nhận xử lý online.
+3. **Bắt đầu dịch live**, cấp quyền mic khi trình duyệt yêu cầu. Luồng này dùng mic trình duyệt, không trực tiếp lấy tiếng video/system. Browser STT có thể cần mạng; văn bản gửi Google Translate.
+4. **Dừng mic online** trước đổi chế độ. **Xuất phụ đề TXT** trước khi rời mục nếu muốn giữ; phụ đề không tự lưu SQLite. Không có hạn mức miễn phí/SLA được cam kết.
+5. Nếu dịch không theo kịp, UI dừng rõ ràng thay vì bỏ lời nói âm thầm; bắt đầu lại với tốc độ nói phù hợp.
+
+### Văn bản & TTS
+Nhập tối đa 5.000 ký tự → chọn ngôn ngữ → **Dịch văn bản online**. Chọn **Đọc bằng Gemini online** (cần Gemini key; gửi text lên cloud), **Đọc bằng trình duyệt**, hoặc **Đọc bản dịch**. Chọn vùng giọng cho Gemini, tốc độ và cao độ cho browser voice; cao độ không áp dụng Gemini. **Dừng phát / hủy** để hủy. Không có transcript local tự đính kèm vào công cụ này.
+
+Nếu không xác minh được trạng thái local, mic online/TTS tạm khóa để tránh echo. Browser voice phụ thuộc thiết bị, không bảo đảm offline. Chỉ kiểm tra loại trừ trong workspace + trạng thái backend; chưa bảo đảm khóa tuyệt đối với nhiều client thao tác đồng thời. Chưa nghiệm thu capture thật 60 phút, VAD/dịch local/AI reply chưa có.
 
 ## 7. Dữ liệu được lưu ở đâu?
 
@@ -84,6 +107,8 @@ Hai ảnh dùng giao diện và câu hỏi mẫu có sẵn, không phải quiz s
 | Tài liệu và kết quả Library | IndexedDB trong trình duyệt |
 | Notebook, nguồn và mindmap notebook | `data/notebook.json` trên server |
 | Chat notebook, profile, chi tiêu | localStorage trên trình duyệt |
+| Meeting local | `data/meeting.sqlite` trên server local, kèm WAL/SHM; chưa mã hóa cấp app |
+| Phụ đề hội thoại online / văn bản dịch | State màn hình; export TXT là file riêng, không tự lưu vào phiên local |
 
 Giữ nguyên origin và browser profile để mở lại dữ liệu client. Xóa site data hoặc dùng cửa sổ ẩn danh có thể làm mất/không thấy dữ liệu đó. Server hiện chưa phân quyền notebook theo tài khoản.
 
